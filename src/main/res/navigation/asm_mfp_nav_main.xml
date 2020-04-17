@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/asm_mfp_nav_main"
+    android:label="@string/asm_mfp_app_name"
+    app:startDestination="@id/asm_mfp_mainfragment">
+
+    <fragment
+        android:id="@+id/asm_mfp_mainfragment"
+        android:name="com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment"
+        tools:layout="@layout/asm_mfp_fragment_main" />
+</navigation>
