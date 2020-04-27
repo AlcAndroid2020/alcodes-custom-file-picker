@@ -17,9 +17,11 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
@@ -34,7 +36,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
     AsmMfpCustomFilePickerAdapter mAdapter;
     ArrayList<MyFile> myFileList = new ArrayList<>();
     private static final int PERMISSION_STORGE_CODE = 1000;
-
+    private Boolean setChecked = false,searching=false;
     ImageView item_checked;
 
     @Override
@@ -43,11 +45,16 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
         setContentView(R.layout.asm_mfp_activity_custom_file_picker);
         //get the grid view from this layout
         gridView = findViewById(R.id.gridView_Album);
+
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //open sub
+
+                ImageView checkicon=view.findViewById(R.id.Album_item_Selected_Image);
+
+                //open folder
                 String name = myFileList.get(position).getFileName();
                 if (myFileList.get(position).getIsFolder()) {
                     if (PickerFileType.equals("Image"))
@@ -56,26 +63,48 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
                         openVideoMediaStoreFile(name);
                 } else {
                     //click on album files
-
+                    //show the check option
+                    setChecked = true;
+                    //is allow option menu to show check icon
+                    invalidateOptionsMenu();
 
                     //havent select yet
-                    if(!myFileList.get(position).getIsSelected()) {
+                    if (!myFileList.get(position).getIsSelected()) {
 
-                        LinearLayout root = (LinearLayout) gridView.getChildAt(position);
-                        root.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                        checkicon.setVisibility(View.VISIBLE);
+
                         myFileList.get(position).setIsSelected(true);
-                    }else{
+                    } else {
                         //selected
-                        LinearLayout root = (LinearLayout) gridView.getChildAt(position);
-                        root.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
+                        checkicon.setVisibility(View.INVISIBLE);
+
 
                         myFileList.get(position).setIsSelected(false);
+                        int count=0;
+                        for (int i = 0; i < myFileList.size(); i++) {
+
+                            if (myFileList.get(i).getIsSelected())
+                                count++;
+
+                        }
+
+                        //if user cancel the selected item
+                        if(count==0) {
+                            setChecked = false;
+                            invalidateOptionsMenu();
+                        }
 
                     }
 
                 }
             }
         });
+
+
+
+
+
+
         //get which file type user selected from album
         if (getIntent().getStringExtra("FileType") != null) {
             PickerFileType = getIntent().getStringExtra("FileType");
@@ -89,24 +118,53 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.asm_mfp_menu_custom_file_picker, menu);
+        //for select item
+        MenuItem checkItem = menu.findItem(R.id.DoneSelection);
+
+        if (setChecked)
+            checkItem.setVisible(true);
+        else
+            checkItem.setVisible(false);
+
+
+
+        //for search filter
+        MenuItem searchItem=menu.findItem(R.id.FilePicker_SearchFilter);
+        SearchView searchView=(SearchView) searchItem.getActionView();
+        searchView.setQueryHint("Search");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.getFilter().filter(newText);
+                searching=true;
+                return true;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.DoneSelection) {
-            ArrayList<String> mFileList=new ArrayList<>();
+            ArrayList<String> mFileList = new ArrayList<>();
             for (int i = 0; i < myFileList.size(); i++) {
 
-                if(myFileList.get(i).getIsSelected())
-                mFileList.add(myFileList.get(i).getFileUri());
+                if (myFileList.get(i).getIsSelected())
+                    mFileList.add(myFileList.get(i).getFileUri());
 
             }
-            Intent intent = new Intent(this, AsmGvrMainActivity.class);
-            intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+            if (mFileList != null) {
+                Intent intent = new Intent(this, AsmGvrMainActivity.class);
+                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
 
-            startActivity(intent);
-
-
+                startActivity(intent);
+            }
 
         }
         return super.onOptionsItemSelected(item);

@@ -10,21 +10,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.util.ArrayList;
 
-public class AsmMfpCustomFilePickerAdapter extends BaseAdapter {
+public class AsmMfpCustomFilePickerAdapter extends BaseAdapter implements Filterable {
     private Context mContext;
     private LayoutInflater inflater;
     public ArrayList<MyFile> myFileList;
+    public ArrayList<MyFile> FilterList;
+
+    CustomFilter filter;
+
     public AsmMfpCustomFilePickerAdapter(Context context, ArrayList<MyFile> filelist){
         this.myFileList=filelist;
         this.mContext=context;
+        this.FilterList=filelist;
     }
 
 
@@ -53,6 +62,8 @@ public class AsmMfpCustomFilePickerAdapter extends BaseAdapter {
 
         ImageView imgView = convertView.findViewById(R.id.Album_item_ImgView);
         TextView textView = convertView.findViewById(R.id.Album_item_TextView);
+
+        if(myFileList.get(position).getFileType()!=null){
         if (myFileList.get(position).getFileType().equals("Image"))
             imgView.setImageURI(Uri.parse(myFileList.get(position).getFileUri()));
         else if (myFileList.get(position).getFileType().equals("Video")) {
@@ -69,7 +80,8 @@ public class AsmMfpCustomFilePickerAdapter extends BaseAdapter {
 
 
                 imgView.setImageBitmap(bitmap);}
-        }
+        }}
+
         //check if is folder or image
 
 
@@ -82,5 +94,50 @@ public class AsmMfpCustomFilePickerAdapter extends BaseAdapter {
 
         return convertView;
     }
+    //for search feature
+          @Override
+        public Filter getFilter() {
+            if(filter==null){
+                filter=new CustomFilter();
+            }
+            return filter;
+        }
+        //inner class
 
+        public class CustomFilter extends Filter {
+
+            @Override
+
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+                //filtering
+                if (constraint != null && constraint.length() > 0) {
+                    //constraint to upper
+                    constraint = constraint.toString().toUpperCase();
+                    ArrayList<MyFile> filter = new ArrayList<>();
+                    for (int i = 0; i < FilterList.size(); i++) {
+                        if (FilterList.get(i).getFileName().toUpperCase().contains(constraint)) {
+
+                            MyFile file = new MyFile(FilterList.get(i).getFileName(), FilterList.get(i).getFileUri(), FilterList.get(i).getIsFolder());
+                            filter.add(file);
+                        }
+                    }
+                    results.count = filter.size();
+                    results.values = filter;
+                } else {
+                    results.count = FilterList.size();
+                    results.values = FilterList;
+                }
+                return results;
+
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                myFileList= (ArrayList<MyFile>) results.values;
+                notifyDataSetChanged();
+            }
+
+
+        }
 }
