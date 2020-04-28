@@ -13,21 +13,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.FileProvider;
+import androidx.documentfile.provider.DocumentFile;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerAdapter;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class AsmMfpCustomFilePicker extends AppCompatActivity {
@@ -36,7 +38,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
     AsmMfpCustomFilePickerAdapter mAdapter;
     ArrayList<MyFile> myFileList = new ArrayList<>();
     private static final int PERMISSION_STORGE_CODE = 1000;
-    private Boolean setChecked = false,searching=false;
+    private Boolean setChecked = false, searching = false;
     ImageView item_checked;
 
     @Override
@@ -52,7 +54,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                ImageView checkicon=view.findViewById(R.id.Album_item_Selected_Image);
+                ImageView checkicon = view.findViewById(R.id.Album_item_Selected_Image);
 
                 //open folder
                 String name = myFileList.get(position).getFileName();
@@ -80,7 +82,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
 
                         myFileList.get(position).setIsSelected(false);
-                        int count=0;
+                        int count = 0;
                         for (int i = 0; i < myFileList.size(); i++) {
 
                             if (myFileList.get(i).getIsSelected())
@@ -89,7 +91,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
                         }
 
                         //if user cancel the selected item
-                        if(count==0) {
+                        if (count == 0) {
                             setChecked = false;
                             invalidateOptionsMenu();
                         }
@@ -99,10 +101,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
                 }
             }
         });
-
-
-
-
 
 
         //get which file type user selected from album
@@ -127,10 +125,9 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
             checkItem.setVisible(false);
 
 
-
         //for search filter
-        MenuItem searchItem=menu.findItem(R.id.FilePicker_SearchFilter);
-        SearchView searchView=(SearchView) searchItem.getActionView();
+        MenuItem searchItem = menu.findItem(R.id.FilePicker_SearchFilter);
+        SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -141,7 +138,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 mAdapter.getFilter().filter(newText);
-                searching=true;
+                searching = true;
                 return true;
             }
         });
@@ -196,19 +193,123 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
             }
         });
-        builder.setNeutralButton("cancel", null);
+        builder.setNeutralButton("Document", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                PickerFileType = "Document";
+                init();
+            }
+        });
         builder.show();
 
     }
 
     public void init() {
         //identify what file type are user pick
-        if (PickerFileType.equals("Image"))
+        if (PickerFileType.equals("Image")) {
             openImageMediaStoreFolder();
-        else
+            mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
+            gridView.setAdapter(mAdapter);
+        } else if (PickerFileType.equals("Video")) {
             openVideoMediaStoreFolder();
-        mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
-        gridView.setAdapter(mAdapter);
+            mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
+            gridView.setAdapter(mAdapter);
+
+        } else if (PickerFileType.equals("Document")) {
+            openDocumentMediaStore();
+            //File dir = Environment.getExternalStorageDirectory();
+
+            // openPdfMediaStore(dir);
+            mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
+            gridView.setAdapter(mAdapter);
+        }
+
+    }
+
+    private void openPdfMediaStore(File dir) {
+        String pdfPattern = ".pdf";
+
+        File FileList[] = dir.listFiles();
+
+        if (FileList != null) {
+            for (int i = 0; i < FileList.length; i++) {
+
+                if (FileList[i].isDirectory()) {
+                    openPdfMediaStore(FileList[i]);
+                } else {
+                    if (FileList[i].getName().endsWith(pdfPattern)) {
+                        //here you have that file.
+                        Uri uri = Uri.fromFile(FileList[i]);
+                        MyFile myFile = new MyFile(uri.toString(), String.valueOf(FileList[i].getName()), false);
+                        myFileList.add(myFile);
+                    }
+                }
+            }
+        }
+
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
+    }
+
+    //get all document file
+    private void openDocumentMediaStore() {
+        //document format
+        myFileList.clear();
+
+
+        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
+        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
+        String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
+        String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
+        String ppt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
+        String pptx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
+        String txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
+        String rtx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx");
+        String rtf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf");
+        String html = MimeTypeMap.getSingleton().getMimeTypeFromExtension("html");
+
+        //Table
+        Uri table = MediaStore.Files.getContentUri("external");
+        //Column
+        String[] column = {MediaStore.Files.FileColumns.DATA};
+        //Where
+        String where = MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?";
+        //args
+        String[] args = new String[]{pdf, doc, docx, xls, xlsx, ppt, pptx, txt, rtx, rtf, html};
+
+        Cursor fileCursor = getContentResolver().query(table, column, where, args, null);
+
+        while (fileCursor.moveToNext()) {
+
+            //your code
+            int dataColumn = fileCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+            String filePath = fileCursor.getString(dataColumn);
+
+            Uri uri = Uri.fromFile(new File(filePath));
+            //grant permision for app with package "packegeName", eg. before starting other app via intent
+
+            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //revoke permisions
+            Uri newuri = FileProvider.getUriForFile(this, "com.alcodes.alcodesgalleryviewerdemo.fileprovider",new File(filePath));
+            DocumentFile df=DocumentFile.fromSingleUri(getApplicationContext(),newuri);
+            //revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), false);
+            myFileList.add(myFile);
+        }
+        fileCursor.close();
+
 
     }
 
@@ -259,8 +360,8 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
         }
         cursor.close();
-
-        mAdapter.notifyDataSetChanged();
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
 
     }
 
