@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +41,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
     private static final int PERMISSION_STORGE_CODE = 1000;
     private Boolean setChecked = false, searching = false;
     ImageView item_checked;
+    public  Uri newuri=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,13 +120,15 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
         inflater.inflate(R.menu.asm_mfp_menu_custom_file_picker, menu);
         //for select item
         MenuItem checkItem = menu.findItem(R.id.DoneSelection);
+        MenuItem shareItem = menu.findItem(R.id.ShareWith);
 
-        if (setChecked)
+        if (setChecked) {
             checkItem.setVisible(true);
-        else
+            shareItem.setVisible(true);
+        } else {
             checkItem.setVisible(false);
-
-
+            shareItem.setVisible(false);
+        }
         //for search filter
         MenuItem searchItem = menu.findItem(R.id.FilePicker_SearchFilter);
         SearchView searchView = (SearchView) searchItem.getActionView();
@@ -160,6 +164,36 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
                 Intent intent = new Intent(this, AsmGvrMainActivity.class);
                 intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
 
+                startActivity(intent);
+            }
+
+        }
+        if (item.getItemId() == R.id.ShareWith) {
+            ArrayList<String> mFileList = new ArrayList<>();
+            for (int i = 0; i < myFileList.size(); i++) {
+
+                if (myFileList.get(i).getIsSelected())
+                    mFileList.add(myFileList.get(i).getFileUri());
+
+            }
+            if (mFileList != null) {
+
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setType("image/jpeg"); /* This example is sharing jpeg images. */
+
+                ArrayList<Uri> files = new ArrayList<>();
+
+                for(String path : mFileList /* List of the files you want to send */) {
+                   String shareUri = path;
+
+
+                    files.add(Uri.parse(shareUri));
+                }
+
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
                 startActivity(intent);
             }
 
@@ -296,17 +330,32 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
             int dataColumn = fileCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
             String filePath = fileCursor.getString(dataColumn);
 
+
             Uri uri = Uri.fromFile(new File(filePath));
             //grant permision for app with package "packegeName", eg. before starting other app via intent
 
             grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             //revoke permisions
-            Uri newuri = FileProvider.getUriForFile(this, "com.alcodes.alcodesgalleryviewerdemo.fileprovider",new File(filePath));
-            DocumentFile df=DocumentFile.fromSingleUri(getApplicationContext(),newuri);
+            newuri = FileProvider.getUriForFile(this, "com.alcodes.alcodesgalleryviewerdemo.fileprovider", new File(filePath));
+            DocumentFile df = DocumentFile.fromSingleUri(getApplicationContext(), newuri);
             //revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), false);
             myFileList.add(myFile);
+
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            Intent shareIntent = new Intent("android.intent.action.SEND");
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "This is the file I'm sharing.");
+            shareIntent.putExtra("android.intent.extra.STREAM", newuri);
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            shareIntent.setType("application/pdf");
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(Intent.createChooser(shareIntent, "Share..."));
+
+
+
         }
         fileCursor.close();
 
@@ -354,6 +403,19 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
             MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), false);
             myFile.setFileType("Image");
+
+//            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+//            StrictMode.setVmPolicy(builder.build());
+//            Intent shareIntent = new Intent("android.intent.action.SEND");
+//            shareIntent.setAction(Intent.ACTION_SEND);
+//            shareIntent.putExtra(Intent.EXTRA_TEXT, "This is the file I'm sharing.");
+//            shareIntent.putExtra("android.intent.extra.STREAM", contentUri);
+//            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            shareIntent.setType("application/pdf");
+//            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(Intent.createChooser(shareIntent, "Share..."));
+
+
 
             myFileList.add(myFile);
 
