@@ -16,4 +16,10 @@
         android:visible="false"
         android:title="Done"/>
 
+    <item
+        android:id="@+id/ShareWith"
+        app:showAsAction="always|collapseActionView"
+        android:visible="false"
+        android:title="Share"/>
+
 </menu>
