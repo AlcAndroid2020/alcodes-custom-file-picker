@@ -17,6 +17,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -264,12 +265,17 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
             gridView.setAdapter(mAdapter);
 
         } else if (PickerFileType.equals("Document")) {
-            openDocumentMediaStore();
+           // openDocumentMediaStore();
             //File dir = Environment.getExternalStorageDirectory();
+            ProgressBar simpleProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
+        simpleProgressBar.setVisibility(View.VISIBLE);
+
+            Intent intent=new Intent(getApplicationContext(),AsmMfpDocumentFilePickerActivity.class);
+            startActivity(intent);
 
             // openPdfMediaStore(dir);
-            mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
-            gridView.setAdapter(mAdapter);
+           // mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
+           // gridView.setAdapter(mAdapter);
         }
 
     }
@@ -617,4 +623,10 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent=new Intent(this,AsmMfpMainActivity.class);
+        startActivity(intent);
+    }
 }
