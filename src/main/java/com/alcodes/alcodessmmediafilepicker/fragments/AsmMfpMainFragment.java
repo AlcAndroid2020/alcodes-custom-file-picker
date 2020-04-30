@@ -6,16 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpCustomFilePicker;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
-import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.MainBindingCallback;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpCustomFilePicker;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
+import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
+import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.MainBindingCallback;
 
 public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback {
 
@@ -65,6 +65,12 @@ public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback
     public void onCustomPickerButtonClicked() {
 
         Intent intent=new Intent(getContext(), AsmMfpCustomFilePicker.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onListViewFilePickerButtonClicked() {
+        Intent intent=new Intent(getContext(), AsmMfpListViewFilePicker.class);
         startActivity(intent);
     }
 }
