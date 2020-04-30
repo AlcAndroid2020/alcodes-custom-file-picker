@@ -29,6 +29,13 @@
             android:onClick="@{() -> bindingCallback.onImageFilePickerButtonClicked()}"
             android:text="Github Sample file picker" />
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:onClick="@{() -> bindingCallback.onListViewFilePickerButtonClicked()}"
+            android:text="List View File Picker" />
+
 
     </LinearLayout>
 
