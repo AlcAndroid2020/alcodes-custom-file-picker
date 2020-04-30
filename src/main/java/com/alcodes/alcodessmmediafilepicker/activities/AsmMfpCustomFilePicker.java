@@ -265,17 +265,17 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
             gridView.setAdapter(mAdapter);
 
         } else if (PickerFileType.equals("Document")) {
-           // openDocumentMediaStore();
+            // openDocumentMediaStore();
             //File dir = Environment.getExternalStorageDirectory();
             ProgressBar simpleProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
-        simpleProgressBar.setVisibility(View.VISIBLE);
+            simpleProgressBar.setVisibility(View.VISIBLE);
 
-            Intent intent=new Intent(getApplicationContext(),AsmMfpDocumentFilePickerActivity.class);
+            Intent intent = new Intent(getApplicationContext(), AsmMfpDocumentFilePickerActivity.class);
             startActivity(intent);
 
             // openPdfMediaStore(dir);
-           // mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
-           // gridView.setAdapter(mAdapter);
+            // mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
+            // gridView.setAdapter(mAdapter);
         }
 
     }
@@ -626,7 +626,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent=new Intent(this,AsmMfpMainActivity.class);
+        Intent intent = new Intent(this, AsmMfpMainActivity.class);
         startActivity(intent);
     }
 }
