@@ -21,5 +21,9 @@
         app:showAsAction="always|collapseActionView"
         android:visible="false"
         android:title="Share"/>
+    <item
+        android:id="@+id/Custom_ChangeLayout"
+        android:title="Change Layout"
+        />
 
 </menu>
