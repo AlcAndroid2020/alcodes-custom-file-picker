@@ -13,12 +13,14 @@ public class MyFile implements Serializable, Parcelable {
     private int Count = 1;
     private boolean isSelected = false;
     private boolean isFolder = false;
+    private int FolderID;
 
     public MyFile(String fileName, String fileUri, boolean isFolder) {
         FileName = fileName;
         FileUri = fileUri;
         this.isFolder = isFolder;
     }
+
 
     protected MyFile(Parcel in) {
         FileName = in.readString();
@@ -41,6 +43,15 @@ public class MyFile implements Serializable, Parcelable {
             return new MyFile[size];
         }
     };
+
+    public int getFolderID() {
+        return FolderID;
+    }
+
+    public void setFolderID(int folderID) {
+        FolderID = folderID;
+    }
+
 
     public String getFileName() {
         return FileName;
