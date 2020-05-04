@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +28,7 @@ public class AsmMfpRecyclerViewFilePickerAdapter extends RecyclerView.Adapter<As
     public ArrayList<MyFile> myFileList;
     public ArrayList<MyFile> FilterList;
 
-    @Override
-    public Filter getFilter() {
-        return null;
-    }
-
+    CustomFilter filter;
 
     public interface ChnageStatusListener {
         void onItemChangeListener(int position, MyFile myuri);
@@ -51,8 +48,8 @@ public class AsmMfpRecyclerViewFilePickerAdapter extends RecyclerView.Adapter<As
         public TextView name, uri;
         public MyViewHolder(View view) {
             super(view);
-            image = (ImageView) view.findViewById(R.id.Image_view_List_Item);
-            name = (TextView) view.findViewById(R.id.Text_view_List_View_Name);
+            image = (ImageView) view.findViewById(R.id.image_view_recycler_item);
+            name = (TextView) view.findViewById(R.id.text_view_recycler_view_name);
         }
     }
     public AsmMfpRecyclerViewFilePickerAdapter(ArrayList<MyFile> myFileList) {
@@ -62,17 +59,67 @@ public class AsmMfpRecyclerViewFilePickerAdapter extends RecyclerView.Adapter<As
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.asm_mfp_listview_item, parent, false);
+                .inflate(R.layout.asm_mfp_recycler_view_item, parent, false);
 
         return new MyViewHolder(itemView);
     }
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        MyFile uri = myFileList.get(position);
+        Glide.with(holder.image)
+                .load(uri.getFileUri())
+                .into(holder.image);
+        holder.name.setText(uri.getFileName());
+    }
 
+    //for search feature
+    @Override
+    public Filter getFilter() {
+        if (filter == null) {
+            filter = new AsmMfpRecyclerViewFilePickerAdapter.CustomFilter();
+        }
+        return filter;
     }
 
     @Override
     public int getItemCount() {
         return 0;
     }
+    //inner class
+
+    public class CustomFilter extends Filter {
+
+        @Override
+
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            //filtering
+            if (constraint != null && constraint.length() > 0) {
+                //constraint to upper
+                constraint = constraint.toString().toUpperCase();
+                ArrayList<MyFile> filter = new ArrayList<>();
+                for (int i = 0; i < FilterList.size(); i++) {
+                    if (FilterList.get(i).getFileName().toUpperCase().contains(constraint)) {
+
+                        MyFile file = new MyFile(FilterList.get(i).getFileName(), FilterList.get(i).getFileUri(), FilterList.get(i).getIsFolder());
+                        filter.add(file);
+                    }
+                }
+                results.count = filter.size();
+                results.values = filter;
+            } else {
+                results.count = FilterList.size();
+                results.values = FilterList;
+            }
+            return results;
+
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            myFileList = (ArrayList<MyFile>) results.values;
+            notifyDataSetChanged();
+        }
+    }
+
 }
