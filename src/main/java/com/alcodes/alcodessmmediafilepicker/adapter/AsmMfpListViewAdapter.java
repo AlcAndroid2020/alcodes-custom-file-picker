@@ -53,8 +53,6 @@ public class AsmMfpListViewAdapter extends RecyclerView.Adapter<AsmMfpListViewAd
             super(view);
             image = (ImageView) view.findViewById(R.id.Image_view_List_Item);
             name = (TextView) view.findViewById(R.id.Text_view_List_View_Name);
-
-
         }
     }
 
@@ -75,50 +73,26 @@ public class AsmMfpListViewAdapter extends RecyclerView.Adapter<AsmMfpListViewAd
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        //Friend.FriendModel newfriend = new Friend.FriendModel();
-        //  Friend.FriendModel friend = newfriend.get(position);
+        if (myFileList.get(position).getFileType().equals("Image")) {
+            MyFile uri = myFileList.get(position);
+            Glide.with(holder.image)
+                    .load(uri.getFileUri())
+                    .into(holder.image);
+            holder.name.setText(uri.getFileName());
+        } else if (myFileList.get(position).getFileType().equals("Video")) {
 
-
-//
-//        if (myFileList.get(position).getFileType().equals("Image"))
-//            {
-//                MyFile uri = myFileList.get(position);
-//                Glide.with(holder.image)
-//                        .load(uri.getFileUri())
-//                        .into(holder.image);
-//                holder.name.setText(uri.getFileName());
-//            }
-//        else if (myFileList.get(position).getFileType().equals("Video")) {
-//
-//            if (!myFileList.get(position).getIsFolder()) {
-//                //to generate video thumbnial from uri
-//                MyFile uri = myFileList.get(position);
-//                Glide.with(holder.image)
-//                        .load(uri.getFileUri())
-//                        .into(holder.image);
-//                holder.name.setText(uri.getFileName());
-//            }else{
-//                MyFile uri = myFileList.get(position);
-//                holder.name.setText(uri.getFileName());
-//            }
-//        }
-        MyFile uri = myFileList.get(position);
+            if (!myFileList.get(position).getIsFolder()) {
+                //to generate video thumbnial from uri
+                MyFile uri = myFileList.get(position);
                 Glide.with(holder.image)
                         .load(uri.getFileUri())
                         .into(holder.image);
                 holder.name.setText(uri.getFileName());
-
-//        if (!myFileList.get(position).getIsFolder()) {
-//            //to generate video thumbnial from uri
-//            MyFile uri = myFileList.get(position);
-//            Glide.with(holder.image)
-//                    .load(uri.getFileUri())
-//                    .into(holder.image);
-//            holder.name.setText(uri.getFileName());
-//        }else{
-//            MyFile uri = myFileList.get(position);
-//            holder.name.setText(uri.getFileName());
-//        }
+            } else {
+                MyFile uri = myFileList.get(position);
+                holder.name.setText(uri.getFileName());
+            }
+        }
     }
 
     @Override

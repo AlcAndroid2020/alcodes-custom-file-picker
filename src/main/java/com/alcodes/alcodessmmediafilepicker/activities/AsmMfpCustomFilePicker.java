@@ -51,25 +51,22 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.asm_mfp_activity_custom_file_picker);
 
+        customRecyclerView = (RecyclerView) findViewById(R.id.Custom_Recycler_View);
+        // set a GridLayoutManager with default vertical orientation and 3 number of columns
 
+        linearLayoutManager = new LinearLayoutManager(this);
+
+        gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+
+        customRecyclerView.setLayoutManager(linearLayoutManager);
         if (savedInstanceState != null) {
 
             myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
+
             savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-
-            customRecyclerView = (RecyclerView) findViewById(R.id.Custom_Recycler_View);
-            // set a GridLayoutManager with default vertical orientation and 3 number of columns
-
-            linearLayoutManager = new LinearLayoutManager(this);
-
-            gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
-
-            customRecyclerView.setLayoutManager(linearLayoutManager);
 
             rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
             customRecyclerView.setAdapter(rcAdapter);
-
-
 
 
         } else {
@@ -80,14 +77,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 promptselection();
             }
 
-
-            customRecyclerView = (RecyclerView) findViewById(R.id.Custom_Recycler_View);
-            // set a GridLayoutManager with default vertical orientation and 3 number of columns
-            linearLayoutManager = new LinearLayoutManager(this);
-
-            gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
-
-            customRecyclerView.setLayoutManager(linearLayoutManager);
 
             rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
             customRecyclerView.setAdapter(rcAdapter);
