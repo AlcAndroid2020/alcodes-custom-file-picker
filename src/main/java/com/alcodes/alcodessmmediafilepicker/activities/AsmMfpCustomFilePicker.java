@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -40,32 +42,70 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private Boolean IsGrid = false;
     private LinearLayoutManager linearLayoutManager;
     private GridLayoutManager gridLayoutManager;
+    private Parcelable savedRecyclerLayoutState;
+    private static String LIST_STATE = "list_state";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.asm_mfp_activity_custom_file_picker);
 
-        if (getIntent().getStringExtra("FileType") != null) {
-            PickerFileType = getIntent().getStringExtra("FileType");
-            init();
+
+        if (savedInstanceState != null) {
+
+            myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+
+            customRecyclerView = (RecyclerView) findViewById(R.id.Custom_Recycler_View);
+            // set a GridLayoutManager with default vertical orientation and 3 number of columns
+
+            linearLayoutManager = new LinearLayoutManager(this);
+
+            gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+
+            customRecyclerView.setLayoutManager(linearLayoutManager);
+
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+            customRecyclerView.setAdapter(rcAdapter);
+
+
+
+
         } else {
-            promptselection();
+            if (getIntent().getStringExtra("FileType") != null) {
+                PickerFileType = getIntent().getStringExtra("FileType");
+                init();
+            } else {
+                promptselection();
+            }
+
+
+            customRecyclerView = (RecyclerView) findViewById(R.id.Custom_Recycler_View);
+            // set a GridLayoutManager with default vertical orientation and 3 number of columns
+            linearLayoutManager = new LinearLayoutManager(this);
+
+            gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+
+            customRecyclerView.setLayoutManager(linearLayoutManager);
+
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+            customRecyclerView.setAdapter(rcAdapter);
         }
 
 
-        customRecyclerView = (RecyclerView) findViewById(R.id.Custom_Recycler_View);
-        // set a GridLayoutManager with default vertical orientation and 3 number of columns
-        linearLayoutManager = new LinearLayoutManager(this);
+    }
 
-        gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
 
-        customRecyclerView.setLayoutManager(linearLayoutManager);
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
-        customRecyclerView.setAdapter(rcAdapter);
+        outState.putParcelableArrayList(LIST_STATE, myFileList);
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, customRecyclerView.getLayoutManager().onSaveInstanceState());
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,12 +182,13 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         //to change layout to grid or recycler view
         if (item.getItemId() == R.id.Custom_ChangeLayout) {
             //if current layout is grid then change to recycler else change to grid
-            if (IsGrid){
+            if (IsGrid) {
                 customRecyclerView.setLayoutManager(linearLayoutManager);
-            IsGrid=false;}
-            else{
+                IsGrid = false;
+            } else {
                 customRecyclerView.setLayoutManager(gridLayoutManager);
-            IsGrid=true;}
+                IsGrid = true;
+            }
 
 
         }
@@ -511,16 +552,16 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     @Override
     public void onFileCliked(ArrayList<MyFile> filelist) {
-        myFileList=filelist;
-        int countSelect=0;
-        for(int i=0;i<myFileList.size();i++){
-            if(myFileList.get(i).getIsSelected())
-              countSelect++;
+        myFileList = filelist;
+        int countSelect = 0;
+        for (int i = 0; i < myFileList.size(); i++) {
+            if (myFileList.get(i).getIsSelected())
+                countSelect++;
 
 
         }
-        if (countSelect>0)
-            setChecked=true;
+        if (countSelect > 0)
+            setChecked = true;
         invalidateOptionsMenu();
 
     }

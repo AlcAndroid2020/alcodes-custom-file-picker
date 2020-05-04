@@ -1,6 +1,11 @@
 package com.alcodes.alcodessmmediafilepicker.utils;
 
-public class MyFile {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class MyFile implements Serializable, Parcelable {
     private String FileName;
     private String FileSize;
     private String FileUri;
@@ -14,6 +19,28 @@ public class MyFile {
         FileUri = fileUri;
         this.isFolder = isFolder;
     }
+
+    protected MyFile(Parcel in) {
+        FileName = in.readString();
+        FileSize = in.readString();
+        FileUri = in.readString();
+        FileType = in.readString();
+        Count = in.readInt();
+        isSelected = in.readByte() != 0;
+        isFolder = in.readByte() != 0;
+    }
+
+    public static final Creator<MyFile> CREATOR = new Creator<MyFile>() {
+        @Override
+        public MyFile createFromParcel(Parcel in) {
+            return new MyFile(in);
+        }
+
+        @Override
+        public MyFile[] newArray(int size) {
+            return new MyFile[size];
+        }
+    };
 
     public String getFileName() {
         return FileName;
@@ -69,5 +96,21 @@ public class MyFile {
 
     public void setIsFolder(boolean folder) {
         isFolder = folder;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(FileName);
+        dest.writeString(FileSize);
+        dest.writeString(FileUri);
+        dest.writeString(FileType);
+        dest.writeInt(Count);
+        dest.writeByte((byte) (isSelected ? 1 : 0));
+        dest.writeByte((byte) (isFolder ? 1 : 0));
     }
 }
