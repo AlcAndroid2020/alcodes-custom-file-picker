@@ -1,40 +1,36 @@
 package com.alcodes.alcodessmmediafilepicker.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adapter<AsmMfpCustomFilePickerRecyclerViewAdapter.MyViewHolder> {
+public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adapter<AsmMfpCustomFilePickerRecyclerViewAdapter.MyViewHolder> implements Filterable {
     private Context mContext;
-    private LayoutInflater inflater;
-    public ArrayList<MyFile> myFileList;
-    private   CustomFilePickerCallback callback;
+    private ArrayList<MyFile> myFileList;
+    private ArrayList<MyFile> FilterList;
+    private CustomFilePickerCallback callback;
+    private CustomFilter filter;
 
     public AsmMfpCustomFilePickerRecyclerViewAdapter(Context context, ArrayList<MyFile> filelist, CustomFilePickerCallback callbacks) {
         this.myFileList = filelist;
         this.mContext = context;
-        this.callback=callbacks;
+        this.callback = callbacks;
+        this.FilterList = myFileList;
     }
 
     @NonNull
@@ -53,7 +49,8 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         if (myFileList.get(position).getFileType() != null) {
             if (myFileList.get(position).getFileType().equals("Image"))
                 Glide.with(mContext)
-                        .load(Uri.parse(myFileList.get(position).getFileUri())) // Uri of the picture
+                        .load(Uri.parse(myFileList.get(position).getFileUri()))
+                        // Uri of the picture
                         .into(holder.imgView);
 
             else if (myFileList.get(position).getFileType().equals("Video")) {
@@ -62,16 +59,16 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
 
                     Glide.with(mContext)
-                            .load(Uri.parse(myFileList.get(position).getFileUri()))// Uri of the picture
+                            .load(Uri.parse(myFileList.get(position).getFileUri()))
+                            // Uri of the picture
                             .into(holder.imgView);
 
-
-
-                }
 
                 }
 
             }
+
+        }
 
 
         //check if is folder or image
@@ -89,18 +86,18 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
             @Override
             public void onClick(View v) {
                 //click on folder
-                if(myFileList.get(position).getIsFolder()){
-                    if(callback!=null){
-                    callback.onFolderClicked(myFileList.get(position).getFileName());}
-                }else{
+                if (myFileList.get(position).getIsFolder()) {
+                    if (callback != null) {
+                        callback.onFolderClicked(myFileList.get(position).getFolderID());
+                    }
+
+                } else {
                     //click on file
-                    if(myFileList.get(position).getIsSelected()){
+                    if (myFileList.get(position).getIsSelected()) {
                         holder.checkIC.setVisibility(View.INVISIBLE);
                         myFileList.get(position).setIsSelected(false);
                         callback.onFileCliked(myFileList);
-                    }
-                    else
-                    {
+                    } else {
                         holder.checkIC.setVisibility(View.VISIBLE);
                         myFileList.get(position).setIsSelected(true);
                         callback.onFileCliked(myFileList);
@@ -114,14 +111,27 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
     }
 
-    public interface CustomFilePickerCallback{
-       void onFolderClicked(String foldername);
-       void onFileCliked(ArrayList<MyFile> filelist);
+
+    public interface CustomFilePickerCallback {
+        void onFolderClicked(int folderid);
+
+        void onFileCliked(ArrayList<MyFile> filelist);
     }
+
     @Override
     public int getItemCount() {
         return myFileList.size();
 
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     //to declare item in recyclerview (textview,image)
@@ -134,8 +144,55 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
             super(itemView);
             imgView = itemView.findViewById(R.id.Album_item_ImgView);
             textView = itemView.findViewById(R.id.Album_item_TextView);
-            checkIC=itemView.findViewById(R.id.Album_item_Selected_Image);
+            checkIC = itemView.findViewById(R.id.Album_item_Selected_Image);
         }
     }
+
+    @Override
+    public Filter getFilter() {
+        if (filter == null) {
+            filter = new CustomFilter();
+        }
+        return filter;
+    }
+
+    public class CustomFilter extends Filter {
+
+        @Override
+
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            //filtering
+            if (constraint != null && constraint.length() > 0) {
+                //constraint to upper
+                constraint = constraint.toString().toUpperCase();
+                ArrayList<MyFile> filter = new ArrayList<>();
+                for (int i = 0; i < FilterList.size(); i++) {
+                    if (FilterList.get(i).getFileName().toUpperCase().contains(constraint)) {
+
+                        MyFile file = new MyFile(FilterList.get(i).getFileName(), FilterList.get(i).getFileUri(), FilterList.get(i).getIsFolder());
+                        filter.add(file);
+                    }
+                }
+                results.count = filter.size();
+                results.values = filter;
+            } else {
+                results.count = FilterList.size();
+                results.values = FilterList;
+            }
+            return results;
+
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            if (results != null) {
+            myFileList = (ArrayList<MyFile>) results.values;
+            notifyDataSetChanged();}
+        }
+
+
+    }
+
 
 }

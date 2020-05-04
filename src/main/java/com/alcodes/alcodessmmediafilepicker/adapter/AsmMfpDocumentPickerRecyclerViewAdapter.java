@@ -34,7 +34,15 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         MyViewHolder viewHolder = new MyViewHolder(v);
         return viewHolder;
     }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
     //init value to view
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {

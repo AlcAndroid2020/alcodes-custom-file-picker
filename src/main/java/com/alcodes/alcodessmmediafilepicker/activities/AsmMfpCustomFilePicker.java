@@ -40,6 +40,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private Boolean IsGrid = false;
     private LinearLayoutManager linearLayoutManager;
     private GridLayoutManager gridLayoutManager;
+    private Boolean isInSideAlbum = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         MenuItem checkItem = menu.findItem(R.id.DoneSelection);
         MenuItem shareItem = menu.findItem(R.id.ShareWith);
 
-
         if (setChecked) {
             checkItem.setVisible(true);
             shareItem.setVisible(true);
@@ -83,6 +83,8 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
             checkItem.setVisible(false);
             shareItem.setVisible(false);
         }
+
+
         //for search filter
         MenuItem searchItem = menu.findItem(R.id.FilePicker_SearchFilter);
         SearchView searchView = (SearchView) searchItem.getActionView();
@@ -95,9 +97,20 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // mAdapter.getFilter().filter(newText);
-                searching = true;
-                return true;
+
+               rcAdapter.getFilter().filter(newText);
+    /*    ArrayList<MyFile> filterlist=new ArrayList<>();
+                for (int i=0;i<myFileList.size();i++){
+                    if(myFileList.get(i).getFileName().equals(newText )){
+                        filterlist.add(myFileList.get(i));
+
+                    }
+
+                }
+                rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(),filterlist, AsmMfpCustomFilePicker.this);
+                customRecyclerView.setAdapter(rcAdapter);
+                rcAdapter.notifyDataSetChanged(); */
+                return false;
             }
         });
         return super.onCreateOptionsMenu(menu);
@@ -137,17 +150,52 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 StartShare(mFileList);
 
             }
+        }
+        if (item.getItemId() == android.R.id.home) {
+            if (isInSideAlbum) {
+
+                if (PickerFileType.equals("Image")) {
+                    myFileList.clear();
+
+                    rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+                    customRecyclerView.setAdapter(rcAdapter);
+
+                    openImageMediaStoreFolder();
+                    isInSideAlbum = false;
+                    setChecked=false;
+                    invalidateOptionsMenu();
+
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+                } else {
+                    myFileList.clear();
+
+                    rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+                    customRecyclerView.setAdapter(rcAdapter);
+
+                    openVideoMediaStoreFolder();
+                    isInSideAlbum = false;
+                    setChecked=false;
+                    invalidateOptionsMenu();
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                }
+            } else {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            }
 
         }
+
+
         //to change layout to grid or recycler view
         if (item.getItemId() == R.id.Custom_ChangeLayout) {
             //if current layout is grid then change to recycler else change to grid
-            if (IsGrid){
+            if (IsGrid) {
                 customRecyclerView.setLayoutManager(linearLayoutManager);
-            IsGrid=false;}
-            else{
+                IsGrid = false;
+            } else {
                 customRecyclerView.setLayoutManager(gridLayoutManager);
-            IsGrid=true;}
+                IsGrid = true;
+            }
 
 
         }
@@ -241,7 +289,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     }
 
 
-    private void openImageMediaStoreFile(String folderName) {
+    private void openImageMediaStoreFile(int folderID) {
         myFileList.clear();
         String[] projection = new String[]{
                 MediaStore.Images.Media._ID,
@@ -250,13 +298,13 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
 
         };
-        String path = "", fileName = "";
+        String fileName = "";
 
         Cursor cursor = getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection,
-                MediaStore.Images.Media.DATA + " like ? ",
-                new String[]{"%" + folderName + "%"},
+                MediaStore.Images.Media.BUCKET_ID + " like ? ",
+                new String[]{"%" + folderID + "%"},
                 null
         );
         // Cache column indices. (all in int variable
@@ -264,16 +312,17 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         int nameColumn = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
         int sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
+
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
 
 
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
-            String size = cursor.getString(sizeColumn);
 
             Uri contentUri = ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
 
             //  for gathering path
             // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -291,12 +340,14 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         if (rcAdapter != null)
             rcAdapter.notifyDataSetChanged();
 
+
     }
 
 
     // for folder
     private void openImageMediaStoreFolder() {
         //list to get file in same folder
+
         ArrayList<String> filelist = new ArrayList<>();
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
@@ -305,13 +356,12 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         } else {
             String[] projection = new String[]{
                     MediaStore.Images.Media._ID,
-                    MediaStore.Images.Media.SIZE,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                     MediaStore.Images.Media.BUCKET_ID
 
 
             };
-            String path = "", fileName = "";
+            String path = "", foldername = "";
 
             Cursor cursor = getContentResolver().query(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -324,35 +374,34 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
             int nameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-            int sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
-            //int BucketIdCoulmn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
+            int folderidColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_ID);
             while (cursor.moveToNext()) {
                 // Get values of columns for a given video.
 
-
+                //to get uri
                 long id = cursor.getInt(idColumn);
-                fileName = cursor.getString(nameColumn);
-                String size = cursor.getString(sizeColumn);
+
+                //to store in phonephoto
+                int FolderID = cursor.getInt(folderidColumn);
+                foldername = cursor.getString(nameColumn);
+
 
                 Uri contentUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-                //  for gathering path
-                // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                //    path = cursor.getString(file_ColumnIndex);
 
-                MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), true);
+                MyFile myFile = new MyFile(foldername, String.valueOf(contentUri), true);
                 myFile.setFileType("Image");
                 myFile.setIsFolder(true);
+                myFile.setFolderID(FolderID);
 
-
-                if (!filelist.contains(fileName)) {
-                    filelist.add(fileName);
+                if (!filelist.contains(foldername)) {
+                    filelist.add(foldername);
                     myFileList.add(myFile);
 
                 } else {
                     for (int i = 0; i < myFileList.size(); i++) {
-                        if (myFileList.get(i).getFileName().equals(fileName)) {
+                        if (myFileList.get(i).getFileName().equals(foldername)) {
                             int count = myFileList.get(i).getCount();
                             myFileList.get(i).setCount(count + 1);
 
@@ -368,8 +417,9 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         }
         if (rcAdapter != null)
             rcAdapter.notifyDataSetChanged();
-
+        //after finish for external then continue to internal storage
     }
+
 
     private void openVideoMediaStoreFolder() {
         //list to get file in same folder
@@ -401,18 +451,15 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
             int nameColumn = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
-            // int sizeColumn = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
-            int BucketIdCoulmn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
             while (cursor.moveToNext()) {
                 // Get values of columns for a given video.
 
 
                 long id = cursor.getInt(idColumn);
                 fileName = cursor.getString(nameColumn);
-                String bucketId = cursor.getString(BucketIdCoulmn);
 
                 Uri contentUri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
 
 
                 MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), true);
@@ -438,10 +485,9 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         }
         if (rcAdapter != null)
             rcAdapter.notifyDataSetChanged();
-
     }
 
-    private void openVideoMediaStoreFile(String foldername) {
+    private void openVideoMediaStoreFile(int folderid) {
         myFileList.clear();
         String[] projection = new String[]{
                 MediaStore.Video.Media._ID,
@@ -456,7 +502,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection,
                 MediaStore.Video.Media.DATA + " like ? ",
-                new String[]{"%" + foldername + "%"},
+                new String[]{"%" + folderid + "%"},
                 null
         );
         // Cache column indices. (all in int variable
@@ -499,28 +545,38 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
 
     @Override
-    public void onFolderClicked(String foldername) {
+    public void onFolderClicked(int folderid) {
         if (PickerFileType.equals("Image"))
-            openImageMediaStoreFile(foldername);
+            openImageMediaStoreFile(folderid);
         else
-            openVideoMediaStoreFile(foldername);
+            openVideoMediaStoreFile(folderid);
         //change to album form
         customRecyclerView.setLayoutManager(gridLayoutManager); // set LayoutManager to RecyclerView
         IsGrid = true;
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        isInSideAlbum = true;
+        invalidateOptionsMenu();
+
     }
 
     @Override
     public void onFileCliked(ArrayList<MyFile> filelist) {
-        myFileList=filelist;
-        int countSelect=0;
-        for(int i=0;i<myFileList.size();i++){
-            if(myFileList.get(i).getIsSelected())
-              countSelect++;
+        myFileList = filelist;
+        int countSelect = 0;
+        for (int i = 0; i < myFileList.size(); i++) {
+            if (myFileList.get(i).getIsSelected())
+                countSelect++;
 
 
         }
-        if (countSelect>0)
-            setChecked=true;
+        if (countSelect > 0)
+            setChecked = true;
+            else
+                setChecked=false;
+
+        //to show back button
+
         invalidateOptionsMenu();
 
     }
