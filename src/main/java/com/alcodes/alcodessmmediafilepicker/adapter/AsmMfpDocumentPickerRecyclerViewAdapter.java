@@ -1,7 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.text.DecimalFormat;
@@ -75,12 +73,22 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<String> myFileList = new ArrayList<>();
-                myFileList.add(mFileList.get(position).getFileUri());
-                Intent intent = new Intent(mContext, AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, myFileList);
 
-                mContext.startActivity(intent);
+
+                if(mFileList.get(position).getIsSelected()) {
+                    holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
+                    mFileList.get(position).setIsSelected(false);
+
+                }else
+                {
+                    holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+                    mFileList.get(position).setIsSelected(true);
+
+                }
+                ((AsmMfpDocumentFilePickerActivity)mContext).getFileListFromAdapter(mFileList);
+
+
+
             }
         });
 
@@ -94,6 +102,9 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
+
+
+
     @Override
     public int getItemCount() {
         return mFileList.size();
@@ -103,13 +114,14 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_FileName;
         private TextView tv_FileSize;
-        private ImageView iv_FileIcon;
+        private ImageView iv_FileIcon, iv_CheckIcon;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             tv_FileName = (TextView) itemView.findViewById(R.id.Text_view_Item_Document_FileName);
             tv_FileSize = (TextView) itemView.findViewById(R.id.Text_view_Item_Document_FileSize);
             iv_FileIcon = (ImageView) itemView.findViewById(R.id.Image_view_Item_Document_Icon);
+            iv_CheckIcon = (ImageView) itemView.findViewById(R.id._Image_view_item_Document_check);
         }
     }
 }

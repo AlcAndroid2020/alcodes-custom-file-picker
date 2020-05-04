@@ -1,102 +1,136 @@
 package com.alcodes.alcodessmmediafilepicker.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-public class AsmMfpListViewAdapter extends BaseAdapter implements Filterable {
-    private Context mContext;
-    private LayoutInflater inflater;
+public class AsmMfpListViewAdapter extends RecyclerView.Adapter<AsmMfpListViewAdapter.MyViewHolder> implements Filterable {
+
     public ArrayList<MyFile> myFileList;
     public ArrayList<MyFile> FilterList;
 
-    AsmMfpListViewAdapter.CustomFilter filter;
+    CustomFilter filter;
 
-    public AsmMfpListViewAdapter(Context context, ArrayList<MyFile> filelist){
-        this.myFileList=filelist;
-        this.mContext=context;
-        this.FilterList=filelist;
+    public interface ChnageStatusListener {
+        void onItemChangeListener(int position, MyFile myuri);
+    }
+
+    Context mContext;
+    ChnageStatusListener chnageStatusListener;
+
+    public void setModels(ArrayList<MyFile> myFileList) {
+        this.myFileList = myFileList;
+
+    }
+
+    public AsmMfpListViewAdapter(ArrayList<MyFile> myFileList, Context mContext, ChnageStatusListener chnageStatusListener) {
+        this.myFileList = myFileList;
+        this.mContext = mContext;
+        this.chnageStatusListener = chnageStatusListener;
     }
 
 
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView image;
+        public TextView name, uri;
+
+
+        public MyViewHolder(View view) {
+            super(view);
+            image = (ImageView) view.findViewById(R.id.Image_view_List_Item);
+            name = (TextView) view.findViewById(R.id.Text_view_List_View_Name);
+
+
+        }
+    }
+
+
+    public AsmMfpListViewAdapter(ArrayList<MyFile> myFileList) {
+        this.myFileList = myFileList;
+        this.FilterList = myFileList;
+    }
+
     @Override
-    public int getCount() {
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.asm_mfp_listview_item, parent, false);
+
+        return new MyViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
+
+        //Friend.FriendModel newfriend = new Friend.FriendModel();
+        //  Friend.FriendModel friend = newfriend.get(position);
+
+
+//
+//        if (myFileList.get(position).getFileType().equals("Image"))
+//            {
+//                MyFile uri = myFileList.get(position);
+//                Glide.with(holder.image)
+//                        .load(uri.getFileUri())
+//                        .into(holder.image);
+//                holder.name.setText(uri.getFileName());
+//            }
+//        else if (myFileList.get(position).getFileType().equals("Video")) {
+//
+//            if (!myFileList.get(position).getIsFolder()) {
+//                //to generate video thumbnial from uri
+//                MyFile uri = myFileList.get(position);
+//                Glide.with(holder.image)
+//                        .load(uri.getFileUri())
+//                        .into(holder.image);
+//                holder.name.setText(uri.getFileName());
+//            }else{
+//                MyFile uri = myFileList.get(position);
+//                holder.name.setText(uri.getFileName());
+//            }
+//        }
+        MyFile uri = myFileList.get(position);
+                Glide.with(holder.image)
+                        .load(uri.getFileUri())
+                        .into(holder.image);
+                holder.name.setText(uri.getFileName());
+
+//        if (!myFileList.get(position).getIsFolder()) {
+//            //to generate video thumbnial from uri
+//            MyFile uri = myFileList.get(position);
+//            Glide.with(holder.image)
+//                    .load(uri.getFileUri())
+//                    .into(holder.image);
+//            holder.name.setText(uri.getFileName());
+//        }else{
+//            MyFile uri = myFileList.get(position);
+//            holder.name.setText(uri.getFileName());
+//        }
+    }
+
+    @Override
+    public int getItemCount() {
         return myFileList.size();
     }
 
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (inflater == null) {
-            inflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
-        }
-        if (convertView == null)
-            convertView = inflater.inflate(R.layout.asm_mfp_listview_item, null);
-
-        ImageView imgView = convertView.findViewById(R.id.Image_view_List_Item);
-        TextView textView = convertView.findViewById(R.id.Text_view_List_View_Name);
-
-        if(myFileList.get(position).getFileType()!=null){
-            if (myFileList.get(position).getFileType().equals("Image"))
-                imgView.setImageURI(Uri.parse(myFileList.get(position).getFileUri()));
-            else if (myFileList.get(position).getFileType().equals("Video")) {
-                if (!myFileList.get(position).getIsFolder()){
-                    //to generate video thumbnial from uri
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                    Cursor cursor = mContext.getContentResolver().query(Uri.parse(myFileList.get(position).getFileUri()), filePathColumn, null, null, null);
-                    cursor.moveToFirst();
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String picturePath = cursor.getString(columnIndex);
-                    cursor.close();
-
-                    Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(picturePath, MediaStore.Video.Thumbnails.MICRO_KIND);
-
-
-                    imgView.setImageBitmap(bitmap);}
-            }}
-
-        //check if is folder or image
-
-
-        if (myFileList.get(position).getIsFolder())
-            //if folder add count
-            textView.setText(myFileList.get(position).getFileName() + "(" + myFileList.get(position).getCount() + ")");
-            //no folder
-        else
-            textView.setText(myFileList.get(position).getFileName());
-
-        return convertView;
-    }
     //for search feature
     @Override
     public Filter getFilter() {
-        if(filter==null){
-            filter=new AsmMfpListViewAdapter.CustomFilter();
+        if (filter == null) {
+            filter = new AsmMfpListViewAdapter.CustomFilter();
         }
         return filter;
     }
@@ -132,7 +166,7 @@ public class AsmMfpListViewAdapter extends BaseAdapter implements Filterable {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            myFileList= (ArrayList<MyFile>) results.values;
+            myFileList = (ArrayList<MyFile>) results.values;
             notifyDataSetChanged();
         }
 

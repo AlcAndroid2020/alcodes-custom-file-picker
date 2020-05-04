@@ -1,33 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
 
     <ImageView
+        android:id="@+id/Image_view_Item_Document_Icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/ic_pdf"
-        android:id="@+id/Image_view_Item_Document_Icon"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
+        android:src="@drawable/ic_pdf" />
+
+    <View
+        android:id="@+id/empty_view1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignStart="@+id/Image_view_Item_Document_Icon"
+        android:layout_alignLeft="@+id/Image_view_Item_Document_Icon"
+        android:layout_alignEnd="@+id/Image_view_Item_Document_Icon"
+        android:layout_alignRight="@+id/Image_view_Item_Document_Icon"
+        android:layout_alignBottom="@+id/Image_view_Item_Document_Icon"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/Text_view_Item_Document_FileName"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginLeft="20dp"
-        >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/Text_view_Item_Document_FileName"
-            android:text="filename"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/Text_view_Item_Document_FileSize"
+        android:layout_alignTop="@+id/Image_view_Item_Document_Icon"
+        android:layout_toStartOf="@+id/_Image_view_item_Document_check"
+        android:layout_toLeftOf="@+id/_Image_view_item_Document_check"
+        android:layout_toEndOf="@+id/Image_view_Item_Document_Icon"
+        android:layout_toRightOf="@+id/Image_view_Item_Document_Icon"
+        android:ellipsize="end"
+        android:maxLines="1"
 
-            android:text="File size"/>
-    </LinearLayout>
+        android:singleLine="true"
+
+        android:text="filename"
+
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:id="@+id/Text_view_Item_Document_FileSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="File size"
+        android:layout_below="@+id/Text_view_Item_Document_FileName"
+        android:layout_toEndOf="@id/Image_view_Item_Document_Icon"
+        android:layout_toRightOf="@id/empty_view1"
+
+        android:textStyle="bold|italic" />
 
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/_Image_view_item_Document_check"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:visibility="gone"
+        android:src="@drawable/document_item_check" />
+</RelativeLayout>

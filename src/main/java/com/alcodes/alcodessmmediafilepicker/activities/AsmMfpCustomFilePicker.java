@@ -13,105 +13,58 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.FileProvider;
-import androidx.documentfile.provider.DocumentFile;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerAdapter;
+import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
-import java.io.File;
 import java.util.ArrayList;
 
-public class AsmMfpCustomFilePicker extends AppCompatActivity {
-    GridView gridView;
-    String PickerFileType = "";
-    AsmMfpCustomFilePickerAdapter mAdapter;
-    ArrayList<MyFile> myFileList = new ArrayList<>();
+public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback {
+    private String PickerFileType = "";
+    private AsmMfpCustomFilePickerRecyclerViewAdapter rcAdapter;
+    private ArrayList<MyFile> myFileList = new ArrayList<>();
     private static final int PERMISSION_STORGE_CODE = 1000;
     private Boolean setChecked = false, searching = false;
-    ImageView item_checked;
     public Uri newuri = null;
+    private RecyclerView customRecyclerView;
+    private Boolean IsGrid = false;
+    private LinearLayoutManager linearLayoutManager;
+    private GridLayoutManager gridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.asm_mfp_activity_custom_file_picker);
-        //get the grid view from this layout
-        gridView = findViewById(R.id.gridView_Album);
 
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                ImageView checkicon = view.findViewById(R.id.Album_item_Selected_Image);
-
-                //open folder
-                String name = myFileList.get(position).getFileName();
-                if (myFileList.get(position).getIsFolder()) {
-                    if (PickerFileType.equals("Image"))
-                        openImageMediaStoreFile(name);
-                    else
-                        openVideoMediaStoreFile(name);
-                } else {
-                    //click on album files
-                    //show the check option
-                    setChecked = true;
-                    //is allow option menu to show check icon
-                    invalidateOptionsMenu();
-
-                    //havent select yet
-                    if (!myFileList.get(position).getIsSelected()) {
-
-                        checkicon.setVisibility(View.VISIBLE);
-
-                        myFileList.get(position).setIsSelected(true);
-                    } else {
-                        //selected
-                        checkicon.setVisibility(View.INVISIBLE);
-
-
-                        myFileList.get(position).setIsSelected(false);
-                        int count = 0;
-                        for (int i = 0; i < myFileList.size(); i++) {
-
-                            if (myFileList.get(i).getIsSelected())
-                                count++;
-
-                        }
-
-                        //if user cancel the selected item
-                        if (count == 0) {
-                            setChecked = false;
-                            invalidateOptionsMenu();
-                        }
-
-                    }
-
-                }
-            }
-        });
-
-
-        //get which file type user selected from album
         if (getIntent().getStringExtra("FileType") != null) {
             PickerFileType = getIntent().getStringExtra("FileType");
             init();
         } else {
             promptselection();
         }
+
+
+        customRecyclerView = (RecyclerView) findViewById(R.id.Custom_Recycler_View);
+        // set a GridLayoutManager with default vertical orientation and 3 number of columns
+        linearLayoutManager = new LinearLayoutManager(this);
+
+        gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+
+        customRecyclerView.setLayoutManager(linearLayoutManager);
+
+        rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+        customRecyclerView.setAdapter(rcAdapter);
+
     }
 
     @Override
@@ -121,6 +74,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
         //for select item
         MenuItem checkItem = menu.findItem(R.id.DoneSelection);
         MenuItem shareItem = menu.findItem(R.id.ShareWith);
+
 
         if (setChecked) {
             checkItem.setVisible(true);
@@ -141,7 +95,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mAdapter.getFilter().filter(newText);
+                // mAdapter.getFilter().filter(newText);
                 searching = true;
                 return true;
             }
@@ -183,6 +137,18 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
                 StartShare(mFileList);
 
             }
+
+        }
+        //to change layout to grid or recycler view
+        if (item.getItemId() == R.id.Custom_ChangeLayout) {
+            //if current layout is grid then change to recycler else change to grid
+            if (IsGrid){
+                customRecyclerView.setLayoutManager(linearLayoutManager);
+            IsGrid=false;}
+            else{
+                customRecyclerView.setLayoutManager(gridLayoutManager);
+            IsGrid=true;}
+
 
         }
         return super.onOptionsItemSelected(item);
@@ -257,115 +223,20 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
         //identify what file type are user pick
         if (PickerFileType.equals("Image")) {
             openImageMediaStoreFolder();
-            mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
-            gridView.setAdapter(mAdapter);
+
         } else if (PickerFileType.equals("Video")) {
             openVideoMediaStoreFolder();
-            mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
-            gridView.setAdapter(mAdapter);
 
         } else if (PickerFileType.equals("Document")) {
-           // openDocumentMediaStore();
-            //File dir = Environment.getExternalStorageDirectory();
-            ProgressBar simpleProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
-        simpleProgressBar.setVisibility(View.VISIBLE);
 
-            Intent intent=new Intent(getApplicationContext(),AsmMfpDocumentFilePickerActivity.class);
+            ProgressBar simpleProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
+            simpleProgressBar.setVisibility(View.VISIBLE);
+
+            Intent intent = new Intent(getApplicationContext(), AsmMfpDocumentFilePickerActivity.class);
             startActivity(intent);
 
-            // openPdfMediaStore(dir);
-           // mAdapter = new AsmMfpCustomFilePickerAdapter(getApplicationContext(), myFileList);
-           // gridView.setAdapter(mAdapter);
-        }
-
-    }
-
-    private void openPdfMediaStore(File dir) {
-        String pdfPattern = ".pdf";
-
-        File FileList[] = dir.listFiles();
-
-        if (FileList != null) {
-            for (int i = 0; i < FileList.length; i++) {
-
-                if (FileList[i].isDirectory()) {
-                    openPdfMediaStore(FileList[i]);
-                } else {
-                    if (FileList[i].getName().endsWith(pdfPattern)) {
-                        //here you have that file.
-                        Uri uri = Uri.fromFile(FileList[i]);
-                        MyFile myFile = new MyFile(uri.toString(), String.valueOf(FileList[i].getName()), false);
-                        myFileList.add(myFile);
-                    }
-                }
-            }
-        }
-
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
-    }
-
-    //get all document file
-    private void openDocumentMediaStore() {
-        //document format
-        myFileList.clear();
-
-
-        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
-        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
-        String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
-        String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
-        String ppt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
-        String pptx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
-        String txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
-        String rtx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx");
-        String rtf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf");
-        String html = MimeTypeMap.getSingleton().getMimeTypeFromExtension("html");
-
-        //Table
-        Uri table = MediaStore.Files.getContentUri("external");
-        //Column
-        String[] column = {MediaStore.Files.FileColumns.DATA};
-        //Where
-        String where = MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-                + " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?";
-        //args
-        String[] args = new String[]{pdf, doc, docx, xls, xlsx, ppt, pptx, txt, rtx, rtf, html};
-
-        Cursor fileCursor = getContentResolver().query(table, column, where, args, null);
-
-        while (fileCursor.moveToNext()) {
-
-            //your code
-            int dataColumn = fileCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-            String filePath = fileCursor.getString(dataColumn);
-
-
-            Uri uri = Uri.fromFile(new File(filePath));
-            //grant permision for app with package "packegeName", eg. before starting other app via intent
-
-            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            //revoke permisions
-            newuri = FileProvider.getUriForFile(this, "com.alcodes.alcodesgalleryviewerdemo.fileprovider", new File(filePath));
-            DocumentFile df = DocumentFile.fromSingleUri(getApplicationContext(), newuri);
-            //revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), false);
-            myFileList.add(myFile);
 
         }
-        fileCursor.close();
-
 
     }
 
@@ -417,8 +288,8 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
         }
         cursor.close();
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+        if (rcAdapter != null)
+            rcAdapter.notifyDataSetChanged();
 
     }
 
@@ -495,9 +366,8 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
 
         }
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
-
+        if (rcAdapter != null)
+            rcAdapter.notifyDataSetChanged();
 
     }
 
@@ -544,9 +414,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
                 Uri contentUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-                //  for gathering path
-                // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                //    path = cursor.getString(file_ColumnIndex);
 
                 MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), true);
                 myFile.setFileType("Video");
@@ -569,8 +436,8 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
 
 
         }
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+        if (rcAdapter != null)
+            rcAdapter.notifyDataSetChanged();
 
     }
 
@@ -620,13 +487,41 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity {
         }
         cursor.close();
 
-        mAdapter.notifyDataSetChanged();
+        rcAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent=new Intent(this,AsmMfpMainActivity.class);
+        Intent intent = new Intent(this, AsmMfpMainActivity.class);
         startActivity(intent);
+    }
+
+
+    @Override
+    public void onFolderClicked(String foldername) {
+        if (PickerFileType.equals("Image"))
+            openImageMediaStoreFile(foldername);
+        else
+            openVideoMediaStoreFile(foldername);
+        //change to album form
+        customRecyclerView.setLayoutManager(gridLayoutManager); // set LayoutManager to RecyclerView
+        IsGrid = true;
+    }
+
+    @Override
+    public void onFileCliked(ArrayList<MyFile> filelist) {
+        myFileList=filelist;
+        int countSelect=0;
+        for(int i=0;i<myFileList.size();i++){
+            if(myFileList.get(i).getIsSelected())
+              countSelect++;
+
+
+        }
+        if (countSelect>0)
+            setChecked=true;
+        invalidateOptionsMenu();
+
     }
 }
