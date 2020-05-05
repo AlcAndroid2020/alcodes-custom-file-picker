@@ -4,4 +4,5 @@ public interface MainBindingCallback {
     void onImageFilePickerButtonClicked();
     void onCustomPickerButtonClicked();
     void onListViewFilePickerButtonClicked();
+    void onRecyclerViewFilePickerButtonClicked();
 }

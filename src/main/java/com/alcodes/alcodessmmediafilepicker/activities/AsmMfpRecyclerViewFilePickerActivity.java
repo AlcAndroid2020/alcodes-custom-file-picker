@@ -1,4 +1,4 @@
-package com.alcodes.alcodessmmediafilepicker.fragments;
+package com.alcodes.alcodessmmediafilepicker.activities;
 
 import android.Manifest;
 import android.content.ContentUris;
@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -23,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -35,20 +33,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpListViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class AsmMfpListViewFilePicker extends AppCompatActivity {
+public class AsmMfpRecyclerViewFilePickerActivity extends AppCompatActivity {
     GridView gridView;
     String PickerFileType = "";
     AsmMfpListViewAdapter mAdapter;
-
+    AsmMfpListViewAdapter listAdapter;
     ArrayList<MyFile> myFileList = new ArrayList<>();
     private static final int PERMISSION_STORGE_CODE = 1000;
     private Boolean setChecked = false, searching = false;
@@ -57,52 +52,28 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
     ListView listView;
     RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
-    public String name = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.asm_mfp_fragment_list_view_file_picker);
+        setContentView(R.layout.asm_mfp_recycler_view_file_picker);
         //get the grid view from this layout
-        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView = findViewById(R.id.recyclerview_list);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        if (savedInstanceState == null) {
-            //get which file type user selected from album
-            if (getIntent().getStringExtra("FileType") != null) {
-                PickerFileType = getIntent().getStringExtra("FileType");
-                init();
-            } else {
-                promptselection();
-            }
-
-            mAdapter = new AsmMfpListViewAdapter(myFileList);
-            recyclerView.setAdapter(mAdapter);
-        } else {
-            myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
-
-            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-            mAdapter = new AsmMfpListViewAdapter(myFileList);
-            recyclerView.setAdapter(mAdapter);
-
-
-        }
+        mAdapter = new AsmMfpListViewAdapter(myFileList);
+        recyclerView.setAdapter(mAdapter);
 
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                ImageView checkicon = view.findViewById(R.id.list_item_Selected_Image);
+                ImageView checkicon = view.findViewById(R.id.recycler_item_selected_image);
 
                 //open folder
-                name = myFileList.get(position).getFileName();
+                String name = myFileList.get(position).getFileName();
                 if (myFileList.get(position).getIsFolder()) {
                     if (PickerFileType.equals("Image"))
                         openImageMediaStoreFile(name);
@@ -114,6 +85,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                     setChecked = true;
                     //is allow option menu to show check icon
                     invalidateOptionsMenu();
+
                     //havent select yet
                     if (!myFileList.get(position).getIsSelected()) {
 
@@ -124,13 +96,16 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                         //selected
                         checkicon.setVisibility(View.INVISIBLE);
 
+
                         myFileList.get(position).setIsSelected(false);
                         int count = 0;
                         for (int i = 0; i < myFileList.size(); i++) {
 
                             if (myFileList.get(i).getIsSelected())
                                 count++;
+
                         }
+
                         //if user cancel the selected item
                         if (count == 0) {
                             setChecked = false;
@@ -145,24 +120,65 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
             @Override
             public void onLongClick(View view, int position) {
+                ImageView checkicon = view.findViewById(R.id.recycler_item_selected_image);
+
+                //open folder
+                String name = myFileList.get(position).getFileName();
+                if (myFileList.get(position).getIsFolder()) {
+                    if (PickerFileType.equals("Image"))
+                        openImageMediaStoreFile(name);
+                    else
+                        openVideoMediaStoreFile(name);
+                } else {
+                    //click on album files
+                    //show the check option
+                    setChecked = true;
+                    //is allow option menu to show check icon
+                    invalidateOptionsMenu();
+
+                    //havent select yet
+                    if (!myFileList.get(position).getIsSelected()) {
+
+                        checkicon.setVisibility(View.VISIBLE);
+
+                        myFileList.get(position).setIsSelected(true);
+                    } else {
+                        //selected
+                        checkicon.setVisibility(View.INVISIBLE);
+
+
+                        myFileList.get(position).setIsSelected(false);
+                        int count = 0;
+                        for (int i = 0; i < myFileList.size(); i++) {
+
+                            if (myFileList.get(i).getIsSelected())
+                                count++;
+
+                        }
+
+                        //if user cancel the selected item
+                        if (count == 0) {
+                            setChecked = false;
+                            invalidateOptionsMenu();
+                        }
+
+                    }
+
+                }
 
             }
         }));
 
 
+
+        //get which file type user selected from album
+        if (getIntent().getStringExtra("FileType") != null) {
+            PickerFileType = getIntent().getStringExtra("FileType");
+            init();
+        } else {
+            promptselection();
+        }
     }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-
-        outState.putParcelableArrayList(LIST_STATE, myFileList);
-        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
-
-
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -235,17 +251,6 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                 StartShare(mFileList);
 
             }
-
-        }
-        if (item.getItemId() == R.id.gridviewVertical) {
-            int spanCount = 2;
-
-            recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
-
-        }
-        if (item.getItemId() == R.id.linearVertical) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
 
         }
         return super.onOptionsItemSelected(item);
@@ -324,13 +329,13 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
 //            listAdapter = new AsmMfpListViewAdapter(getApplicationContext(), myFileList);
 //            listView.setAdapter(listAdapter);
-            mAdapter = new AsmMfpListViewAdapter(myFileList);
+            listAdapter = new AsmMfpListViewAdapter(myFileList);
             recyclerView.setAdapter(mAdapter);
 
         } else if (PickerFileType.equals("Video")) {
             openVideoMediaStoreFolder();
 
-            mAdapter = new AsmMfpListViewAdapter(myFileList);
+            listAdapter = new AsmMfpListViewAdapter(myFileList);
             recyclerView.setAdapter(mAdapter);
 
         } else if (PickerFileType.equals("Document")) {
@@ -339,7 +344,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             ProgressBar simpleProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
             simpleProgressBar.setVisibility(View.VISIBLE);
 
-            Intent intent = new Intent(getApplicationContext(), AsmMfpDocumentFilePickerActivity.class);
+            Intent intent=new Intent(getApplicationContext(), AsmMfpDocumentFilePickerActivity.class);
             startActivity(intent);
 
             // openPdfMediaStore(dir);
@@ -372,7 +377,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
         if (mAdapter != null)
             mAdapter.notifyDataSetChanged();
-
+        if (listAdapter != null)
+            listAdapter.notifyDataSetChanged();
     }
 
     //get all document file
@@ -488,8 +494,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         }
         cursor.close();
 
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+        if (listAdapter != null)
+            listAdapter.notifyDataSetChanged();
 
     }
 
@@ -567,8 +573,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
         }
 
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+        if (listAdapter != null)
+            listAdapter.notifyDataSetChanged();
 
     }
 
@@ -641,8 +647,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
         }
 
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+        if (listAdapter != null)
+            listAdapter.notifyDataSetChanged();
     }
 
     private void openVideoMediaStoreFile(String foldername) {
@@ -692,16 +698,15 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         cursor.close();
 
 
-        mAdapter.notifyDataSetChanged();
+        listAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this, AsmMfpMainActivity.class);
+        Intent intent=new Intent(this, AsmMfpMainActivity.class);
         startActivity(intent);
     }
-
     public interface ClickListener {
         void onClick(View view, int position);
 
@@ -711,9 +716,9 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
     public static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
 
         private GestureDetector gestureDetector;
-        private AsmMfpListViewFilePicker.ClickListener clickListener;
+        private AsmMfpRecyclerViewFilePickerActivity.ClickListener clickListener;
 
-        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final AsmMfpListViewFilePicker.ClickListener clickListener) {
+        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final AsmMfpRecyclerViewFilePickerActivity.ClickListener clickListener) {
             this.clickListener = clickListener;
             gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -748,6 +753,9 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         }
     }
+
+
+
 
 
 }
