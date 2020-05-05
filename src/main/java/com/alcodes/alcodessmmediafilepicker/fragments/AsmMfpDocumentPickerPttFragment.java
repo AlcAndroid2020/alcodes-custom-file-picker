@@ -25,7 +25,7 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import java.io.File;
 import java.util.ArrayList;
 
-public class AsmMfpDocumentPickerPttFragment extends Fragment {
+public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks {
     View view;
     private RecyclerView recyclerView;
     private ArrayList<MyFile> mFileList=new ArrayList<>();
@@ -38,7 +38,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.asm_mfp_document_fragment,container,false);
         recyclerView= (RecyclerView ) view.findViewById(R.id.pdf_RecyclerView);
-        AsmMfpDocumentPickerRecyclerViewAdapter mAdapter=new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(),mFileList);
+        AsmMfpDocumentPickerRecyclerViewAdapter mAdapter=new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(),mFileList,AsmMfpDocumentPickerPttFragment.this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(mAdapter);
         return view;
@@ -98,4 +98,13 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment {
     }
 
 
+    @Override
+    public void onDocumentSelected(Uri uri) {
+
+    }
+
+    @Override
+    public void onDocumentUnSelected(Uri uri) {
+
+    }
 }

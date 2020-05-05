@@ -5,7 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -18,17 +21,23 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class AsmMfpDocumentPickerDocxFragment extends Fragment {
+public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks {
     View view;
     private RecyclerView recyclerView;
+    private android.view.ActionMode mActionMode;
+
     private ArrayList<MyFile> mFileList=new ArrayList<>();
+    private ArrayList<String> selectedList=new ArrayList<>();
+
     public AsmMfpDocumentPickerDocxFragment() {
 
     }
@@ -38,7 +47,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.asm_mfp_document_fragment,container,false);
         recyclerView= (RecyclerView ) view.findViewById(R.id.pdf_RecyclerView);
-        AsmMfpDocumentPickerRecyclerViewAdapter mAdapter=new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(),mFileList);
+        AsmMfpDocumentPickerRecyclerViewAdapter mAdapter=new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(),mFileList,AsmMfpDocumentPickerDocxFragment.this );
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(mAdapter);
         return view;
@@ -99,5 +108,86 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment {
 
     }
 
+
+    @Override
+    public void onDocumentSelected(Uri uri) {
+selectedList.add(String.valueOf(uri));
+        if (mActionMode == null)
+            mActionMode = getActivity().startActionMode(mActionModeCallback);
+
+        mActionMode.setTitle(selectedList.size() + "item(s) selected");
+    }
+
+    @Override
+    public void onDocumentUnSelected(Uri uri) {
+        for(int i=0;i<selectedList.size();i++){
+            if(selectedList.get(i).equals(uri.toString()))
+                selectedList.remove(i);
+        }
+        if(mActionMode!=null)
+            mActionMode.setTitle(selectedList.size() + "item(s) selected");
+
+        if (selectedList.size() == 0)
+            mActionMode.finish();
+    }
+
+
+
+
+
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
+            //for select item
+         //   if(selectedList!=null)
+          //  mActionMode.setTitle(selectedList.size() + "item(s) selected");
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+
+
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+
+
+
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+/*
+            if (isInSideAlbum) {
+
+                if (PickerFileType.equals("Image")) {
+
+
+
+                    openImageMediaStoreFolder();
+                    isInSideAlbum = false;
+
+
+                } else {
+
+
+
+                    openVideoMediaStoreFolder();
+                    isInSideAlbum = false;
+                }
+            } else {
+
+
+            }*/
+            mActionMode = null;
+        }
+    };
 
 }

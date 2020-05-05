@@ -15,10 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,17 +37,20 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private String PickerFileType = "";
     private AsmMfpCustomFilePickerRecyclerViewAdapter rcAdapter;
     private ArrayList<MyFile> myFileList = new ArrayList<>();
+
     private static final int PERMISSION_STORGE_CODE = 1000;
-    private Boolean setChecked = false, searching = false;
+    private Boolean searching = false;
     public Uri newuri = null;
     private RecyclerView customRecyclerView;
     private Boolean IsGrid = false;
     private LinearLayoutManager linearLayoutManager;
     private GridLayoutManager gridLayoutManager;
 
+    private ActionMode mActionMode;
     private Parcelable savedRecyclerLayoutState;
     private static String LIST_STATE = "list_state";
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
+    private ArrayList<MyFile> selectionList = new ArrayList<>();
 
     private Boolean isInSideAlbum = false;
 
@@ -64,6 +69,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
         customRecyclerView.setLayoutManager(linearLayoutManager);
         if (savedInstanceState != null) {
+
 
             myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
 
@@ -89,7 +95,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     }
 
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -105,16 +110,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.asm_mfp_menu_custom_file_picker, menu);
         //for select item
-        MenuItem checkItem = menu.findItem(R.id.DoneSelection);
-        MenuItem shareItem = menu.findItem(R.id.ShareWith);
-
-        if (setChecked) {
-            checkItem.setVisible(true);
-            shareItem.setVisible(true);
-        } else {
-            checkItem.setVisible(false);
-            shareItem.setVisible(false);
-        }
 
 
         //for search filter
@@ -130,18 +125,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
             @Override
             public boolean onQueryTextChange(String newText) {
 
-               rcAdapter.getFilter().filter(newText);
-    /*    ArrayList<MyFile> filterlist=new ArrayList<>();
-                for (int i=0;i<myFileList.size();i++){
-                    if(myFileList.get(i).getFileName().equals(newText )){
-                        filterlist.add(myFileList.get(i));
-
-                    }
-
-                }
-                rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(),filterlist, AsmMfpCustomFilePicker.this);
-                customRecyclerView.setAdapter(rcAdapter);
-                rcAdapter.notifyDataSetChanged(); */
+                rcAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -152,37 +136,8 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.DoneSelection) {
-            ArrayList<String> mFileList = new ArrayList<>();
-            for (int i = 0; i < myFileList.size(); i++) {
 
-                if (myFileList.get(i).getIsSelected())
-                    mFileList.add(myFileList.get(i).getFileUri());
 
-            }
-            if (mFileList != null) {
-                Intent intent = new Intent(this, AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-
-                startActivity(intent);
-            }
-
-        }
-        if (item.getItemId() == R.id.ShareWith) {
-            ArrayList<String> mFileList = new ArrayList<>();
-            for (int i = 0; i < myFileList.size(); i++) {
-
-                if (myFileList.get(i).getIsSelected()) {
-                    mFileList.add(myFileList.get(i).getFileUri());
-                    sharefiletype = myFileList.get(i).getFileType();
-                }
-
-            }
-            if (mFileList != null) {
-                StartShare(mFileList);
-
-            }
-        }
         if (item.getItemId() == android.R.id.home) {
             if (isInSideAlbum) {
 
@@ -194,7 +149,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
                     openImageMediaStoreFolder();
                     isInSideAlbum = false;
-                    setChecked=false;
                     invalidateOptionsMenu();
 
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -207,7 +161,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
                     openVideoMediaStoreFolder();
                     isInSideAlbum = false;
-                    setChecked=false;
                     invalidateOptionsMenu();
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 }
@@ -356,21 +309,21 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
 
-            //  for gathering path
-            // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            //    path = cursor.getString(file_ColumnIndex);
-
             MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), false);
             myFile.setFileType("Image");
 
+            //to put back seleceted status to pervious selected item
+            for (int i = 0; i < selectionList.size(); i++) {
+                if (myFile.getFileUri().equals(selectionList.get(i).getFileUri())) {
+                    myFile.setIsSelected(true);
+                }
+            }
 
             myFileList.add(myFile);
 
 
         }
         cursor.close();
-        if (rcAdapter != null)
-            rcAdapter.notifyDataSetChanged();
 
 
     }
@@ -379,7 +332,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     // for folder
     private void openImageMediaStoreFolder() {
         //list to get file in same folder
-
+        myFileList.clear();
         ArrayList<String> filelist = new ArrayList<>();
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
@@ -447,16 +400,19 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
 
         }
+
         if (rcAdapter != null)
             rcAdapter.notifyDataSetChanged();
         //after finish for external then continue to internal storage
+        if (mActionMode==null&&selectionList.size()!=0)
+          mActionMode = startSupportActionMode(mActionModeCallback);
     }
 
 
     private void openVideoMediaStoreFolder() {
         //list to get file in same folder
-        ArrayList<String> filelist = new ArrayList<>();
         myFileList.clear();
+        ArrayList<String> filelist = new ArrayList<>();
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
             String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -515,8 +471,12 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
 
         }
+
         if (rcAdapter != null)
             rcAdapter.notifyDataSetChanged();
+
+        if (mActionMode==null&&selectionList.size()!=0)
+            mActionMode = startSupportActionMode(mActionModeCallback);
     }
 
     private void openVideoMediaStoreFile(int folderid) {
@@ -559,13 +519,18 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
             MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), false);
             myFile.setFileType("Video");
+            for (int i = 0; i < selectionList.size(); i++) {
+                if (myFile.getFileUri().equals(selectionList.get(i).getFileUri())) {
+                    myFile.setIsSelected(true);
+                }
+            }
             myFileList.add(myFile);
 
 
         }
         cursor.close();
 
-        rcAdapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -590,28 +555,139 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         isInSideAlbum = true;
         invalidateOptionsMenu();
 
+        rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+        customRecyclerView.setAdapter(rcAdapter);
     }
 
     @Override
-    public void onFileCliked(ArrayList<MyFile> filelist) {
-        myFileList = filelist;
-        int countSelect = 0;
-        for (int i = 0; i < myFileList.size(); i++) {
-            if (myFileList.get(i).getIsSelected())
-                countSelect++;
+    public void onAlbumItemSelected(int position) {
+        //get position
+        isInSideAlbum = true;
 
+        selectionList.add(myFileList.get(position));
+        if (mActionMode == null)
+            mActionMode = startSupportActionMode(mActionModeCallback);
+
+        mActionMode.setTitle(selectionList.size() + "item(s) selected");
+
+    }
+
+    @Override
+    public void onAlbumItemUnSelected(int position) {
+      String uri=  myFileList.get(position).getFileUri();
+        for (int i=0;i<selectionList.size();i++){
+            if(selectionList.get(i).getFileUri().equals(uri))
+            selectionList.remove(i);
 
         }
+        /*
+<<<<<<< HEAD
         if (countSelect > 0)
             setChecked = true;
 
             else
                 setChecked=false;
+=======
+>>>>>>> origin/CheeSeongTan/dev
 
-        //to show back button
 
+<<<<<<< HEAD
 
         invalidateOptionsMenu();
+=======
+>>>>>>> origin/CheeSeongTan/dev
 
+         */
+
+        if(mActionMode!=null)
+            mActionMode.setTitle(selectionList.size() + "item(s) selected");
+
+        if (selectionList.size() == 0)
+            mActionMode.finish();
     }
+
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.asm_mfp_menu_custom_file_picker, menu);
+            //for select item
+            MenuItem checkItem = menu.findItem(R.id.DoneSelection);
+            checkItem.setVisible(true);
+            MenuItem shareItem = menu.findItem(R.id.ShareWith);
+            shareItem.setVisible(true);
+            mode.setTitle(selectionList.size() + "item(s) selected");
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+
+
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            if (item.getItemId() == R.id.DoneSelection) {
+                ArrayList<String> mFileList = new ArrayList<>();
+                for (int i = 0; i < selectionList.size(); i++) {
+                    mFileList.add(selectionList.get(i).getFileUri());
+                }
+                if (mFileList != null) {
+                    Intent intent = new Intent(getApplicationContext(), AsmGvrMainActivity.class);
+                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+
+                    startActivity(intent);
+                }
+
+            }
+
+            if (item.getItemId() == R.id.ShareWith) {
+                ArrayList<String> mFileList = new ArrayList<>();
+                for (int i = 0; i < myFileList.size(); i++) {
+
+                    if (myFileList.get(i).getIsSelected()) {
+                        mFileList.add(myFileList.get(i).getFileUri());
+                        sharefiletype = myFileList.get(i).getFileType();
+                    }
+
+                }
+                if (mFileList != null) {
+                    StartShare(mFileList);
+
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+/*
+            if (isInSideAlbum) {
+
+                if (PickerFileType.equals("Image")) {
+
+
+
+                    openImageMediaStoreFolder();
+                    isInSideAlbum = false;
+
+
+                } else {
+
+
+
+                    openVideoMediaStoreFolder();
+                    isInSideAlbum = false;
+                }
+            } else {
+
+
+            }*/
+            mActionMode = null;
+        }
+    };
+
 }

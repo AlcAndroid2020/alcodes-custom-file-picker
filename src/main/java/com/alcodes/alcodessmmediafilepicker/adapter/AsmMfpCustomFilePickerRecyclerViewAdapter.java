@@ -5,10 +5,12 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +33,8 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         this.mContext = context;
         this.callback = callbacks;
         this.FilterList = myFileList;
+
+        filter = new CustomFilter();
     }
 
     @NonNull
@@ -44,8 +48,11 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
-
+        //to show selected when go back to album
+        if(myFileList.get(position).getIsSelected()) {
+            holder.checkBox.setVisibility(View.VISIBLE);
+            holder.checkBox.setChecked(true);
+        }
         if (myFileList.get(position).getFileType() != null) {
             if (myFileList.get(position).getFileType().equals("Image"))
                 Glide.with(mContext)
@@ -88,19 +95,28 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 //click on folder
                 if (myFileList.get(position).getIsFolder()) {
                     if (callback != null) {
+
+
                         callback.onFolderClicked(myFileList.get(position).getFolderID());
                     }
-
                 } else {
                     //click on file
+
+                    //unselect
                     if (myFileList.get(position).getIsSelected()) {
-                        holder.checkIC.setVisibility(View.INVISIBLE);
                         myFileList.get(position).setIsSelected(false);
-                        callback.onFileCliked(myFileList);
+                        holder.checkBox.setChecked(false);
+                        holder.checkBox.setVisibility(View.INVISIBLE);
+
+                        callback.onAlbumItemUnSelected(position);
                     } else {
-                        holder.checkIC.setVisibility(View.VISIBLE);
+                        //select
                         myFileList.get(position).setIsSelected(true);
-                        callback.onFileCliked(myFileList);
+                        holder.checkBox.setVisibility(View.VISIBLE);
+                        holder.checkBox.setChecked(true);
+
+
+                        callback.onAlbumItemSelected(position);
 
                     }
 
@@ -110,12 +126,17 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         });
 
     }
+    public void ChangeList(ArrayList<MyFile> MyList){
+        this.myFileList=MyList;
 
+    }
 
     public interface CustomFilePickerCallback {
         void onFolderClicked(int folderid);
 
-        void onFileCliked(ArrayList<MyFile> filelist);
+        void onAlbumItemSelected(int position);
+
+        void onAlbumItemUnSelected(int position);
     }
 
     @Override
@@ -139,20 +160,20 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         private TextView textView;
         private ImageView imgView;
         private ImageView checkIC;
+        private CheckBox checkBox;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             imgView = itemView.findViewById(R.id.Album_item_ImgView);
             textView = itemView.findViewById(R.id.Album_item_TextView);
             checkIC = itemView.findViewById(R.id.Album_item_Selected_Image);
+            checkBox = itemView.findViewById(R.id.FilePicker_checkbox);
         }
     }
 
     @Override
     public Filter getFilter() {
-        if (filter == null) {
-            filter = new CustomFilter();
-        }
+
         return filter;
     }
 
@@ -161,34 +182,29 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         @Override
 
         protected FilterResults performFiltering(CharSequence constraint) {
-            FilterResults results = new FilterResults();
+            FilterResults filterResults = new FilterResults();
+            ArrayList<MyFile> resultlist = new ArrayList<>();
             //filtering
-            if (constraint != null && constraint.length() > 0) {
-                //constraint to upper
-                constraint = constraint.toString().toUpperCase();
-                ArrayList<MyFile> filter = new ArrayList<>();
-                for (int i = 0; i < FilterList.size(); i++) {
-                    if (FilterList.get(i).getFileName().toUpperCase().contains(constraint)) {
 
-                        MyFile file = new MyFile(FilterList.get(i).getFileName(), FilterList.get(i).getFileUri(), FilterList.get(i).getIsFolder());
-                        filter.add(file);
-                    }
+            String searchvalue = constraint.toString().toLowerCase();
+            for (int i = 0; i < FilterList.size(); i++) {
+                String title = FilterList.get(i).getFileName();
+
+                if (title.toLowerCase().contains(searchvalue)) {
+                    resultlist.add(FilterList.get(i));
                 }
-                results.count = filter.size();
-                results.values = filter;
-            } else {
-                results.count = FilterList.size();
-                results.values = FilterList;
             }
-            return results;
-
+            filterResults.count = resultlist.size();
+            filterResults.values = resultlist;
+            return filterResults;
         }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             if (results != null) {
-            myFileList = (ArrayList<MyFile>) results.values;
-            notifyDataSetChanged();}
+                myFileList = (ArrayList<MyFile>) results.values;
+                notifyDataSetChanged();
+            }
         }
 
 
