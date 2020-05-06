@@ -45,11 +45,19 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private Boolean IsGrid = false;
     private LinearLayoutManager linearLayoutManager;
     private GridLayoutManager gridLayoutManager;
+<<<<<<< HEAD
     private ActionMode mActionMode;
     private Parcelable savedRecyclerLayoutState;
     private static String LIST_STATE = "list_state";
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ArrayList<MyFile> selectionList = new ArrayList<>();
+=======
+
+    private Parcelable savedRecyclerLayoutState;
+    private static String LIST_STATE = "list_state";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
+
+>>>>>>> origin/OoiLiangZhi/dev
     private Boolean isInSideAlbum = false;
 
 
@@ -67,6 +75,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
         customRecyclerView.setLayoutManager(linearLayoutManager);
         if (savedInstanceState != null) {
+<<<<<<< HEAD
 
             myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
 
@@ -92,6 +101,33 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     }
 
+=======
+
+            myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
+
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+            customRecyclerView.setAdapter(rcAdapter);
+
+
+        } else {
+            if (getIntent().getStringExtra("FileType") != null) {
+                PickerFileType = getIntent().getStringExtra("FileType");
+                init();
+            } else {
+                promptselection();
+            }
+
+
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
+            customRecyclerView.setAdapter(rcAdapter);
+        }
+
+
+    }
+
+>>>>>>> origin/OoiLiangZhi/dev
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -578,8 +614,21 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
             selectionList.remove(i);
 
         }
+<<<<<<< HEAD
+=======
+        if (countSelect > 0)
+            setChecked = true;
+
+            else
+                setChecked=false;
+>>>>>>> origin/OoiLiangZhi/dev
 
 
+<<<<<<< HEAD
+=======
+
+        invalidateOptionsMenu();
+>>>>>>> origin/OoiLiangZhi/dev
 
             if(mActionMode!=null)
             mActionMode.setTitle(selectionList.size() + "item(s) selected");

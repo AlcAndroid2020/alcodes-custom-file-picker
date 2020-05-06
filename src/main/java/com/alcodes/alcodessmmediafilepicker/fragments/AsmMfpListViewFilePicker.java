@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +24,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -43,6 +46,8 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AsmMfpListViewFilePicker extends AppCompatActivity {
     GridView gridView;
@@ -148,8 +153,13 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
             }
         }));
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> origin/OoiLiangZhi/dev
     }
 
     @Override
@@ -248,7 +258,47 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
 
         }
+
+        if (item.getItemId() == R.id.sortingNameAscending) {
+
+            Collections.sort(myFileList, new SortByName());
+            mAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingNameDescending) {
+            Collections.sort(myFileList, Collections.reverseOrder(new SortByName()));
+            mAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingDateAscending) {
+
+            Collections.sort(myFileList, new SortByDate());
+            mAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingDateDescending) {
+            Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
+            mAdapter.notifyDataSetChanged();
+        }
+
+
         return super.onOptionsItemSelected(item);
+    }
+
+    public class SortByName implements Comparator<MyFile> {
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            return a.getFileName().compareTo(b.getFileName());
+        }
+    }
+
+    public class SortByDate implements Comparator<MyFile> {
+
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            Log.e("Check", a.getLastModifyDate()+"second"+b.getLastModifyDate());
+            return a.getLastModifyDate().compareTo(b.getLastModifyDate());
+        }
     }
 
     public void StartShare(ArrayList<String> mFileList) {
@@ -445,7 +495,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         String[] projection = new String[]{
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.SIZE,
-                MediaStore.Images.Media.DISPLAY_NAME
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_MODIFIED
 
 
         };
@@ -463,6 +514,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         int nameColumn = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
         int sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
+        int lastModifyColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
 
@@ -470,6 +522,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
             String size = cursor.getString(sizeColumn);
+            String lastModify = cursor.getString(lastModifyColumn);
 
             Uri contentUri = ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
@@ -478,7 +531,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             //    path = cursor.getString(file_ColumnIndex);
 
-            MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), false);
+            MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), lastModify,false);
             myFile.setFileType("Image");
 
 
@@ -507,7 +560,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                     MediaStore.Images.Media._ID,
                     MediaStore.Images.Media.SIZE,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.BUCKET_ID
+                    MediaStore.Images.Media.BUCKET_ID,
+                    MediaStore.Images.Media.DATE_MODIFIED
 
 
             };
@@ -525,6 +579,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
             int nameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
             int sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
+            int lastModifyColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
             //int BucketIdCoulmn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
             while (cursor.moveToNext()) {
                 // Get values of columns for a given video.
@@ -533,6 +588,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                 long id = cursor.getInt(idColumn);
                 fileName = cursor.getString(nameColumn);
                 String size = cursor.getString(sizeColumn);
+                String lastModify = cursor.getString(lastModifyColumn);
 
                 Uri contentUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
@@ -541,7 +597,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                 // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 //    path = cursor.getString(file_ColumnIndex);
 
-                MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), true);
+                MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), String.valueOf(lastModify), true);
                 myFile.setFileType("Image");
                 myFile.setIsFolder(true);
 
