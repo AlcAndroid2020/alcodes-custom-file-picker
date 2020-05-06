@@ -8,6 +8,17 @@
         android:title="Done"
         android:visible="false"
         app:showAsAction="always|collapseActionView" />
+<item
+    android:id="@+id/Doc_FilePicker_UnselectAll"
+    android:title="Unselect"
+    android:visible="false"
 
+    />
+    <item
+        android:id="@+id/Doc_FilePicker_SearchFilter"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Search"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
 </menu>
