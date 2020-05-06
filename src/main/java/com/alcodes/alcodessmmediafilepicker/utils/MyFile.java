@@ -12,7 +12,7 @@ public class MyFile implements Serializable, Parcelable {
     private String FileUri;
     private String FileType;
 
-    private Long LastModifyDate;
+    private Long LastModifyDate = 0l;
     private int Count = 1;
     private boolean isSelected = false;
     private boolean isFolder = false;

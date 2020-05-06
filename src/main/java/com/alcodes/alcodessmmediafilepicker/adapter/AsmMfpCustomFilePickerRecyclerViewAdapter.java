@@ -10,7 +10,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,13 +26,14 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     private ArrayList<MyFile> FilterList;
     private CustomFilePickerCallback callback;
     private CustomFilter filter;
+    private int SelectionCount;
 
-    public AsmMfpCustomFilePickerRecyclerViewAdapter(Context context, ArrayList<MyFile> filelist, CustomFilePickerCallback callbacks) {
+    public AsmMfpCustomFilePickerRecyclerViewAdapter(Context context, ArrayList<MyFile> filelist, CustomFilePickerCallback callbacks,int selectedCount) {
         this.myFileList = filelist;
         this.mContext = context;
         this.callback = callbacks;
         this.FilterList = myFileList;
-
+        this.SelectionCount=selectedCount;
         filter = new CustomFilter();
     }
 
@@ -49,7 +49,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         //to show selected when go back to album
-        if(myFileList.get(position).getIsSelected()) {
+        if (myFileList.get(position).getIsSelected()) {
             holder.checkBox.setVisibility(View.VISIBLE);
             holder.checkBox.setChecked(true);
         }
@@ -102,6 +102,9 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 } else {
                     //click on file
 
+
+
+
                     //unselect
                     if (myFileList.get(position).getIsSelected()) {
                         myFileList.get(position).setIsSelected(false);
@@ -110,6 +113,10 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
                         callback.onAlbumItemUnSelected(position);
                     } else {
+                        //Limit user selection ,maximum 5 items
+
+                        if(SelectionCount<5)
+                        {
                         //select
                         myFileList.get(position).setIsSelected(true);
                         holder.checkBox.setVisibility(View.VISIBLE);
@@ -120,16 +127,14 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
                     }
 
-                }
+                }}
 
             }
         });
 
     }
-    public void ChangeList(ArrayList<MyFile> MyList){
-        this.myFileList=MyList;
 
-    }
+
 
     public interface CustomFilePickerCallback {
         void onFolderClicked(int folderid);
@@ -170,6 +175,13 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
             checkBox = itemView.findViewById(R.id.FilePicker_checkbox);
         }
     }
+
+    //update the selection count from picker so to limit user selection
+    public void setSelectionCount(int count){
+        this.SelectionCount=count;
+    }
+
+
 
     @Override
     public Filter getFilter() {
