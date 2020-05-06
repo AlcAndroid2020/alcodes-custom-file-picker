@@ -4,10 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
-<<<<<<< HEAD
-=======
-import java.util.Date;
->>>>>>> origin/OoiLiangZhi/dev
+
 
 public class MyFile implements Serializable, Parcelable {
     private String FileName;
@@ -40,10 +37,9 @@ public class MyFile implements Serializable, Parcelable {
         FileName = in.readString();
         FileSize = in.readString();
         FileUri = in.readString();
-<<<<<<< HEAD
-=======
+
         LastModifyDate = in.readString();
->>>>>>> origin/OoiLiangZhi/dev
+
         FileType = in.readString();
         Count = in.readInt();
         isSelected = in.readByte() != 0;
@@ -62,8 +58,7 @@ public class MyFile implements Serializable, Parcelable {
         }
     };
 
-<<<<<<< HEAD
-=======
+
     public String getLastModifyDate() {
         return LastModifyDate;
     }
@@ -72,7 +67,6 @@ public class MyFile implements Serializable, Parcelable {
         LastModifyDate = lastModifyDate;
     }
 
->>>>>>> origin/OoiLiangZhi/dev
     public int getFolderID() {
         return FolderID;
     }
@@ -148,10 +142,9 @@ public class MyFile implements Serializable, Parcelable {
         dest.writeString(FileName);
         dest.writeString(FileSize);
         dest.writeString(FileUri);
-<<<<<<< HEAD
-=======
+
         dest.writeString(LastModifyDate);
->>>>>>> origin/OoiLiangZhi/dev
+
         dest.writeString(FileType);
         dest.writeInt(Count);
         dest.writeByte((byte) (isSelected ? 1 : 0));

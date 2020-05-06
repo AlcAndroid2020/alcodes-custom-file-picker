@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,9 +30,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
+import com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpListViewFilePicker;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback {
     private String PickerFileType = "";
@@ -45,19 +49,11 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private Boolean IsGrid = false;
     private LinearLayoutManager linearLayoutManager;
     private GridLayoutManager gridLayoutManager;
-<<<<<<< HEAD
     private ActionMode mActionMode;
     private Parcelable savedRecyclerLayoutState;
     private static String LIST_STATE = "list_state";
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ArrayList<MyFile> selectionList = new ArrayList<>();
-=======
-
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
-
->>>>>>> origin/OoiLiangZhi/dev
     private Boolean isInSideAlbum = false;
 
 
@@ -75,7 +71,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
         customRecyclerView.setLayoutManager(linearLayoutManager);
         if (savedInstanceState != null) {
-<<<<<<< HEAD
 
             myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
 
@@ -101,33 +96,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     }
 
-=======
-
-            myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
-
-            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-
-            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
-            customRecyclerView.setAdapter(rcAdapter);
-
-
-        } else {
-            if (getIntent().getStringExtra("FileType") != null) {
-                PickerFileType = getIntent().getStringExtra("FileType");
-                init();
-            } else {
-                promptselection();
-            }
-
-
-            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this);
-            customRecyclerView.setAdapter(rcAdapter);
-        }
-
-
-    }
-
->>>>>>> origin/OoiLiangZhi/dev
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -218,6 +186,28 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
 
         }
+        if (item.getItemId() == R.id.sortingNameAscending) {
+
+            Collections.sort(myFileList, new SortByName());
+            rcAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingNameDescending) {
+            Collections.sort(myFileList, Collections.reverseOrder(new SortByName()));
+            rcAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingDateAscending) {
+
+            Collections.sort(myFileList, new SortByDate());
+            rcAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingDateDescending) {
+            Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
+            rcAdapter.notifyDataSetChanged();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -439,7 +429,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
             rcAdapter.notifyDataSetChanged();
         //after finish for external then continue to internal storage
         if (mActionMode==null&&selectionList.size()!=0)
-          mActionMode = startSupportActionMode(mActionModeCallback);
+            mActionMode = startSupportActionMode(mActionModeCallback);
     }
 
 
@@ -608,29 +598,16 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     @Override
     public void onAlbumItemUnSelected(int position) {
-      String uri=  myFileList.get(position).getFileUri();
+        String uri=  myFileList.get(position).getFileUri();
         for (int i=0;i<selectionList.size();i++){
             if(selectionList.get(i).getFileUri().equals(uri))
-            selectionList.remove(i);
+                selectionList.remove(i);
 
         }
-<<<<<<< HEAD
-=======
-        if (countSelect > 0)
-            setChecked = true;
-
-            else
-                setChecked=false;
->>>>>>> origin/OoiLiangZhi/dev
 
 
-<<<<<<< HEAD
-=======
 
-        invalidateOptionsMenu();
->>>>>>> origin/OoiLiangZhi/dev
-
-            if(mActionMode!=null)
+        if(mActionMode!=null)
             mActionMode.setTitle(selectionList.size() + "item(s) selected");
 
         if (selectionList.size() == 0)
@@ -720,5 +697,30 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
             mActionMode = null;
         }
     };
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_STORGE_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    init();
+                }
+            }
+        }
+    }
+    public class SortByName implements Comparator<MyFile> {
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            return a.getFileName().compareTo(b.getFileName());
+        }
+    }
+
+    public class SortByDate implements Comparator<MyFile> {
+
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            Log.e("Check", a.getLastModifyDate()+"second"+b.getLastModifyDate());
+            return a.getLastModifyDate().compareTo(b.getLastModifyDate());
+        }
+    }
 
 }

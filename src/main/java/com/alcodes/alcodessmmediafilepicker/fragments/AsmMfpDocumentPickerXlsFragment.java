@@ -5,7 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -18,7 +21,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
@@ -29,6 +34,8 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     View view;
     private RecyclerView recyclerView;
     private ArrayList<MyFile> mFileList=new ArrayList<>();
+    private ArrayList<String> selectedList=new ArrayList<>();//only store selected file uri but can be change
+    private android.view.ActionMode mActionMode;
     public AsmMfpDocumentPickerXlsFragment() {
 
     }
@@ -100,11 +107,64 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
     @Override
     public void onDocumentSelected(Uri uri) {
+        selectedList.add(String.valueOf(uri));
+        if (mActionMode == null)
+            mActionMode = getActivity().startActionMode(mActionModeCallback);
 
+        mActionMode.setTitle(selectedList.size() + "item(s) selected");
     }
 
     @Override
     public void onDocumentUnSelected(Uri uri) {
+        for(int i=0;i<selectedList.size();i++){
+            if(selectedList.get(i).equals(uri.toString()))
+                selectedList.remove(i);
+        }
+        if(mActionMode!=null)
+            mActionMode.setTitle(selectedList.size() + "item(s) selected");
 
+        if (selectedList.size() == 0&&mActionMode!=null)
+            mActionMode.finish();
     }
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
+            //for select item
+            MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
+            checkItem.setVisible(true);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+
+
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            if(item.getItemId()==R.id.Doc_FilePicker_DoneSelection) {
+                ArrayList<String> mFileList = new ArrayList<>();
+                for (int i = 0; i < selectedList.size(); i++) {
+                    mFileList.add(selectedList.get(i));
+                }
+                if (mFileList != null) {
+                    Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
+                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+
+                    startActivity(intent);
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+            mActionMode = null;
+        }
+    };
 }

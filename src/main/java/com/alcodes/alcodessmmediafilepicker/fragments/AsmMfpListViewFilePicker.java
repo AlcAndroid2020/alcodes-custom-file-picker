@@ -153,13 +153,6 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
             }
         }));
-<<<<<<< HEAD
-
-
-=======
-
-
->>>>>>> origin/OoiLiangZhi/dev
     }
 
     @Override

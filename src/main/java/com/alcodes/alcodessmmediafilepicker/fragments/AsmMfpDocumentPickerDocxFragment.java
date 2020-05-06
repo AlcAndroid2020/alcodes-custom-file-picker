@@ -127,7 +127,7 @@ selectedList.add(String.valueOf(uri));
         if(mActionMode!=null)
             mActionMode.setTitle(selectedList.size() + "item(s) selected");
 
-        if (selectedList.size() == 0)
+        if (selectedList.size() == 0&&mActionMode!=null)
             mActionMode.finish();
     }
 
@@ -140,8 +140,8 @@ selectedList.add(String.valueOf(uri));
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
             //for select item
-         //   if(selectedList!=null)
-          //  mActionMode.setTitle(selectedList.size() + "item(s) selected");
+            MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
+            checkItem.setVisible(true);
             return true;
         }
 
@@ -154,9 +154,18 @@ selectedList.add(String.valueOf(uri));
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            if(item.getItemId()==R.id.Doc_FilePicker_DoneSelection) {
+                ArrayList<String> mFileList = new ArrayList<>();
+                for (int i = 0; i < selectedList.size(); i++) {
+                    mFileList.add(selectedList.get(i));
+                }
+                if (mFileList != null) {
+                    Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
+                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
 
-
-
+                    startActivity(intent);
+                }
+            }
 
             return true;
         }
@@ -164,28 +173,6 @@ selectedList.add(String.valueOf(uri));
         @Override
         public void onDestroyActionMode(ActionMode mode) {
 
-/*
-            if (isInSideAlbum) {
-
-                if (PickerFileType.equals("Image")) {
-
-
-
-                    openImageMediaStoreFolder();
-                    isInSideAlbum = false;
-
-
-                } else {
-
-
-
-                    openVideoMediaStoreFolder();
-                    isInSideAlbum = false;
-                }
-            } else {
-
-
-            }*/
             mActionMode = null;
         }
     };

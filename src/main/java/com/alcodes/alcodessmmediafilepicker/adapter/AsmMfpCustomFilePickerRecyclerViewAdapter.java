@@ -10,7 +10,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,7 +32,6 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         this.mContext = context;
         this.callback = callbacks;
         this.FilterList = myFileList;
-
         filter = new CustomFilter();
     }
 
@@ -49,7 +47,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         //to show selected when go back to album
-        if(myFileList.get(position).getIsSelected()) {
+        if (myFileList.get(position).getIsSelected()) {
             holder.checkBox.setVisibility(View.VISIBLE);
             holder.checkBox.setChecked(true);
         }
@@ -126,8 +124,9 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         });
 
     }
-    public void ChangeList(ArrayList<MyFile> MyList){
-        this.myFileList=MyList;
+
+    public void ChangeList(ArrayList<MyFile> MyList) {
+        this.myFileList = MyList;
 
     }
 
