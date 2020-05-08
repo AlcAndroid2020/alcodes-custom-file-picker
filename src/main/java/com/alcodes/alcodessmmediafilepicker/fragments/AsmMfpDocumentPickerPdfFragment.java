@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,7 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,13 +36,19 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import java.io.File;
 import java.util.ArrayList;
 
-public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks ,SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener{
+public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks {
     View view;
     private RecyclerView recyclerView;
     private ArrayList<MyFile> mFileList = new ArrayList<>();//for store all file details
     private ArrayList<String> selectedList = new ArrayList<>();//only store selected file uri but can be change
     private android.view.ActionMode mActionMode;
     private AsmMfpDocumentPickerRecyclerViewAdapter mAdapter;
+    private SearchView.OnQueryTextListener queryTextListener;
+    SearchView searchView;
+    //for action mode custom search bar
+    private EditText CustomSearchBar;
+    private Button ClearTextBtn;
+    private Boolean isSearching = false;
 
     public AsmMfpDocumentPickerPdfFragment() {
 
@@ -60,8 +69,31 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
         openDocumentMediaStore();
+
+
+        CustomSearchBar = getActivity().findViewById(R.id.Doc_File_Picker_EditText);
+        CustomSearchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mAdapter.getFilter().filter(s.toString());
+            }
+        });
+        ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
+        ClearTextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CustomSearchBar.setText(null);
+            }
+        });
 
     }
 
@@ -112,34 +144,10 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-  /*   MenuItem mSearchItem;
-        inflater.inflate(R.menu.asm_mfp_menu_document_file_picker, menu); // Put your search menu in "menu_search" menu file.
-        mSearchItem = menu.findItem(R.id.Doc_FilePicker_SearchFilter);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
-        searchView.setIconified(true);
 
-        SearchManager searchManager = (SearchManager)  getActivity().getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-             searchView.clearFocus();
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String query) {
-                //for testing
-                Toast.makeText(getContext(),"testing search ",Toast.LENGTH_SHORT).show();
-                mAdapter.getFilter().filter(query);
-                return false;
-            }
-        });*/
-
-/*
-        inflater.inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.Doc_FilePicker_SearchFilter).getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView = (SearchView) menu.findItem(R.id.Doc_FilePicker_SearchFilter).getActionView();
+        queryTextListener = new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 return false;
@@ -147,17 +155,13 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Toast.makeText(getContext(), "testing search ", Toast.LENGTH_SHORT).show();
                 mAdapter.getFilter().filter(s);
                 return false;
             }
-        });*/
-        MenuItem searchItem = menu.findItem(R.id.Doc_FilePicker_SearchFilter);
+        };
+        searchView.setOnQueryTextListener(queryTextListener);
 
 
-        androidx.appcompat.widget.SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint("Search..");
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -190,12 +194,16 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+
+
             mode.getMenuInflater().inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
+
             //for select item
             MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
             checkItem.setVisible(true);
             MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
             unSelectItem.setVisible(true);
+
             return true;
         }
 
@@ -236,6 +244,24 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 //close actionmode
                 mActionMode.finish();
             }
+            if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
+
+
+                if (!isSearching) {
+                    CustomSearchBar.setVisibility(View.VISIBLE);
+                    ClearTextBtn.setVisibility(View.VISIBLE);
+                    isSearching = true;
+                }
+                //click search btn for second time to hide the custom search bar
+                else {
+                    CustomSearchBar.setVisibility(View.INVISIBLE);
+                    ClearTextBtn.setVisibility(View.INVISIBLE);
+                    isSearching = false;
+                }
+
+
+            }
+
 
             return true;
         }
@@ -243,30 +269,33 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         @Override
         public void onDestroyActionMode(ActionMode mode) {
 
+            CustomSearchBar.setVisibility(View.INVISIBLE);
+            ClearTextBtn.setVisibility(View.INVISIBLE);
+            isSearching = false;
+            selectedList.clear();
+
+            //for refresh the view
+
+            for (int i = 0; i < mFileList.size(); i++) {
+                if (mFileList.get(i).getIsSelected())
+                    mFileList.get(i).setIsSelected(false);
+            }
+
+            mAdapter = new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(), mFileList, AsmMfpDocumentPickerPdfFragment.this, selectedList.size());
+            recyclerView.setAdapter(mAdapter);
             mActionMode = null;
+
         }
     };
 
-    @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
-        return true;
+    private void setSearchViewForActionMode(MenuItem search) {
+
+        //get search view /actionview from menu item
+        SearchView searchView = (SearchView) search.getActionView();
+
+
+        searchView.setOnQueryTextListener(queryTextListener);
+        searchView.setQueryHint("Search..");
     }
 
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-
-        mAdapter.getFilter().filter(newText);
-
-        return false;
-    }
 }

@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +43,10 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     private ArrayList<String> selectedList = new ArrayList<>();//only store selected file uri but can be change
     private android.view.ActionMode mActionMode;
     private AsmMfpDocumentPickerRecyclerViewAdapter mAdapter;
+    //for action mode custom search bar
+    private EditText CustomSearchBar;
+    private Button ClearTextBtn;
+    private Boolean isSearching = false;
 
     public AsmMfpDocumentPickerXlsFragment() {
 
@@ -60,6 +68,30 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         super.onCreate(savedInstanceState);
         openDocumentMediaStore();
         setHasOptionsMenu(true);
+
+        //for custom search bar
+        CustomSearchBar = getActivity().findViewById(R.id.Doc_File_Picker_EditText);
+        CustomSearchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mAdapter.getFilter().filter(s.toString());
+            }
+        });
+        ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
+        ClearTextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CustomSearchBar.setText(null);
+            }
+        });
 
     }
 
@@ -185,6 +217,21 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                 //close actionmode
                 mActionMode.finish();
             }
+            if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
+
+
+                if (!isSearching) {
+                    CustomSearchBar.setVisibility(View.VISIBLE);
+                    ClearTextBtn.setVisibility(View.VISIBLE);
+                    isSearching = true;
+                }
+                //click search btn for second time to hide the custom search bar
+                else {
+                    CustomSearchBar.setVisibility(View.INVISIBLE);
+                    ClearTextBtn.setVisibility(View.INVISIBLE);
+                    isSearching = false;
+                }
+            }
 
             return true;
         }
@@ -192,9 +239,24 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         @Override
         public void onDestroyActionMode(ActionMode mode) {
 
+            CustomSearchBar.setVisibility(View.INVISIBLE);
+            ClearTextBtn.setVisibility(View.INVISIBLE);
+            isSearching = false;
+            selectedList.clear();
+
+            //for refresh the view
+
+            for (int i = 0; i < mFileList.size(); i++) {
+                if (mFileList.get(i).getIsSelected())
+                    mFileList.get(i).setIsSelected(false);
+            }
+
+            mAdapter = new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(), mFileList, AsmMfpDocumentPickerXlsFragment.this, selectedList.size());
+            recyclerView.setAdapter(mAdapter);
             mActionMode = null;
         }
     };
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         MenuItem searchItem = menu.findItem(R.id.Doc_FilePicker_SearchFilter);
@@ -205,6 +267,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         searchView.setQueryHint("Search..");
         super.onCreateOptionsMenu(menu, inflater);
     }
+
     @Override
     public boolean onMenuItemActionExpand(MenuItem item) {
         return true;

@@ -111,7 +111,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                         holder.checkBox.setChecked(false);
                         holder.checkBox.setVisibility(View.INVISIBLE);
 
-                        callback.onAlbumItemUnSelected(position);
+                        callback.onAlbumItemUnSelected(Uri.parse(myFileList.get(position).getFileUri()));
                     } else {
                         //Limit user selection ,maximum 5 items
 
@@ -123,7 +123,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                         holder.checkBox.setChecked(true);
 
 
-                        callback.onAlbumItemSelected(position);
+                        callback.onAlbumItemSelected(Uri.parse(myFileList.get(position).getFileUri()));
 
                     }
 
@@ -139,9 +139,14 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     public interface CustomFilePickerCallback {
         void onFolderClicked(int folderid);
 
-        void onAlbumItemSelected(int position);
+    //    void onAlbumItemSelected(int position);
 
-        void onAlbumItemUnSelected(int position);
+      //  void onAlbumItemUnSelected(int position);
+      void onAlbumItemUnSelected(Uri uri);
+      void onAlbumItemSelected(Uri uri);
+
+
+
     }
 
     @Override
