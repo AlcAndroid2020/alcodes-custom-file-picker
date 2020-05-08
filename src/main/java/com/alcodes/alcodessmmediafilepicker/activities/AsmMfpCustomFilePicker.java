@@ -187,23 +187,27 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         if (item.getItemId() == R.id.sortingNameAscending) {
 
             Collections.sort(myFileList, new SortByName());
-            rcAdapter.notifyDataSetChanged();
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(rcAdapter);
         }
 
         if (item.getItemId() == R.id.sortingNameDescending) {
             Collections.sort(myFileList, Collections.reverseOrder(new SortByName()));
-            rcAdapter.notifyDataSetChanged();
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(rcAdapter);
         }
 
         if (item.getItemId() == R.id.sortingDateAscending) {
 
             Collections.sort(myFileList, new SortByDate());
-            rcAdapter.notifyDataSetChanged();
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(rcAdapter);
         }
 
         if (item.getItemId() == R.id.sortingDateDescending) {
             Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
-            rcAdapter.notifyDataSetChanged();
+            rcAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(rcAdapter);
         }
 
         return super.onOptionsItemSelected(item);
@@ -450,7 +454,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                     MediaStore.Video.Media._ID,
                     MediaStore.Video.Media.SIZE,
                     MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.BUCKET_ID,
+                    MediaStore.Video.Media.BUCKET_ID,
                     MediaStore.Video.Media.DATE_MODIFIED
 
 

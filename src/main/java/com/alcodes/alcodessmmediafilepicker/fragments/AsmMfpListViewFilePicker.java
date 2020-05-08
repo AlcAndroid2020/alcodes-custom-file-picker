@@ -634,8 +634,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                     MediaStore.Video.Media._ID,
                     MediaStore.Video.Media.SIZE,
                     MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.BUCKET_ID,
-                    MediaStore.Images.Media.DATE_MODIFIED
+                    MediaStore.Video.Media.BUCKET_ID,
+                    MediaStore.Video.Media.DATE_MODIFIED
 
 
             };
@@ -653,7 +653,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
             int nameColumn = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
             // int sizeColumn = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
-            int BucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
+            int BucketIdColumn = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID);
             int lastModifyColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED);
             while (cursor.moveToNext()) {
                 // Get values of columns for a given video.
@@ -665,7 +665,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                 Long lastModify = cursor.getLong(lastModifyColumn);
 
                 Uri contentUri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
 
                 //  for gathering path
                 // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
