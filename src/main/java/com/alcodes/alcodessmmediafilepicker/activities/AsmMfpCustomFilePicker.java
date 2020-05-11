@@ -119,7 +119,13 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         ClearTextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 CustomSearchBar.setText(null);
+
+                //to reset adapter as refresh to prevent selected position duplicated after used search
+                mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+                customRecyclerView.setAdapter(mAdapter);
+
             }
         });
 

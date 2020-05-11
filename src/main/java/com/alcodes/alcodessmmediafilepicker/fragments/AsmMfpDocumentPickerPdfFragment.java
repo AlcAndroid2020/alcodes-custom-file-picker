@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +37,7 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import java.io.File;
 import java.util.ArrayList;
 
-public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks {
+public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener  {
     View view;
     private RecyclerView recyclerView;
     private ArrayList<MyFile> mFileList = new ArrayList<>();//for store all file details
@@ -85,6 +86,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             @Override
             public void afterTextChanged(Editable s) {
                 mAdapter.getFilter().filter(s.toString());
+
             }
         });
         ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
@@ -92,6 +94,9 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             @Override
             public void onClick(View v) {
                 CustomSearchBar.setText(null);
+
+
+
             }
         });
 
@@ -288,14 +293,26 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         }
     };
 
-    private void setSearchViewForActionMode(MenuItem search) {
 
-        //get search view /actionview from menu item
-        SearchView searchView = (SearchView) search.getActionView();
-
-
-        searchView.setOnQueryTextListener(queryTextListener);
-        searchView.setQueryHint("Search..");
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem item) {
+        return false;
     }
 
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mAdapter.getFilter().filter(newText);
+
+        return false;
+    }
 }
