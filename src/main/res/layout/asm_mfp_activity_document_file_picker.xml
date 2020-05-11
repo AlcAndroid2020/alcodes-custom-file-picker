@@ -1,45 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data ></data>
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-  android:gravity="center"
-    >
-    <EditText
-        android:id="@+id/Doc_File_Picker_EditText"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:hint="Searching"
-        android:lines="1"
-        android:visibility="invisible"
-        android:maxLines="1" />
-
-    <Button
-        android:layout_width="35dp"
-       android:layout_alignParentRight="true"
-        android:layout_height="35dp"
-        android:visibility="invisible"
-        android:id="@+id/Doc_File_Picker_ClearTextBtn"
-         android:background="@drawable/ic_cross_black_48dp"
-        />
-</LinearLayout>
-
-<com.google.android.material.tabs.TabLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:tabGravity="fill"
-    app:tabMode="fixed"
-    android:id="@+id/Doc_FilePicker_TabLayout"
-    />
-    <androidx.viewpager.widget.ViewPager
+    tools:context=".activities.AsmMfpDocumentFilePickerActivity">
+    <fragment
+        android:id="@+id/nav_document_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/Doc_FilePicker_ViewPager"/>
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/asm_mfp_nav_document" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-</LinearLayout>
+</layout>
