@@ -394,9 +394,9 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         //list to get file in same folder
         myFileList.clear();
         ArrayList<String> filelist = new ArrayList<>();
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
-            String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permission, PERMISSION_STORGE_CODE);
         } else {
             String[] projection = new String[]{
@@ -476,9 +476,9 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         //list to get file in same folder
         myFileList.clear();
         ArrayList<String> filelist = new ArrayList<>();
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
-            String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permission, PERMISSION_STORGE_CODE);
         } else {
             String[] projection = new String[]{
