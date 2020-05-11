@@ -109,15 +109,13 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
                     holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
                     mFileList.get(position).setIsSelected(false);
                     callback.onDocumentUnSelected(Uri.parse(mFileList.get(position).getFileUri()));
-                    notifyDataSetChanged();
-
                 } else {
                     //limit user selection,maximum 5 item only
                     if (SelectedCounter < 5) {
+
                         holder.iv_CheckIcon.setVisibility(View.VISIBLE);
                         mFileList.get(position).setIsSelected(true);
                         callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
-                        notifyDataSetChanged();
 
                     }
 
@@ -184,7 +182,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
 
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
-           resultlist = new ArrayList<>();
+            resultlist = new ArrayList<>();
             //filtering
             String searchvalue = constraint.toString().toLowerCase();
             for (int i = 0; i < FilterList.size(); i++) {

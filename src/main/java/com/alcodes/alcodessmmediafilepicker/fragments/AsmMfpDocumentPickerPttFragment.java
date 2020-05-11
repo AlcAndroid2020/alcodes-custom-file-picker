@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -83,6 +84,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             @Override
             public void afterTextChanged(Editable s) {
                 mAdapter.getFilter().filter(s.toString());
+
             }
         });
         ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
@@ -90,6 +92,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             @Override
             public void onClick(View v) {
                 CustomSearchBar.setText(null);
+
             }
         });
 
@@ -280,7 +283,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return true;
+        return false;
     }
 
     @Override

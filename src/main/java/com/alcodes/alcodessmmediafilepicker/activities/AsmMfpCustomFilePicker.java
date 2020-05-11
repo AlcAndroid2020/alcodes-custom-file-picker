@@ -123,7 +123,13 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         ClearTextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 CustomSearchBar.setText(null);
+
+                //to reset adapter as refresh to prevent selected position duplicated after used search
+                mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+                customRecyclerView.setAdapter(mAdapter);
+
             }
         });
 
@@ -221,25 +227,28 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
         }
         if (item.getItemId() == R.id.sortingNameAscending) {
-
             Collections.sort(myFileList, new SortByName());
-            mAdapter.notifyDataSetChanged();
+            mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(mAdapter);
         }
 
         if (item.getItemId() == R.id.sortingNameDescending) {
             Collections.sort(myFileList, Collections.reverseOrder(new SortByName()));
-            mAdapter.notifyDataSetChanged();
+            mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(mAdapter);
         }
 
         if (item.getItemId() == R.id.sortingDateAscending) {
-
             Collections.sort(myFileList, new SortByDate());
             mAdapter.notifyDataSetChanged();
+            mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(mAdapter);
         }
 
         if (item.getItemId() == R.id.sortingDateDescending) {
             Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
-            mAdapter.notifyDataSetChanged();
+            mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
+            customRecyclerView.setAdapter(mAdapter);
         }
 
         return super.onOptionsItemSelected(item);
@@ -486,7 +495,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                     MediaStore.Video.Media._ID,
                     MediaStore.Video.Media.SIZE,
                     MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.BUCKET_ID,
+                    MediaStore.Video.Media.BUCKET_ID,
                     MediaStore.Video.Media.DATE_MODIFIED
 
 
