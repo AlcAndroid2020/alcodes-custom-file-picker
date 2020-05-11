@@ -1,42 +1,37 @@
 package com.alcodes.alcodessmmediafilepicker.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
-import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
-import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerViewPagerAdapter;
-import com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpDocumentPickerDocxFragment;
-import com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpDocumentPickerPdfFragment;
-import com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpDocumentPickerPttFragment;
-import com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpDocumentPickerTxtFragment;
-import com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpDocumentPickerXlsFragment;
-import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
-import com.google.android.material.tabs.TabLayout;
+import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpActivityDocumentFilePickerBinding;
+import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpActivityMainBinding;
 
-import java.util.ArrayList;
-
-public class AsmMfpDocumentFilePickerActivity extends AppCompatActivity  {
+public class AsmMfpDocumentFilePickerActivity extends AppCompatActivity {
     //The main activity for document picker to assign viewpager,fragments and tablayout
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private Boolean isSelected;
-    private ArrayList<MyFile> myfilelist = new ArrayList<>();
+
+
+    private AsmMfpActivityDocumentFilePickerBinding mDataBinding;
+    private NavController mNavController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.asm_mfp_activity_document_file_picker);
-        //init tablayout and viewpager
+        mDataBinding = AsmMfpActivityDocumentFilePickerBinding.inflate(getLayoutInflater());
+
+        setContentView(mDataBinding.getRoot());
+
+        // Init navigation components.
+        mNavController = Navigation.findNavController(this, R.id.nav_document_fragment);
+
+        NavigationUI.setupActionBarWithNavController(this, mNavController);
+
+    /*    //init tablayout and viewpager
         tabLayout = (TabLayout) findViewById(R.id.Doc_FilePicker_TabLayout);
         viewPager = (ViewPager) findViewById(R.id.Doc_FilePicker_ViewPager);
         isSelected = false;
@@ -54,50 +49,49 @@ public class AsmMfpDocumentFilePickerActivity extends AppCompatActivity  {
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-
+*/
     }
 
 
+    /*
+        @Override
+        public boolean onCreateOptionsMenu(Menu menu) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
+            MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
+            if (isSelected) {
+                checkItem.setVisible(true);
+            } else {
+                checkItem.setVisible(false);
+            }
+            return super.onCreateOptionsMenu(menu);
 
-
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
-        MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
-        if (isSelected) {
-            checkItem.setVisible(true);
-        } else {
-            checkItem.setVisible(false);
         }
-        return super.onCreateOptionsMenu(menu);
 
-    }
+        @Override
+        public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+            if (item.getItemId() == R.id.Doc_FilePicker_DoneSelection) {
+                ArrayList<String> selectedFileList = new ArrayList<>();
+                if (myfilelist != null) {
+                    for (int i = 0; i < myfilelist.size(); i++) {
+                        if (myfilelist.get(i).getIsSelected())
+                            selectedFileList.add(myfilelist.get(i).getFileUri());
+                    }
 
-        if (item.getItemId() == R.id.Doc_FilePicker_DoneSelection) {
-            ArrayList<String> selectedFileList = new ArrayList<>();
-            if (myfilelist != null) {
-                for (int i = 0; i < myfilelist.size(); i++) {
-                    if (myfilelist.get(i).getIsSelected())
-                        selectedFileList.add(myfilelist.get(i).getFileUri());
+                    Intent intent = new Intent(this, AsmGvrMainActivity.class);
+                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, selectedFileList);
+
+                    startActivity(intent);
                 }
 
-                Intent intent = new Intent(this, AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, selectedFileList);
-
-                startActivity(intent);
             }
+            return super.onOptionsItemSelected(item);
 
         }
-        return super.onOptionsItemSelected(item);
 
-    }
 
+    */
     @Override
     public void onBackPressed() {
 
@@ -105,6 +99,4 @@ public class AsmMfpDocumentFilePickerActivity extends AppCompatActivity  {
         Intent intent = new Intent(this, AsmMfpMainActivity.class);
         startActivity(intent);
     }
-
-
 }
