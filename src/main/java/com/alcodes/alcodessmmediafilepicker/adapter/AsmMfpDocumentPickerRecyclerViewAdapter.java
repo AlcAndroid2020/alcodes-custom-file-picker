@@ -53,7 +53,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     public long getItemId(int position) {
 
         //for solving search view onitem select problem
-       
+
 
         return position;
     }
