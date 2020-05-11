@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +24,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -43,6 +46,9 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 public class AsmMfpListViewFilePicker extends AppCompatActivity {
     GridView gridView;
@@ -149,7 +155,6 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             }
         }));
 
-
     }
 
     @Override
@@ -248,7 +253,46 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
 
         }
+
+        if (item.getItemId() == R.id.sortingNameAscending) {
+
+            Collections.sort(myFileList, new SortByName());
+            mAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingNameDescending) {
+            Collections.sort(myFileList, Collections.reverseOrder(new SortByName()));
+            mAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingDateAscending) {
+
+            Collections.sort(myFileList, new SortByDate());
+            mAdapter.notifyDataSetChanged();
+        }
+
+        if (item.getItemId() == R.id.sortingDateDescending) {
+            Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
+            mAdapter.notifyDataSetChanged();
+        }
+
+
         return super.onOptionsItemSelected(item);
+    }
+
+    public class SortByName implements Comparator<MyFile> {
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            return a.getFileName().compareTo(b.getFileName());
+        }
+    }
+
+    public class SortByDate implements Comparator<MyFile> {
+
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            return a.getLastModifyDate().compareTo(b.getLastModifyDate());
+        }
     }
 
     public void StartShare(ArrayList<String> mFileList) {
@@ -363,7 +407,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                     if (FileList[i].getName().endsWith(pdfPattern)) {
                         //here you have that file.
                         Uri uri = Uri.fromFile(FileList[i]);
-                        MyFile myFile = new MyFile(uri.toString(), String.valueOf(FileList[i].getName()), false);
+                        MyFile myFile = new MyFile(uri.toString(), String.valueOf(FileList[i].getName()), FileList[i].lastModified(), false);
                         myFileList.add(myFile);
                     }
                 }
@@ -430,7 +474,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             DocumentFile df = DocumentFile.fromSingleUri(getApplicationContext(), newuri);
             //revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), false);
+            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), df.lastModified(),false);
             myFileList.add(myFile);
 
         }
@@ -445,7 +489,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         String[] projection = new String[]{
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.SIZE,
-                MediaStore.Images.Media.DISPLAY_NAME
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_MODIFIED
 
 
         };
@@ -463,6 +508,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         int nameColumn = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
         int sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
+        int lastModifyColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
 
@@ -470,6 +516,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
             String size = cursor.getString(sizeColumn);
+            Long lastModify = cursor.getLong(lastModifyColumn);
 
             Uri contentUri = ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
@@ -478,7 +525,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             //    path = cursor.getString(file_ColumnIndex);
 
-            MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), false);
+            MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), lastModify,false);
             myFile.setFileType("Image");
 
 
@@ -507,7 +554,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                     MediaStore.Images.Media._ID,
                     MediaStore.Images.Media.SIZE,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.BUCKET_ID
+                    MediaStore.Images.Media.BUCKET_ID,
+                    MediaStore.Images.Media.DATE_MODIFIED
 
 
             };
@@ -525,6 +573,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
             int nameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
             int sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
+            int lastModifyColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
             //int BucketIdCoulmn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
             while (cursor.moveToNext()) {
                 // Get values of columns for a given video.
@@ -533,6 +582,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                 long id = cursor.getInt(idColumn);
                 fileName = cursor.getString(nameColumn);
                 String size = cursor.getString(sizeColumn);
+                Long lastModify = cursor.getLong(lastModifyColumn);
 
                 Uri contentUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
@@ -541,7 +591,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                 // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 //    path = cursor.getString(file_ColumnIndex);
 
-                MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), true);
+                MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), lastModify, true);
                 myFile.setFileType("Image");
                 myFile.setIsFolder(true);
 
@@ -585,7 +635,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
                     MediaStore.Video.Media._ID,
                     MediaStore.Video.Media.SIZE,
                     MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.BUCKET_ID
+                    MediaStore.Video.Media.BUCKET_ID,
+                    MediaStore.Video.Media.DATE_MODIFIED
 
 
             };
@@ -603,23 +654,25 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
             int nameColumn = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
             // int sizeColumn = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
-            int BucketIdCoulmn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
+            int BucketIdColumn = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID);
+            int lastModifyColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED);
             while (cursor.moveToNext()) {
                 // Get values of columns for a given video.
 
 
                 long id = cursor.getInt(idColumn);
                 fileName = cursor.getString(nameColumn);
-                String bucketId = cursor.getString(BucketIdCoulmn);
+                String bucketId = cursor.getString(BucketIdColumn);
+                Long lastModify = cursor.getLong(lastModifyColumn);
 
                 Uri contentUri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
 
                 //  for gathering path
                 // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 //    path = cursor.getString(file_ColumnIndex);
 
-                MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), true);
+                MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), lastModify, true);
                 myFile.setFileType("Video");
 
                 if (!filelist.contains(fileName)) {
@@ -650,7 +703,8 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         String[] projection = new String[]{
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Media.SIZE,
-                MediaStore.Video.Media.DISPLAY_NAME
+                MediaStore.Video.Media.DISPLAY_NAME,
+                MediaStore.Video.Media.DATE_MODIFIED
 
 
         };
@@ -668,6 +722,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
         int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
         int nameColumn = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME);
         int sizeColumn = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
+        int lastModifyColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED);
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
 
@@ -675,6 +730,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
             String size = cursor.getString(sizeColumn);
+            Long lastModify = cursor.getLong(lastModifyColumn);
 
             Uri contentUri = ContentUris.withAppendedId(
                     MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
@@ -683,7 +739,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             // int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             //    path = cursor.getString(file_ColumnIndex);
 
-            MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), false);
+            MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), lastModify, false);
             myFile.setFileType("Video");
             myFileList.add(myFile);
 
@@ -746,6 +802,17 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_STORGE_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    init();
+                }
+            }
         }
     }
 

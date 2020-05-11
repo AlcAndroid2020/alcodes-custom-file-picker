@@ -33,5 +33,32 @@
         android:title="Change Layout"
         />
 
+    <item
+        android:id="@+id/sortingNameAscending"
+        app:showAsAction="never"
+        android:title="Ascending Order Name"/>
+
+    <item
+        android:id="@+id/sortingNameDescending"
+        app:showAsAction="never"
+        android:title="Descending Order Name"/>
+
+    <item
+        android:id="@+id/sortingDateAscending"
+        app:showAsAction="never"
+        android:title="Ascending Order Date"/>
+
+    <item
+        android:id="@+id/sortingDateDescending"
+        app:showAsAction="never"
+        android:title="Descending Order Date"/>
+
+    <item
+        android:id="@+id/UnSelectAll"
+        app:showAsAction="never"
+        android:title="UnSelect All"
+        android:visible="false"
+
+        />
 
 </menu>

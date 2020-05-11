@@ -10,11 +10,21 @@ public class MyFile implements Serializable, Parcelable {
     private String FileSize;
     private String FileUri;
     private String FileType;
+
+    private Long LastModifyDate = 0l;
     private int Count = 1;
     private boolean isSelected = false;
     private boolean isFolder = false;
     private int FolderID;
 
+    public MyFile(String fileName, String fileUri, Long lastModifyDate, boolean isFolder) {
+        FileName = fileName;
+        FileUri = fileUri;
+        LastModifyDate = lastModifyDate;
+        this.isFolder = isFolder;
+    }
+
+    //Tem use will delete after all part get date
     public MyFile(String fileName, String fileUri, boolean isFolder) {
         FileName = fileName;
         FileUri = fileUri;
@@ -26,6 +36,7 @@ public class MyFile implements Serializable, Parcelable {
         FileName = in.readString();
         FileSize = in.readString();
         FileUri = in.readString();
+        LastModifyDate = in.readLong();
         FileType = in.readString();
         Count = in.readInt();
         isSelected = in.readByte() != 0;
@@ -43,6 +54,15 @@ public class MyFile implements Serializable, Parcelable {
             return new MyFile[size];
         }
     };
+
+
+    public Long getLastModifyDate() {
+        return LastModifyDate;
+    }
+
+    public void setLastModifyDate(Long lastModifyDate) {
+        LastModifyDate = lastModifyDate;
+    }
 
     public int getFolderID() {
         return FolderID;
@@ -119,6 +139,7 @@ public class MyFile implements Serializable, Parcelable {
         dest.writeString(FileName);
         dest.writeString(FileSize);
         dest.writeString(FileUri);
+        dest.writeLong(LastModifyDate);
         dest.writeString(FileType);
         dest.writeInt(Count);
         dest.writeByte((byte) (isSelected ? 1 : 0));

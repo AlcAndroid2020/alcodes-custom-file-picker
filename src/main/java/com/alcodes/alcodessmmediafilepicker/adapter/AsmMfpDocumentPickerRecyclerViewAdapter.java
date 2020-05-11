@@ -1,9 +1,12 @@
 package com.alcodes.alcodessmmediafilepicker.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,19 +14,30 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapter<AsmMfpDocumentPickerRecyclerViewAdapter.MyViewHolder> {
+public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapter<AsmMfpDocumentPickerRecyclerViewAdapter.MyViewHolder> implements Filterable {
     Context mContext;
     ArrayList<MyFile> mFileList;
+    ArrayList<MyFile> FilterList;
 
-    public AsmMfpDocumentPickerRecyclerViewAdapter(Context Context, ArrayList<MyFile> FileList) {
+    DocumentFilePickerCallbacks callback;
+    private CustomFilter filter;
+    ArrayList<MyFile> resultlist;
+    private int SelectedCounter;
+
+    public AsmMfpDocumentPickerRecyclerViewAdapter(Context Context, ArrayList<MyFile> FileList, DocumentFilePickerCallbacks callbacks, int selectedCounter) {
         this.mContext = Context;
         this.mFileList = FileList;
+        this.callback = callbacks;
+        this.FilterList = mFileList;
+
+        this.SelectedCounter = selectedCounter;
+        filter = new CustomFilter();
+
     }
 
     @NonNull
@@ -34,8 +48,13 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         MyViewHolder viewHolder = new MyViewHolder(v);
         return viewHolder;
     }
+
     @Override
     public long getItemId(int position) {
+
+        //for solving search view onitem select problem
+
+
         return position;
     }
 
@@ -43,10 +62,14 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     public int getItemViewType(int position) {
         return position;
     }
+
     //init value to view
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.tv_FileName.setText(mFileList.get(position).getFileName());
+
+        if (mFileList.get(position).getIsSelected())
+            holder.iv_CheckIcon.setVisibility(View.VISIBLE);
 
 
         //detect which file type then set suitable file icon
@@ -82,21 +105,22 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
             @Override
             public void onClick(View v) {
 
-
-                if(mFileList.get(position).getIsSelected()) {
+                if (mFileList.get(position).getIsSelected()) {
                     holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
                     mFileList.get(position).setIsSelected(false);
+                    callback.onDocumentUnSelected(Uri.parse(mFileList.get(position).getFileUri()));
+                } else {
+                    //limit user selection,maximum 5 item only
+                    if (SelectedCounter < 5) {
 
-                }else
-                {
-                    holder.iv_CheckIcon.setVisibility(View.VISIBLE);
-                    mFileList.get(position).setIsSelected(true);
+                        holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+                        mFileList.get(position).setIsSelected(true);
+                        callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
+
+                    }
+
 
                 }
-                ((AsmMfpDocumentFilePickerActivity)mContext).getFileListFromAdapter(mFileList);
-
-
-
             }
         });
 
@@ -111,11 +135,20 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     }
 
 
+    public interface DocumentFilePickerCallbacks {
 
+        void onDocumentSelected(Uri uri);
+
+        void onDocumentUnSelected(Uri uri);
+    }
 
     @Override
     public int getItemCount() {
         return mFileList.size();
+    }
+
+    public void setSelectedCounter(int selectcounter) {
+        this.SelectedCounter = selectcounter;
     }
 
     //to declare item in recyclerview (textview,image)
@@ -124,6 +157,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         private TextView tv_FileSize;
         private ImageView iv_FileIcon, iv_CheckIcon;
 
+
         public MyViewHolder(View itemView) {
             super(itemView);
             tv_FileName = (TextView) itemView.findViewById(R.id.Text_view_Item_Document_FileName);
@@ -131,5 +165,47 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
             iv_FileIcon = (ImageView) itemView.findViewById(R.id.Image_view_Item_Document_Icon);
             iv_CheckIcon = (ImageView) itemView.findViewById(R.id._Image_view_item_Document_check);
         }
+
+
     }
+
+
+    @Override
+    public Filter getFilter() {
+
+        return filter;
+    }
+
+    public class CustomFilter extends Filter {
+
+        @Override
+
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults filterResults = new FilterResults();
+            resultlist = new ArrayList<>();
+            //filtering
+            String searchvalue = constraint.toString().toLowerCase();
+            for (int i = 0; i < FilterList.size(); i++) {
+                String title = FilterList.get(i).getFileName();
+
+                if (title.toLowerCase().contains(searchvalue)) {
+                    resultlist.add(FilterList.get(i));
+                }
+            }
+            filterResults.count = resultlist.size();
+            filterResults.values = resultlist;
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            if (results != null) {
+                mFileList = (ArrayList<MyFile>) results.values;
+                notifyDataSetChanged();
+            }
+        }
+
+
+    }
+
 }
