@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class MyFile implements Serializable, Parcelable {
     private String FileName;
@@ -12,13 +11,13 @@ public class MyFile implements Serializable, Parcelable {
     private String FileUri;
     private String FileType;
 
-    private String LastModifyDate;
+    private Long LastModifyDate = 0l;
     private int Count = 1;
     private boolean isSelected = false;
     private boolean isFolder = false;
     private int FolderID;
 
-    public MyFile(String fileName, String fileUri, String lastModifyDate, boolean isFolder) {
+    public MyFile(String fileName, String fileUri, Long lastModifyDate, boolean isFolder) {
         FileName = fileName;
         FileUri = fileUri;
         LastModifyDate = lastModifyDate;
@@ -37,7 +36,7 @@ public class MyFile implements Serializable, Parcelable {
         FileName = in.readString();
         FileSize = in.readString();
         FileUri = in.readString();
-        LastModifyDate = in.readString();
+        LastModifyDate = in.readLong();
         FileType = in.readString();
         Count = in.readInt();
         isSelected = in.readByte() != 0;
@@ -56,11 +55,12 @@ public class MyFile implements Serializable, Parcelable {
         }
     };
 
-    public String getLastModifyDate() {
+
+    public Long getLastModifyDate() {
         return LastModifyDate;
     }
 
-    public void setLastModifyDate(String lastModifyDate) {
+    public void setLastModifyDate(Long lastModifyDate) {
         LastModifyDate = lastModifyDate;
     }
 
@@ -139,7 +139,7 @@ public class MyFile implements Serializable, Parcelable {
         dest.writeString(FileName);
         dest.writeString(FileSize);
         dest.writeString(FileUri);
-        dest.writeString(LastModifyDate);
+        dest.writeLong(LastModifyDate);
         dest.writeString(FileType);
         dest.writeInt(Count);
         dest.writeByte((byte) (isSelected ? 1 : 0));
