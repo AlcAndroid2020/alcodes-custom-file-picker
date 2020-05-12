@@ -113,7 +113,6 @@ public class AsmMfpListViewAdapter extends RecyclerView.Adapter<AsmMfpListViewAd
     public class CustomFilter extends Filter {
 
         @Override
-
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
             //filtering

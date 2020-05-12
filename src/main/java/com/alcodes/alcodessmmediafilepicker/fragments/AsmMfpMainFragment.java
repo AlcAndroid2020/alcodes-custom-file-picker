@@ -13,7 +13,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpCustomFilePicker;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpRecyclerViewFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
