@@ -57,6 +57,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
+
         mAdapter = new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(), mFileList, AsmMfpDocumentPickerXlsFragment.this, selectedList.size());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(mAdapter);
@@ -83,6 +84,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             @Override
             public void afterTextChanged(Editable s) {
                 mAdapter.getFilter().filter(s.toString());
+
             }
         });
         ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
@@ -90,6 +92,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             @Override
             public void onClick(View v) {
                 CustomSearchBar.setText(null);
+
             }
         });
 
@@ -280,7 +283,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return true;
+        return false;
     }
 
     @Override

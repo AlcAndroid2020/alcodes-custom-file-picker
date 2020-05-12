@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.AsmMfpCustomFilePicker">
-
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/custom_File_Picker_EditText"
@@ -19,14 +17,11 @@
     <Button
         android:layout_width="35dp"
         android:visibility="invisible"
-
         android:layout_height="35dp"
         android:id="@+id/custom_File_Picker_ClearTextBtn"
         android:layout_alignEnd="@id/custom_File_Picker_EditText"
         android:layout_alignRight="@id/custom_File_Picker_EditText"
-        android:background="@drawable/ic_cross_black_48dp"
-        />
-
+        android:background="@drawable/ic_cross_black_48dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/Custom_Recycler_View"
@@ -40,6 +35,6 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:visibility="invisible"
-   android:layout_centerInParent="true" />
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

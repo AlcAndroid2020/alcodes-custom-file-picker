@@ -9,5 +9,15 @@
     <fragment
         android:id="@+id/asm_mfp_mainfragment"
         android:name="com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment"
-        tools:layout="@layout/asm_mfp_fragment_main" />
+        tools:layout="@layout/asm_mfp_fragment_main" >
+        <action
+            android:id="@+id/asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment"
+            app:destination="@id/asm_mfp_customfilepickerfragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/asm_mfp_customfilepickerfragment"
+        android:name="com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpCustomFilePickerFragment"
+        tools:layout="@layout/asm_mfp_fragment_custom_file_picker" />
+
 </navigation>

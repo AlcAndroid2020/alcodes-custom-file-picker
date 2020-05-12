@@ -24,6 +24,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,7 +32,9 @@ import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
+import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
+import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,6 +46,9 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     private ArrayList<MyFile> mFileList = new ArrayList<>();
     private ArrayList<String> selectedList = new ArrayList<>();
     private AsmMfpDocumentPickerRecyclerViewAdapter mAdapter;
+    private AsmMfpFragmentDocumentFilePickerBinding mDataBinding;
+    private AsmMfpDocumentViewModel mDocumentViewModel;
+
 
     //for action mode custom search bar
     private EditText CustomSearchBar;
@@ -86,6 +92,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             @Override
             public void afterTextChanged(Editable s) {
                 mAdapter.getFilter().filter(s.toString());
+
+
             }
         });
         ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
@@ -93,13 +101,28 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             @Override
             public void onClick(View v) {
                 CustomSearchBar.setText(null);
+                mFileList.remove(3);
                 mAdapter = new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(), mFileList, AsmMfpDocumentPickerDocxFragment.this, selectedList.size());
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 recyclerView.setAdapter(mAdapter);
-                mAdapter.notifyDataSetChanged();
 
             }
         });
 
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+/*
+
+        mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(ArrayList<String> strings) {
+                selectedList = strings;
+
+            }
+        });*/
     }
 
     private void openDocumentMediaStore() {
@@ -301,7 +324,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return true;
+        return false;
     }
 
     @Override

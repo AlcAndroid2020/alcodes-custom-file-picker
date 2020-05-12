@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
-
 public class MyFile implements Serializable, Parcelable {
     private String FileName;
     private String FileSize;
@@ -55,6 +54,7 @@ public class MyFile implements Serializable, Parcelable {
             return new MyFile[size];
         }
     };
+
 
     public Long getLastModifyDate() {
         return LastModifyDate;
