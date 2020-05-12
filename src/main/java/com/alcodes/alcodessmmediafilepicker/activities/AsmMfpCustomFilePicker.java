@@ -26,14 +26,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
+import com.alcodes.alcodessmgalleryviewer.viewmodels.AsmGvrMainSharedViewModel;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
+import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpMainSharedViewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +46,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private String PickerFileType = "";
     private AsmMfpCustomFilePickerRecyclerViewAdapter mAdapter;
     private ArrayList<MyFile> myFileList = new ArrayList<>();
+    private AsmMfpMainSharedViewModel mfpMainSharedViewModel;
 
     private static final int PERMISSION_STORGE_CODE = 1000;
     private Boolean searching = false;
@@ -73,16 +77,24 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
         gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
 
-        customRecyclerView.setLayoutManager(linearLayoutManager);
-        if (savedInstanceState != null) {
+        mfpMainSharedViewModel = new ViewModelProvider(
+                this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())
+        ).get(AsmMfpMainSharedViewModel.class);
 
-            myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
+        customRecyclerView.setLayoutManager(linearLayoutManager);
+        if (savedInstanceState != null &&
+                mfpMainSharedViewModel.getMyFileList().getValue() != null &&
+                mfpMainSharedViewModel.getMyFileList().getValue().size() != 0 &&
+                mfpMainSharedViewModel.getSelectionList().getValue() != null &&
+                mfpMainSharedViewModel.getSelectionList().getValue().size() != 0) {
+//            myFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
+            myFileList = mfpMainSharedViewModel.getMyFileList().getValue();
 
             savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
 
             mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
             customRecyclerView.setAdapter(mAdapter);
-
 
         } else {
             if (getIntent().getStringExtra("FileType") != null) {
@@ -91,7 +103,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
             } else {
                 promptselection();
             }
-
 
             mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
             customRecyclerView.setAdapter(mAdapter);
@@ -131,11 +142,25 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(LIST_STATE, myFileList);
+//        outState.putParcelableArrayList(LIST_STATE, myFileList);
+        mfpMainSharedViewModel.saveMyFileList(myFileList);
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, customRecyclerView.getLayoutManager().onSaveInstanceState());
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mfpMainSharedViewModel.getMyFileList().getValue() != null ){
+            myFileList = mfpMainSharedViewModel.getMyFileList().getValue();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mfpMainSharedViewModel.saveMyFileList(myFileList);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,13 +193,12 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-
         if (item.getItemId() == android.R.id.home) {
             if (isInSideAlbum) {
 
                 if (PickerFileType.equals("Image")) {
                     myFileList.clear();
+                    mfpMainSharedViewModel.clearMyFileList();
 
                     mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
                     customRecyclerView.setAdapter(mAdapter);
@@ -187,7 +211,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
                 } else {
                     myFileList.clear();
-
+                    mfpMainSharedViewModel.clearMyFileList();
                     mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
                     customRecyclerView.setAdapter(mAdapter);
 
@@ -324,8 +348,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
             Intent intent = new Intent(getApplicationContext(), AsmMfpDocumentFilePickerActivity.class);
             startActivity(intent);
-
-
         }
 
     }
@@ -338,8 +360,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 MediaStore.Images.Media.SIZE,
                 MediaStore.Images.Media.DISPLAY_NAME,
                 MediaStore.Images.Media.DATE_MODIFIED
-
-
         };
         String fileName = "";
 
@@ -359,8 +379,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
-
-
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
             Long lastModify = cursor.getLong(lastModifyColumn);
@@ -380,12 +398,9 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
             }
 
             myFileList.add(myFile);
-
-
+            mfpMainSharedViewModel.addFileToMyFileList(myFile);
         }
         cursor.close();
-
-
     }
 
 
@@ -393,6 +408,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private void openImageMediaStoreFolder() {
         //list to get file in same folder
         myFileList.clear();
+        mfpMainSharedViewModel.clearMyFileList();
         ArrayList<String> filelist = new ArrayList<>();
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
@@ -437,7 +453,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 Uri contentUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-
                 MyFile myFile = new MyFile(foldername, String.valueOf(contentUri), lastModify, true);
                 myFile.setFileType("Image");
                 myFile.setIsFolder(true);
@@ -446,7 +461,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 if (!filelist.contains(foldername)) {
                     filelist.add(foldername);
                     myFileList.add(myFile);
-
+                    mfpMainSharedViewModel.addFileToMyFileList(myFile);
                 } else {
                     for (int i = 0; i < myFileList.size(); i++) {
                         if (myFileList.get(i).getFileName().equals(foldername)) {
@@ -460,8 +475,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
             }
             cursor.close();
-
-
         }
 
         if (mAdapter != null)
@@ -475,6 +488,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
     private void openVideoMediaStoreFolder() {
         //list to get file in same folder
         myFileList.clear();
+        mfpMainSharedViewModel.clearMyFileList();
         ArrayList<String> filelist = new ArrayList<>();
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
@@ -487,8 +501,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                     MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
                     MediaStore.Video.Media.BUCKET_ID,
                     MediaStore.Video.Media.DATE_MODIFIED
-
-
             };
             String path = "", fileName = "";
 
@@ -522,6 +534,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 if (!filelist.contains(fileName)) {
                     filelist.add(fileName);
                     myFileList.add(myFile);
+                    mfpMainSharedViewModel.addFileToMyFileList(myFile);
                 } else {
                     for (int i = 0; i < myFileList.size(); i++) {
                         if (myFileList.get(i).getFileName().equals(fileName)) {
@@ -530,12 +543,8 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                         }
                     }
                 }
-
-
             }
             cursor.close();
-
-
         }
 
         if (mAdapter != null)
@@ -547,13 +556,12 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
     private void openVideoMediaStoreFile(int folderid) {
         myFileList.clear();
+        mfpMainSharedViewModel.clearMyFileList();
         String[] projection = new String[]{
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Media.SIZE,
                 MediaStore.Video.Media.DISPLAY_NAME,
                 MediaStore.Video.Media.DATE_MODIFIED
-
-
         };
         String path = "", fileName = "";
 
@@ -573,8 +581,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
 
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
-
-
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
             String size = cursor.getString(sizeColumn);
@@ -595,12 +601,9 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 }
             }
             myFileList.add(myFile);
-
-
+            mfpMainSharedViewModel.addFileToMyFileList(myFile);
         }
         cursor.close();
-
-
     }
 
     @Override
@@ -635,6 +638,7 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
         isInSideAlbum = true;
 
         selectionList.add(uri);
+        mfpMainSharedViewModel.addSelectionIntoSelectionList(uri);
         if (mActionMode == null)
             mActionMode = startSupportActionMode(mActionModeCallback);
 
@@ -652,7 +656,6 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 selectionList.remove(i);
 
         }
-
 
         if (mActionMode != null)
             mActionMode.setTitle(selectionList.size() + "item(s) selected");
@@ -724,30 +727,27 @@ public class AsmMfpCustomFilePicker extends AppCompatActivity implements AsmMfpC
                 }
                 if (mFileList != null) {
                     StartShare(mFileList);
-
                 }
             }
             //unselect the user selection
             if (item.getItemId() == R.id.UnSelectAll) {
                 selectionList.clear();
+                mfpMainSharedViewModel.clearSelectionList();
                 //update recycler view data and ui
 
                 for (int i = 0; i < myFileList.size(); i++) {
                     if (myFileList.get(i).getIsSelected())
                         myFileList.get(i).setIsSelected(false);
                 }
+                mfpMainSharedViewModel.saveMyFileList(myFileList);
 
                 mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(getApplicationContext(), myFileList, AsmMfpCustomFilePicker.this, selectionList.size());
                 customRecyclerView.setAdapter(mAdapter);
 
                 //close actionmode
                 mActionMode.finish();
-
-
             }
             if (item.getItemId() == R.id.FilePicker_SearchFilter) {
-
-
                 if (!searching) {
                     CustomSearchBar.setVisibility(View.VISIBLE);
                     ClearTextBtn.setVisibility(View.VISIBLE);
