@@ -145,9 +145,11 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         mDocumentViewModel.getFileList(FileType, "TXT").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
             @Override
             public void onChanged(ArrayList<MyFile> myFiles) {
-                if (myFiles.get(0).getFileType() == "TXT") {
-                    mFileList = myFiles;
-                    initAdapter();
+                if(myFiles.size() != 0){
+                    if (myFiles.get(0).getFileType() == "TXT") {
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
                 }
             }
         });

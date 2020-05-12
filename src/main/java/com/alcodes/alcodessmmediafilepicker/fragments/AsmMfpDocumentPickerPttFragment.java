@@ -147,9 +147,11 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         mDocumentViewModel.getFileList(FileType, "PTT").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
             @Override
             public void onChanged(ArrayList<MyFile> myFiles) {
-                if (myFiles.get(0).getFileType() == "PTT") {
-                    mFileList = myFiles;
-                    initAdapter();
+                if(myFiles.size() != 0){
+                    if (myFiles.get(0).getFileType() == "PTT") {
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
                 }
             }
         });

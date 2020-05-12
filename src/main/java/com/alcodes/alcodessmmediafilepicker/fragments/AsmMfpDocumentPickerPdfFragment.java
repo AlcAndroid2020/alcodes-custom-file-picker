@@ -139,16 +139,19 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
         });
 
+
         String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
         ArrayList<String> FilType = new ArrayList<>();
         FilType.add(pdf);
         mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
             @Override
             public void onChanged(ArrayList<MyFile> myFiles) {
-                if (myFiles.get(0).getFileType() == "PDF") {
+                if(myFiles.size() != 0){
+                    if (myFiles.get(0).getFileType() == "PDF") {
 
-                    mFileList = myFiles;
-                    initAdapter();
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
                 }
             }
         });
