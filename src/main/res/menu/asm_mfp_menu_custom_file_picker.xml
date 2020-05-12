@@ -54,6 +54,11 @@
         android:title="Descending Order Date"/>
 
     <item
+        android:id="@+id/SelectAll"
+        app:showAsAction="never"
+        android:title="Select All" />
+
+    <item
         android:id="@+id/UnSelectAll"
         app:showAsAction="never"
         android:title="UnSelect All"
