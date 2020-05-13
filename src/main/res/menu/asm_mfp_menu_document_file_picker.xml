@@ -27,5 +27,11 @@
         android:visible="false"
 
         />
+    <item
+        android:id="@+id/Doc_FilePicker_SelectAll"
+        android:title="Select All"
+
+        />
+
 
 </menu>

@@ -19,9 +19,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class AsmMfpDocumentViewModel extends AndroidViewModel {
-    private MutableLiveData<ArrayList<String>> Selectionlist = new MutableLiveData<ArrayList<String>>();
-    private MutableLiveData<Integer> SelectionLimit = new MutableLiveData<Integer>(10);
-    private MutableLiveData<ArrayList<MyFile>> mFileList = new MutableLiveData<ArrayList<MyFile>>();
+    private MutableLiveData<ArrayList<String>> Selectionlist = new MutableLiveData<ArrayList<String>>();//selected files list
+    private MutableLiveData<Integer> SelectionLimit = new MutableLiveData<Integer>(10); //select limit counter
+    private MutableLiveData<ArrayList<MyFile>> mFileList = new MutableLiveData<ArrayList<MyFile>>(); //to store file list
+    private MutableLiveData<Boolean> mIsSearch = new MutableLiveData<>(false);  ///for custom search bar
+    private MutableLiveData<Boolean> isSwitched = new MutableLiveData<>(false);
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
         super(application);
@@ -56,8 +58,8 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         //Where
         String where = MediaStore.Files.FileColumns.MIME_TYPE + "=?";
         if (FileTypes.size() > 1) {
-            for(int i=1;i<FileTypes.size();i++)
-            where += " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?";
+            for (int i = 1; i < FileTypes.size(); i++)
+                where += " OR " + MediaStore.Files.FileColumns.MIME_TYPE + "=?";
         }
 
         //args
@@ -94,5 +96,21 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         return mFileList;
     }
 
+    public LiveData<Boolean> getIsSearching() {
+        return mIsSearch;
+
+    }
+
+    public void setIsSearching(Boolean IsSearch) {
+        mIsSearch.setValue(IsSearch);
+    }
+
+    public LiveData<Boolean> getIsSwitched() {
+        return isSwitched;
+    }
+
+    public void setIsSwtiched(Boolean IsSwitched) {
+        isSwitched.setValue(IsSwitched);
+    }
 
 }
