@@ -12,6 +12,9 @@
         tools:layout="@layout/asm_mfp_fragment_main" >
         <action
             android:id="@+id/asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/main_nav_graph"
+            app:popUpToInclusive="true"
             app:destination="@id/asm_mfp_customfilepickerfragment" />
     </fragment>
 

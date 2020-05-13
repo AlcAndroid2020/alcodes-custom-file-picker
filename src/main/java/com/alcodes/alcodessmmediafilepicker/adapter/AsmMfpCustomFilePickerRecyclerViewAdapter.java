@@ -49,40 +49,42 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         //to show selected when go back to album
-
-
         if (myFileList.get(position).getIsSelected()) {
             holder.checkBox.setVisibility(View.VISIBLE);
             holder.checkBox.setChecked(true);
         }
         if (myFileList.get(position).getFileType() != null) {
-            if (myFileList.get(position).getFileType().equals("Image"))
-                Glide.with(mContext)
-                        .load(Uri.parse(myFileList.get(position).getFileUri()))
-                        // Uri of the picture
-                        .into(holder.imgView);
-
+            //Reset Thumbnail for Album
+            holder.imgView.setImageDrawable(null);
+            if (myFileList.get(position).getFileType().equals("Image")){
+                if (!myFileList.get(position).getIsFolder()) {
+                    Glide.with(mContext)
+                            .load(Uri.parse(myFileList.get(position).getFileUri()))
+                            // Uri of the picture
+                            .into(holder.imgView);
+                }else{
+                    Glide.with(mContext)
+                            .load(R.drawable.tasklist)
+                            .into(holder.imgView);
+                }
+            }
             else if (myFileList.get(position).getFileType().equals("Video")) {
                 if (!myFileList.get(position).getIsFolder()) {
                     //to generate video thumbnial from uri
-
-
                     Glide.with(mContext)
                             .load(Uri.parse(myFileList.get(position).getFileUri()))
                             // Uri of the picture
                             .into(holder.imgView);
 
-
+                }else{
+                    Glide.with(mContext)
+                            .load(R.drawable.tasklist)
+                            .into(holder.imgView);
                 }
-
             }
-
         }
 
-
         //check if is folder or image
-
-
         if (myFileList.get(position).getIsFolder())
             //if folder add count
             holder.textView.setText(myFileList.get(position).getFileName() + "(" + myFileList.get(position).getCount() + ")");
@@ -103,7 +105,6 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                     }
                 } else {
                     //click on file
-
 
                     //unselect
                     if (myFileList.get(position).getIsSelected()) {
@@ -135,22 +136,17 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
     }
 
-
     public interface CustomFilePickerCallback {
         void onFolderClicked(int folderid);
-
 
         void onAlbumItemUnSelected(Uri uri);
 
         void onAlbumItemSelected(Uri uri);
-
-
     }
 
     @Override
     public int getItemCount() {
         return myFileList.size();
-
     }
 
     @Override
@@ -187,14 +183,11 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
     @Override
     public Filter getFilter() {
-
         return filter;
     }
 
     public class CustomFilter extends Filter {
-
         @Override
-
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
             ArrayList<MyFile> resultlist = new ArrayList<>();
@@ -220,9 +213,5 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 notifyDataSetChanged();
             }
         }
-
-
     }
-
-
 }

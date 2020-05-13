@@ -13,7 +13,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpCustomFilePicker;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpRecyclerViewFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
@@ -65,11 +64,12 @@ public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback
 
     @Override
     public void onCustomPickerButtonClicked() {
-/*
+        /*
         Intent intent=new Intent(getContext(), AsmMfpCustomFilePicker.class);
         startActivity(intent);
-*/
-        mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
+        */
+
+         mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
     }
 
     @Override
