@@ -656,7 +656,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             openImageMediaStoreFile(folderid);
         else
             openVideoMediaStoreFile(folderid);
-        
+
         mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
         mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         isInSideAlbum = true;
