@@ -48,7 +48,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import timber.log.Timber;
+
 public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback{
+
+    public static final String EXTRA_INT_MAX_FILE_SELECTION = "EXTRA_INT_MAX_FILE_SELECTION";
 
     private AsmMfpFragmentCustomFilePickerBinding mDataBinding;
     private NavController mNavController;
@@ -74,6 +78,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
     private Boolean searching;
 
     private AppCompatActivity mAppCompatActivity;
+
+    private int mMaxFileSelection;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,6 +107,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        //Init Max File Selection
+        mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
 
         //Init AppCompatActivity
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
@@ -291,10 +300,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
                 mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
                 IsGrid = false;
                 mfpMainSharedViewModel.setIsGrid(IsGrid);
+                item.setTitle("Grid View Format");
             } else {
                 mDataBinding.CustomRecyclerView.setLayoutManager(mGridLayoutManager);
                 IsGrid = true;
                 mfpMainSharedViewModel.setIsGrid(IsGrid);
+                item.setTitle("List View Format");
             }
         }
         if (item.getItemId() == R.id.sortingNameAscending) {
@@ -315,9 +326,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
             initAdapter();
         }
+
         if(item.getItemId() == R.id.SelectAll){
+            //Clear it to avoid duplicate data in the same array list
             selectionList.clear();
-            for(int i=0; i < myFileList.size(); i++){
+
+            //Before selecting all, check whether there is a max file selection.
+            for(int i=0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : myFileList.size()); i++){
                 myFileList.get(i).setIsSelected(true);
                 selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
             }
@@ -666,6 +681,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
 
     private void initAdapter(){
         mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(requireContext(), myFileList, AsmMfpCustomFilePickerFragment.this, selectionList.size());
+        //Set the Maximum File Selection
+        mAdapter.setMaxFileSelection(mMaxFileSelection);
+
         mDataBinding.CustomRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
@@ -687,9 +705,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
 
     @Override
     public void onAlbumItemUnSelected(Uri uri) {
-        for (int i = 0; i < selectionList.size(); i++) {
-            if (selectionList.get(i).equals(uri))
+        for (int i = (selectionList.size() - 1); i >= 0; i--) {
+            if (selectionList.get(i).equals(uri)){
                 selectionList.remove(i);
+            }
         }
         mfpMainSharedViewModel.saveSelectionList(selectionList);
 
@@ -709,16 +728,16 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
     public void onAlbumItemSelected(Uri uri) {
         //get position
         isInSideAlbum = true;
+
         mfpMainSharedViewModel.setIsInsideAlbum(isInSideAlbum);
 
         selectionList.add(uri);
-        mfpMainSharedViewModel.addSelectionIntoSelectionList(uri);
+        mfpMainSharedViewModel.saveSelectionList(selectionList);
 
         if (mActionMode == null){
             mActionMode = mAppCompatActivity.startSupportActionMode(mActionModeCallback);
             mfpMainSharedViewModel.setActionMode(mActionMode);
         }
-
         mActionMode.setTitle(selectionList.size() + "item(s) selected");
 
         //update the selection count for limit user selection

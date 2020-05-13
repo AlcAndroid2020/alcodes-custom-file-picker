@@ -27,6 +27,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     private CustomFilePickerCallback callback;
     private CustomFilter filter;
     private int SelectionCount;
+    private int mMaxFileSelection;
 
     public AsmMfpCustomFilePickerRecyclerViewAdapter(Context context, ArrayList<MyFile> filelist, CustomFilePickerCallback callbacks, int selectedCount) {
         this.myFileList = filelist;
@@ -114,23 +115,26 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
                         callback.onAlbumItemUnSelected(Uri.parse(myFileList.get(position).getFileUri()));
                     } else {
-                        //Limit user selection ,maximum 5 items
+                        if(mMaxFileSelection != 0){
+                            // Limit Selection
+                            if (SelectionCount < mMaxFileSelection) {
+                                //select
+                                myFileList.get(position).setIsSelected(true);
+                                holder.checkBox.setVisibility(View.VISIBLE);
+                                holder.checkBox.setChecked(true);
 
-                        if (SelectionCount < 5) {
-                            //select
-
+                                callback.onAlbumItemSelected(Uri.parse(myFileList.get(position).getFileUri()));
+                            }
+                        }else{
+                            //No Limit Selection
                             myFileList.get(position).setIsSelected(true);
                             holder.checkBox.setVisibility(View.VISIBLE);
                             holder.checkBox.setChecked(true);
 
-
                             callback.onAlbumItemSelected(Uri.parse(myFileList.get(position).getFileUri()));
-
                         }
-
                     }
                 }
-
             }
         });
 
@@ -213,5 +217,10 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 notifyDataSetChanged();
             }
         }
+    }
+
+    public void setMaxFileSelection(int maxFileSelection){
+        //Set the maximum file that the users could select
+        this.mMaxFileSelection = maxFileSelection;
     }
 }
