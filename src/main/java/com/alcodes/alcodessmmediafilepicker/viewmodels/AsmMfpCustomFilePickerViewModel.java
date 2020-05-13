@@ -22,7 +22,8 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> mIsInsideAlbum = new MutableLiveData<>();
     private final MutableLiveData<String> mPickerFileType = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mSearching = new MutableLiveData<>();
-    private final MutableLiveData<androidx.appcompat.view.ActionMode> mActionMode = new MutableLiveData<>();
+    private final MutableLiveData<String>  mSearchingText = new MutableLiveData<>();
+    private final MutableLiveData<String> mSortingStyle = new MutableLiveData<>();
 
     public AsmMfpCustomFilePickerViewModel(@NonNull Application application) {
         super(application);
@@ -53,7 +54,6 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
     public MutableLiveData<ArrayList<Uri>> getSelectionList() {
         return mSelectionList;
     }
-
 
     /*public void addSelectionIntoSelectionList(Uri uri){
         ArrayList<Uri> tempSelectionList = new ArrayList<>();
@@ -112,15 +112,19 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         mSearching.setValue(searching);
     }
 
-    public MutableLiveData<androidx.appcompat.view.ActionMode> getActionMode() {
-        return mActionMode;
+    public MutableLiveData<String> getSearchingText() {
+        return mSearchingText;
     }
 
-    public void setActionMode(androidx.appcompat.view.ActionMode  actionMode){
-        mActionMode.setValue(actionMode);
+    public void setSearchingText(String searchingText){
+        mSearchingText.setValue(searchingText);
     }
 
-    public void clearActionMode(){
-        mActionMode.setValue(null);
+    public MutableLiveData<String> getSortingStyle() {
+        return mSortingStyle;
+    }
+
+    public void setSortingStyle(String sortingStyle){
+        mSortingStyle.setValue(sortingStyle);
     }
 }

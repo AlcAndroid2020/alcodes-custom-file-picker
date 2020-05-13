@@ -100,8 +100,6 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 //click on folder
                 if (myFileList.get(position).getIsFolder()) {
                     if (callback != null) {
-
-
                         callback.onFolderClicked(myFileList.get(position).getFolderID());
                     }
                 } else {
@@ -137,6 +135,10 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 }
             }
         });
+
+    }
+
+    public void holderItemOnClick(){
 
     }
 
