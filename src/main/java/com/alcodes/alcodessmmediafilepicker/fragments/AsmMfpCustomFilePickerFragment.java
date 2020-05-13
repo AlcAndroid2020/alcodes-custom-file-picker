@@ -47,6 +47,7 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerVie
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback{
 
@@ -110,6 +111,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         mGridLayoutManager = new GridLayoutManager(requireContext(), 2);
 
         //Set Default Layout to Linear
+
         mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mfpMainSharedViewModel = new ViewModelProvider(
@@ -361,7 +363,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
     private void promptSelection(){
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Which file type you prefer ?");
-
+        builder.setCancelable(false);
         builder.setMessage("select one of these");
 
         builder.setPositiveButton("Image", new DialogInterface.OnClickListener() {
@@ -687,8 +689,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
     @Override
     public void onAlbumItemUnSelected(Uri uri) {
         for (int i = 0; i < selectionList.size(); i++) {
-            if (selectionList.get(i).equals(uri))
+            if (selectionList.get(i).equals(uri)) {
                 selectionList.remove(i);
+                break;
+            }
         }
         mfpMainSharedViewModel.saveSelectionList(selectionList);
 
@@ -709,15 +713,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         //get position
         isInSideAlbum = true;
         mfpMainSharedViewModel.setIsInsideAlbum(isInSideAlbum);
-
         selectionList.add(uri);
         mfpMainSharedViewModel.addSelectionIntoSelectionList(uri);
-
         if (mActionMode == null){
             mActionMode = mAppCompatActivity.startSupportActionMode(mActionModeCallback);
             mfpMainSharedViewModel.setActionMode(mActionMode);
         }
-
         mActionMode.setTitle(selectionList.size() + "item(s) selected");
 
         //update the selection count for limit user selection
