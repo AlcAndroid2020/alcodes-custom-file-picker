@@ -227,7 +227,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
 
         if (item.getItemId() == R.id.sortingDateAscending) {
             Collections.sort(myFileList, new SortByDate());
-            mAdapter.notifyDataSetChanged();
             initAdapter();
         }
         if (item.getItemId() == R.id.sortingDateDescending) {
@@ -316,9 +315,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         //list to get file in same folder
         myFileList.clear();
         ArrayList<String> filelist = new ArrayList<>();
-        if (requireActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
-            String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permission, PERMISSION_STORGE_CODE);
         } else {
             String[] projection = new String[]{
@@ -394,9 +393,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         //list to get file in same folder
         myFileList.clear();
         ArrayList<String> filelist = new ArrayList<>();
-        if (requireActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
-            String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permission, PERMISSION_STORGE_CODE);
         } else {
             String[] projection = new String[]{
