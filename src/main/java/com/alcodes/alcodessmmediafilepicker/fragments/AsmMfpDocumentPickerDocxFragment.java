@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +45,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
     private android.view.ActionMode mActionMode;
     private ArrayList<MyFile> mFileList = new ArrayList<>();
-    //  private ArrayList<String> selectedList = new ArrayList<>();
     private ArrayList<String> TotalselectedList = new ArrayList<>();
     private AsmMfpDocumentPickerRecyclerViewAdapter mAdapter;
     private AsmMfpFragmentDocumentFilePickerBinding mDataBinding;
@@ -60,6 +58,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
     //for limit selection
     private int SelecLimitCount;
+    private Boolean isSelectedAll = false;
 
     public AsmMfpDocumentPickerDocxFragment() {
 
@@ -154,7 +153,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
             @Override
             public void onChanged(ArrayList<MyFile> myFiles) {
-                if(myFiles.size() != 0){
+                if (myFiles.size() != 0) {
                     if (myFiles.get(0).getFileType() == "doc") {
                         mFileList = myFiles;
                         initAdapter();
@@ -162,6 +161,18 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 }
             }
         });
+        mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean != null) {
+                    isSearching = aBoolean;
+                }
+            }
+        });
+
+        //to active action mode when switch to another tab
+
+
     }
 
     @Override
@@ -172,6 +183,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mNavController = Navigation.findNavController(view);
     }
 
+    Boolean isUnSelect = false;
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -188,6 +200,26 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
+            isSelectedAll = true;
+
+            mDocumentViewModel.setSelectionLimit(99);
+            for (int i = 0; i < mFileList.size(); i++) {
+                mFileList.get(i).setIsSelected(true);
+                TotalselectedList.add(mFileList.get(i).getFileUri());
+            }
+            if (mActionMode == null)
+                mActionMode = getActivity().startActionMode(mActionModeCallback);
+            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+            mDocumentViewModel.setSelectionList(TotalselectedList);
+            initAdapter();
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
     public void onDocumentSelected(Uri uri) {
         //    selectedList.add(String.valueOf(uri));
 
@@ -197,14 +229,17 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mAdapter.setSelectedCounter(TotalselectedList.size());
         if (mActionMode == null)
             mActionMode = getActivity().startActionMode(mActionModeCallback);
+        //select all remaining
+        if (!isSelectedAll)
+            mActionMode.invalidate();
         mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
         mDocumentViewModel.setSelectionList(TotalselectedList);
+
+
     }
 
     @Override
     public void onDocumentUnSelected(Uri uri) {
-
-
         //update with viewmodel
         for (int i = 0; i < TotalselectedList.size(); i++) {
             if (TotalselectedList.get(i).equals(uri.toString()))
@@ -213,9 +248,15 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
         }
         mDocumentViewModel.setSelectionList(TotalselectedList);
+        //to reactive selectall
+        isSelectedAll = false;
+        //  if(mActionMode!=null)
+        //  mActionMode.invalidate();
+
         if (TotalselectedList.size() == 0 && mActionMode != null)
             mActionMode.finish();
         mAdapter.setSelectedCounter(TotalselectedList.size());
+
 
         if (mActionMode != null)
             mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
@@ -227,15 +268,19 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         return SelecLimitCount;
     }
 
+    Boolean isUnselected = false;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         MenuItem unLimitItem;
+        MenuItem selectall;
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
             //for select item
             MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
+
+
             checkItem.setVisible(true);
             MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
             unSelectItem.setVisible(true);
@@ -244,6 +289,14 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             if (SelecLimitCount != 99)
                 unLimitItem.setVisible(true);
 
+            selectall = menu.findItem(R.id.Doc_FilePicker_SelectAll);
+            if (!isSelectedAll)
+                selectall.setVisible(true);
+
+            else
+
+                selectall.setVisible(false);
+
 
             return true;
         }
@@ -251,7 +304,12 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 
+            if (!isSelectedAll)
+                selectall.setVisible(true);
 
+            else
+
+                selectall.setVisible(false);
             return false;
         }
 
@@ -272,19 +330,11 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
 
             if (item.getItemId() == R.id.Doc_FilePicker_UnselectAll) {
-
-                //clear m file
+                //for refresh + clear all list
                 resetFileList();
-
-                //reinit adapter /refresh
-                initAdapter();
-                TotalselectedList.clear();
-                //update viewmodel as adapter will update along
-                mDocumentViewModel.setSelectionList(TotalselectedList);
-                mDocumentViewModel.setSelectionLimit(SelecLimitCount);
-                Toast.makeText(getContext(), mAdapter.getSelectLimitCounter() + " test", Toast.LENGTH_SHORT).show();
                 //close actionmode
                 mActionMode.finish();
+                isSelectedAll = false;
 
             }
             if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
@@ -293,13 +343,13 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 if (!isSearching) {
                     CustomSearchBar.setVisibility(View.VISIBLE);
                     ClearTextBtn.setVisibility(View.VISIBLE);
-                    isSearching = true;
+                    mDocumentViewModel.setIsSearching(true);
                 }
                 //click search btn for second time to hide the custom search bar
                 else {
                     CustomSearchBar.setVisibility(View.INVISIBLE);
                     ClearTextBtn.setVisibility(View.INVISIBLE);
-                    isSearching = false;
+                    mDocumentViewModel.setIsSearching(false);
                 }
 
 
@@ -308,19 +358,37 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 mDocumentViewModel.setSelectionLimit(99);
                 unLimitItem.setVisible(false);
             }
-
+            if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
+                unLimitItem.setVisible(false);
+                isSelectedAll = true;
+                mDocumentViewModel.setSelectionLimit(99);
+                for (int i = 0; i < mFileList.size(); i++) {
+                    //to prevent adding already selected item
+                    if (!mFileList.get(i).getIsSelected()) {
+                        mFileList.get(i).setIsSelected(true);
+                        TotalselectedList.add(mFileList.get(i).getFileUri());
+                    }
+                }
+                if (mActionMode == null)
+                    mActionMode = getActivity().startActionMode(mActionModeCallback);
+                mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+                mDocumentViewModel.setSelectionList(TotalselectedList);
+                initAdapter();
+            }
             return true;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            //when user unselect all item / clicked back button action mode
+
+            //hide custom search bar
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
-            isSearching = false;
-            //selectedList.clear();
-            //for refresh
+            mDocumentViewModel.setIsSearching(false);
 
-            resetFileList();
+            //for refresh + clear all list
+            // resetFileList();
             initAdapter();
             mActionMode = null;
 
@@ -333,6 +401,11 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             if (mFileList.get(i).getIsSelected())
                 mFileList.get(i).setIsSelected(false);
         }
+        TotalselectedList.clear();
+        //update viewmodel as adapter will update along
+        mDocumentViewModel.setSelectionList(TotalselectedList);
+        mDocumentViewModel.setSelectionLimit(SelecLimitCount);
+
 
     }
 

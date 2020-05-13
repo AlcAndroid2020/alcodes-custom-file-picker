@@ -71,10 +71,9 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         holder.tv_FileName.setText(mFileList.get(position).getFileName());
 
         if (mFileList.get(position).getIsSelected())
-        {
             holder.checkBox.setVisibility(View.VISIBLE);
             holder.checkBox.setChecked(true);
-        }    // holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+          //holder.iv_CheckIcon.setVisibility(View.VISIBLE);
 
 
         //detect which file type then set suitable file icon
@@ -112,7 +111,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
             public void onClick(View v) {
 
                 if (mFileList.get(position).getIsSelected()) {
-                  //  holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
+                //  holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
                     holder.checkBox.setVisibility(View.INVISIBLE);
                     holder.checkBox.setChecked(false);
                     mFileList.get(position).setIsSelected(false);
@@ -126,8 +125,8 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
 
                     if (SelectedCounter < SelectLimitCounter || SelectLimitCounter == 99) {
 
-                       // holder.iv_CheckIcon.setVisibility(View.VISIBLE);
-                        holder.checkBox.setVisibility(View.VISIBLE);
+                     //   holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+                       holder.checkBox.setVisibility(View.VISIBLE);
                         holder.checkBox.setChecked(true);
 
                         mFileList.get(position).setIsSelected(true);
