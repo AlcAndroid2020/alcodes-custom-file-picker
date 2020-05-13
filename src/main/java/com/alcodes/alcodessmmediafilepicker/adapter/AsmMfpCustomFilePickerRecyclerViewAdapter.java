@@ -99,8 +99,6 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 //click on folder
                 if (myFileList.get(position).getIsFolder()) {
                     if (callback != null) {
-
-
                         callback.onFolderClicked(myFileList.get(position).getFolderID());
                     }
                 } else {
@@ -118,12 +116,9 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
                         if (SelectionCount < 5) {
                             //select
-
                             myFileList.get(position).setIsSelected(true);
                             holder.checkBox.setVisibility(View.VISIBLE);
                             holder.checkBox.setChecked(true);
-
-
                             callback.onAlbumItemSelected(Uri.parse(myFileList.get(position).getFileUri()));
 
                         }
@@ -133,6 +128,10 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
             }
         });
+
+    }
+
+    public void holderItemOnClick(){
 
     }
 

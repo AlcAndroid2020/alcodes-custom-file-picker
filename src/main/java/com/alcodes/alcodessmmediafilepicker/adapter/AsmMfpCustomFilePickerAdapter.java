@@ -135,7 +135,5 @@ public class AsmMfpCustomFilePickerAdapter extends BaseAdapter implements Filter
                 myFileList= (ArrayList<MyFile>) results.values;
                 notifyDataSetChanged();
             }
-
-
         }
 }
