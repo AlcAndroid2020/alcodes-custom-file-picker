@@ -30,7 +30,7 @@
         android:title="Share"/>
     <item
         android:id="@+id/Custom_ChangeLayout"
-        android:title="Change Layout"
+        android:title="Grid View Format"
         />
 
     <item
