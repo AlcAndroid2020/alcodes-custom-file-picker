@@ -1,10 +1,12 @@
 package com.alcodes.alcodessmmediafilepicker.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -28,14 +30,14 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     private CustomFilter filter;
     ArrayList<MyFile> resultlist;
     private int SelectedCounter;
+    private int SelectLimitCounter;
 
-    public AsmMfpDocumentPickerRecyclerViewAdapter(Context Context, ArrayList<MyFile> FileList, DocumentFilePickerCallbacks callbacks, int selectedCounter) {
+    public AsmMfpDocumentPickerRecyclerViewAdapter(Context Context, ArrayList<MyFile> FileList, DocumentFilePickerCallbacks callbacks) {
         this.mContext = Context;
         this.mFileList = FileList;
         this.callback = callbacks;
         this.FilterList = mFileList;
 
-        this.SelectedCounter = selectedCounter;
         filter = new CustomFilter();
 
     }
@@ -69,7 +71,10 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         holder.tv_FileName.setText(mFileList.get(position).getFileName());
 
         if (mFileList.get(position).getIsSelected())
-            holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+        {
+            holder.checkBox.setVisibility(View.VISIBLE);
+            holder.checkBox.setChecked(true);
+        }    // holder.iv_CheckIcon.setVisibility(View.VISIBLE);
 
 
         //detect which file type then set suitable file icon
@@ -78,7 +83,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
                 case "PDF":
                     holder.iv_FileIcon.setImageResource(R.drawable.ic_pdf);
                     break;
-                case "DOCX":
+                case "doc":
                     holder.iv_FileIcon.setImageResource(R.drawable.ic_word);
                     break;
                 case "PTT":
@@ -102,21 +107,31 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
 
         //onclick on item of recyclerview
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View v) {
 
                 if (mFileList.get(position).getIsSelected()) {
-                    holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
+                  //  holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
+                    holder.checkBox.setVisibility(View.INVISIBLE);
+                    holder.checkBox.setChecked(false);
                     mFileList.get(position).setIsSelected(false);
                     callback.onDocumentUnSelected(Uri.parse(mFileList.get(position).getFileUri()));
                 } else {
-                    //limit user selection,maximum 5 item only
-                    if (SelectedCounter < 5) {
+                    //to solve unable to active action mode after unselect all
 
-                        holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+                    if (SelectLimitCounter == 0)
+                        SelectLimitCounter = callback.onNullSelectionLimit();
+
+
+                    if (SelectedCounter < SelectLimitCounter || SelectLimitCounter == 99) {
+
+                       // holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+                        holder.checkBox.setVisibility(View.VISIBLE);
+                        holder.checkBox.setChecked(true);
+
                         mFileList.get(position).setIsSelected(true);
                         callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
-
                     }
 
 
@@ -140,6 +155,8 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         void onDocumentSelected(Uri uri);
 
         void onDocumentUnSelected(Uri uri);
+
+        int onNullSelectionLimit();
     }
 
     @Override
@@ -151,11 +168,25 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         this.SelectedCounter = selectcounter;
     }
 
+    public void setSelectLimitCounter(int count) {
+        this.SelectLimitCounter = count;
+    }
+
+    public int getSelectedCounter() {
+        return SelectedCounter;
+    }
+
+    public int getSelectLimitCounter() {
+        return this.SelectLimitCounter;
+    }
+
+
     //to declare item in recyclerview (textview,image)
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_FileName;
         private TextView tv_FileSize;
         private ImageView iv_FileIcon, iv_CheckIcon;
+        private CheckBox checkBox;
 
 
         public MyViewHolder(View itemView) {
@@ -164,6 +195,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
             tv_FileSize = (TextView) itemView.findViewById(R.id.Text_view_Item_Document_FileSize);
             iv_FileIcon = (ImageView) itemView.findViewById(R.id.Image_view_Item_Document_Icon);
             iv_CheckIcon = (ImageView) itemView.findViewById(R.id._Image_view_item_Document_check);
+            checkBox = itemView.findViewById(R.id.Doc_Picker_checkbox);
         }
 
 

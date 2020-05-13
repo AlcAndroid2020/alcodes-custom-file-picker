@@ -248,6 +248,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
                 return false;
             }
         });
+
+        MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
+        if(isInSideAlbum){
+            selectAllItem.setVisible(true);
+        }else{
+            selectAllItem.setVisible(false);
+        }
     }
 
     @Override
@@ -306,6 +313,18 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         }
         if (item.getItemId() == R.id.sortingDateDescending) {
             Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
+            initAdapter();
+        }
+        if(item.getItemId() == R.id.SelectAll){
+            selectionList.clear();
+            for(int i=0; i < myFileList.size(); i++){
+                myFileList.get(i).setIsSelected(true);
+                selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+            }
+
+            if (mActionMode == null)
+                mActionMode = mAppCompatActivity.startSupportActionMode(mActionModeCallback);
+
             initAdapter();
         }
         return super.onOptionsItemSelected(item);
@@ -472,6 +491,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         mfpMainSharedViewModel.clearMyFileList();
         ArrayList<String> filelist = new ArrayList<>();
         if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+
             String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permission, PERMISSION_STORGE_CODE);
         } else {
@@ -808,6 +828,17 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             searching = false;
             mfpMainSharedViewModel.setSearching(searching);
             mActionMode = null;
+
+
+            //Deselect All
+            selectionList.clear();
+            //update recycler view data and ui
+
+            for (int i = 0; i < myFileList.size(); i++) {
+                if (myFileList.get(i).getIsSelected())
+                    myFileList.get(i).setIsSelected(false);
+            }
+
             mfpMainSharedViewModel.clearActionMode();
             //Clear selection list when back button clicked
             selectionList.clear();

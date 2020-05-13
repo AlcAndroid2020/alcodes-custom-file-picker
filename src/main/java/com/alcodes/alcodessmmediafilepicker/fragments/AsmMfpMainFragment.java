@@ -64,12 +64,12 @@ public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback
 
     @Override
     public void onCustomPickerButtonClicked() {
-/*
+        /*
         Intent intent=new Intent(getContext(), AsmMfpCustomFilePicker.class);
         startActivity(intent);
-*/
-        mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
+        */
 
+         mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
     }
 
     @Override
