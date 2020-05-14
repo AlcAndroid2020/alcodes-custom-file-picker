@@ -72,8 +72,8 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
 
         if (mFileList.get(position).getIsSelected())
             holder.checkBox.setVisibility(View.VISIBLE);
-            holder.checkBox.setChecked(true);
-          //holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+        holder.checkBox.setChecked(true);
+        //holder.iv_CheckIcon.setVisibility(View.VISIBLE);
 
 
         //detect which file type then set suitable file icon
@@ -111,7 +111,6 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
             public void onClick(View v) {
 
                 if (mFileList.get(position).getIsSelected()) {
-                //  holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
                     holder.checkBox.setVisibility(View.INVISIBLE);
                     holder.checkBox.setChecked(false);
                     mFileList.get(position).setIsSelected(false);
@@ -119,14 +118,20 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
                 } else {
                     //to solve unable to active action mode after unselect all
 
-                    if (SelectLimitCounter == 0)
-                        SelectLimitCounter = callback.onNullSelectionLimit();
+                    if (SelectLimitCounter != 0) {
+                        if (SelectedCounter < SelectLimitCounter) {
+
+                            holder.checkBox.setVisibility(View.VISIBLE);
+                            holder.checkBox.setChecked(true);
+
+                            mFileList.get(position).setIsSelected(true);
+                            callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
+                        }
 
 
-                    if (SelectedCounter < SelectLimitCounter || SelectLimitCounter == 99) {
+                    } else {
 
-                     //   holder.iv_CheckIcon.setVisibility(View.VISIBLE);
-                       holder.checkBox.setVisibility(View.VISIBLE);
+                        holder.checkBox.setVisibility(View.VISIBLE);
                         holder.checkBox.setChecked(true);
 
                         mFileList.get(position).setIsSelected(true);
