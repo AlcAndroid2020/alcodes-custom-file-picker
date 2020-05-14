@@ -150,23 +150,40 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             }
         });*/
 
-        String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
-        String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
+        if (mDocumentViewModel.getIsSearching().getValue() != null) {
+            isSearching = mDocumentViewModel.getIsSearching().getValue();
+        } else {
+            mDocumentViewModel.setIsSearching(false);
+        }
+
+        if (mDocumentViewModel.getMyFileList().getValue() != null &&
+                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+            initAdapter();
 
 
-        ArrayList<String> FileType = new ArrayList<>();
-        FileType.addAll(Arrays.asList(xls, xlsx));
-        mDocumentViewModel.getFileList(FileType, "XLS").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-            @Override
-            public void onChanged(ArrayList<MyFile> myFiles) {
-                if (myFiles.size() != 0) {
-                    if (myFiles.get(0).getFileType() == "XLS") {
-                        mFileList = myFiles;
-                        initAdapter();
+        } else {
+
+            String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
+            String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
+
+
+            ArrayList<String> FileType = new ArrayList<>();
+            FileType.addAll(Arrays.asList(xls, xlsx));
+            mDocumentViewModel.getFileList(FileType, "XLS").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+                @Override
+                public void onChanged(ArrayList<MyFile> myFiles) {
+                    if (myFiles.size() != 0) {
+                        if (myFiles.get(0).getFileType() == "XLS") {
+                            mFileList = myFiles;
+                            initAdapter();
+                        }
                     }
                 }
-            }
-        });
+            });
+
+
+        }
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -447,5 +464,38 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
         mAdapter.getFilter().filter(newText);
         return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mDocumentViewModel.getMyFileList().getValue() != null) {
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+        }
+        if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
+            TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
+        }
+        if (mDocumentViewModel.getIsSearching().getValue() != null) {
+            isSearching = mDocumentViewModel.getIsSearching().getValue();
+            if (isSearching) {
+                CustomSearchBar.setVisibility(View.VISIBLE);
+                ClearTextBtn.setVisibility(View.VISIBLE);
+            }
+            //click search btn for second time to hide the custom search bar
+            else {
+
+                CustomSearchBar.setVisibility(View.INVISIBLE);
+                ClearTextBtn.setVisibility(View.INVISIBLE);
+            }
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mDocumentViewModel.saveMyFileList(mFileList);
+        mDocumentViewModel.setSelectionList(TotalselectedList);
+        mDocumentViewModel.setIsSearching(isSearching);
     }
 }
