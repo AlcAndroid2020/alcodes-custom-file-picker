@@ -83,10 +83,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
         inflater.inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
-
-
     }
 
 }
