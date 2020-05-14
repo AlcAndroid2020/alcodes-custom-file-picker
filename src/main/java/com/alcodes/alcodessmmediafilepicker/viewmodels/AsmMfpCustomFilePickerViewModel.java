@@ -24,6 +24,7 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> mSearching = new MutableLiveData<>();
     private final MutableLiveData<String>  mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<String> mSortingStyle = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mMaxSelection = new MutableLiveData<>();
 
     public AsmMfpCustomFilePickerViewModel(@NonNull Application application) {
         super(application);
@@ -116,5 +117,13 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
 
     public void setSortingStyle(String sortingStyle){
         mSortingStyle.setValue(sortingStyle);
+    }
+
+    public MutableLiveData<Integer> getMaxSelection() {
+        return mMaxSelection;
+    }
+
+    public void setMaxSelection(Integer maxSelection){
+        mMaxSelection.setValue(maxSelection);
     }
 }
