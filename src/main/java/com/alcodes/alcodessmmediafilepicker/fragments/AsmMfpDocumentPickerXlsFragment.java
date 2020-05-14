@@ -83,7 +83,11 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         //for custom search bar
         CustomSearchBar = getActivity().findViewById(R.id.Doc_File_Picker_EditText);
@@ -113,12 +117,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
             }
         });
-
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
         mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_documentfragment),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
