@@ -133,7 +133,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         if(mfpMainSharedViewModel.getMaxSelection().getValue() != null){
             mMaxFileSelection = mfpMainSharedViewModel.getMaxSelection().getValue();
         }else{
-//            mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
+            mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
         }
 
         if (mfpMainSharedViewModel.getMyFileList().getValue() != null &&
