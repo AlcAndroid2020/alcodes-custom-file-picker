@@ -354,6 +354,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         if(item.getItemId() == R.id.SelectAll){
             //Clear it to avoid duplicate data in the same array list
             selectionList.clear();
+
             //Before selecting all, check whether there is a max file selection.
             for(int i=0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : myFileList.size()); i++){
                 myFileList.get(i).setIsSelected(true);
@@ -453,7 +454,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         mfpMainSharedViewModel.clearMyFileList();
         ArrayList<String> filelist = new ArrayList<>();
         if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-
             String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permission, PERMISSION_STORGE_CODE);
         } else {
@@ -623,7 +623,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
 
-
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
             Long lastModify = cursor.getLong(lastModifyColumn);
@@ -676,7 +675,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         while (cursor.moveToNext()) {
             // Get values of columns for a given video.
 
-
             long id = cursor.getInt(idColumn);
             fileName = cursor.getString(nameColumn);
             String size = cursor.getString(sizeColumn);
@@ -706,7 +704,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         mAdapter = new AsmMfpCustomFilePickerRecyclerViewAdapter(requireContext(), myFileList, AsmMfpCustomFilePickerFragment.this, selectionList.size());
         //Set the Maximum File Selection
         mAdapter.setMaxFileSelection(mMaxFileSelection);
-
         mDataBinding.CustomRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
@@ -825,6 +822,23 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
                 if (mFileList != null) {
                     StartShare(mFileList);
                 }
+            }
+
+            //reinitialized select all because mActionMode is reset.
+            if (item.getItemId() == R.id.SelectAll) {
+                //Clear it to avoid duplicate data in the same array list
+                selectionList.clear();
+
+                //Before selecting all, check whether there is a max file selection.
+                for (int i = 0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : myFileList.size()); i++) {
+                    myFileList.get(i).setIsSelected(true);
+                    selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+                }
+
+                mfpMainSharedViewModel.saveSelectionList(selectionList);
+
+                initAdapter();
+                mActionMode.setTitle(selectionList.size() + "item(s) selected");
             }
 
             //unselect the user selection

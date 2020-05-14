@@ -55,16 +55,6 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         return mSelectionList;
     }
 
-    /*public void addSelectionIntoSelectionList(Uri uri){
-        ArrayList<Uri> tempSelectionList = new ArrayList<>();
-        if(mSelectionList.getValue() != null){
-            tempSelectionList=mSelectionList.getValue();
-        }
-        tempSelectionList.add(uri);
-
-        mSelectionList.setValue(tempSelectionList);
-    }*/
-
     public void saveSelectionList(ArrayList<Uri> selectionList){
         mSelectionList.setValue(selectionList);
     }

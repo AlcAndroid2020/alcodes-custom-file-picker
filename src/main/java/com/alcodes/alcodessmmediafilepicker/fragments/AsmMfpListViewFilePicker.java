@@ -468,7 +468,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             Uri uri = Uri.fromFile(new File(filePath));
             //grant permision for app with package "packegeName", eg. before starting other app via intent
 
-            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION & Intent.FLAG_GRANT_READ_URI_PERMISSION);
             //revoke permisions
             newuri = FileProvider.getUriForFile(this, "com.alcodes.alcodesgalleryviewerdemo.fileprovider", new File(filePath));
             DocumentFile df = DocumentFile.fromSingleUri(getApplicationContext(), newuri);
@@ -479,8 +479,6 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
         }
         fileCursor.close();
-
-
     }
 
 
