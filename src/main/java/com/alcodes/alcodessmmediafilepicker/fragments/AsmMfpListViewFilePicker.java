@@ -254,6 +254,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
 
         }
 
+        /*
         if (item.getItemId() == R.id.sortingNameAscending) {
 
             Collections.sort(myFileList, new SortByName());
@@ -275,6 +276,7 @@ public class AsmMfpListViewFilePicker extends AppCompatActivity {
             Collections.sort(myFileList, Collections.reverseOrder(new SortByDate()));
             mAdapter.notifyDataSetChanged();
         }
+        */
 
 
         return super.onOptionsItemSelected(item);

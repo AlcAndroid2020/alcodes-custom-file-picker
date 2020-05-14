@@ -9,6 +9,8 @@ import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.bumptech.glide.Glide;
+import com.google.android.material.checkbox.MaterialCheckBox;
 
 import java.util.ArrayList;
 
@@ -28,6 +31,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     private CustomFilter filter;
     private int SelectionCount;
     private int mMaxFileSelection;
+    private int mCurrentView = 0; //0 -> List View , 1 -> GridView
 
     public AsmMfpCustomFilePickerRecyclerViewAdapter(Context context, ArrayList<MyFile> filelist, CustomFilePickerCallback callbacks, int selectedCount) {
         this.myFileList = filelist;
@@ -49,24 +53,48 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        ImageView currentViewImageView;
+        MaterialCheckBox currentViewCheckBox;
+        TextView currentViewTextView;
+
+        //Set Its Appearance
+        //Only one group of view is loaded at a time to reduce memory burden
+        if(mCurrentView == 0){
+            //List View
+            holder.mAlbumInListView.setVisibility(View.VISIBLE);
+            holder.mAlbumInGridView.setVisibility(View.GONE);
+            currentViewImageView = holder.mAlbumItemThumbnailInListView;
+            currentViewCheckBox = holder.mAlbumItemCheckBoxInListView;
+            currentViewTextView = holder.mAlbumItemFileNameInListView;
+        }else{
+            //Grid View
+            holder.mAlbumInListView.setVisibility(View.GONE);
+            holder.mAlbumInGridView.setVisibility(View.VISIBLE);
+            currentViewImageView = holder.mAlbumItemThumbnailInGridView;
+            currentViewCheckBox = holder.mAlbumItemCheckBoxInGridView;
+            currentViewTextView = holder.mAlbumItemFileNameInGridView;
+        }
+
         //to show selected when go back to album
         if (myFileList.get(position).getIsSelected()) {
-            holder.checkBox.setVisibility(View.VISIBLE);
-            holder.checkBox.setChecked(true);
+            currentViewCheckBox.setVisibility(View.VISIBLE);
+            currentViewCheckBox.setChecked(true);
         }
+
         if (myFileList.get(position).getFileType() != null) {
             //Reset Thumbnail for Album
-            holder.imgView.setImageDrawable(null);
+            currentViewImageView.setImageDrawable(null);
+
             if (myFileList.get(position).getFileType().equals("Image")){
                 if (!myFileList.get(position).getIsFolder()) {
                     Glide.with(mContext)
                             .load(Uri.parse(myFileList.get(position).getFileUri()))
                             // Uri of the picture
-                            .into(holder.imgView);
+                            .into(currentViewImageView);
                 }else{
                     Glide.with(mContext)
-                            .load(R.drawable.tasklist)
-                            .into(holder.imgView);
+                            .load(R.drawable.image_folder)
+                            .into(currentViewImageView);
                 }
             }
             else if (myFileList.get(position).getFileType().equals("Video")) {
@@ -75,12 +103,12 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                     Glide.with(mContext)
                             .load(Uri.parse(myFileList.get(position).getFileUri()))
                             // Uri of the picture
-                            .into(holder.imgView);
+                            .into(currentViewImageView);
 
                 }else{
                     Glide.with(mContext)
-                            .load(R.drawable.tasklist)
-                            .into(holder.imgView);
+                            .load(R.drawable.video_folder)
+                            .into(currentViewImageView);
                 }
             }
         }
@@ -88,10 +116,10 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         //check if is folder or image
         if (myFileList.get(position).getIsFolder())
             //if folder add count
-            holder.textView.setText(myFileList.get(position).getFileName() + "(" + myFileList.get(position).getCount() + ")");
+            currentViewTextView.setText(myFileList.get(position).getFileName() + "(" + myFileList.get(position).getCount() + ")");
             //no folder
         else
-            holder.textView.setText(myFileList.get(position).getFileName());
+            currentViewTextView.setText(myFileList.get(position).getFileName());
 
         //user select a folder then pass folder name to access inner file
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -108,8 +136,8 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                     //unselect
                     if (myFileList.get(position).getIsSelected()) {
                         myFileList.get(position).setIsSelected(false);
-                        holder.checkBox.setChecked(false);
-                        holder.checkBox.setVisibility(View.INVISIBLE);
+                        currentViewCheckBox.setChecked(false);
+                        currentViewCheckBox.setVisibility(View.INVISIBLE);
 
                         callback.onAlbumItemUnSelected(Uri.parse(myFileList.get(position).getFileUri()));
                     } else {
@@ -118,16 +146,16 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                             if (SelectionCount < mMaxFileSelection) {
                                 //select
                                 myFileList.get(position).setIsSelected(true);
-                                holder.checkBox.setVisibility(View.VISIBLE);
-                                holder.checkBox.setChecked(true);
+                                currentViewCheckBox.setVisibility(View.VISIBLE);
+                                currentViewCheckBox.setChecked(true);
 
                                 callback.onAlbumItemSelected(Uri.parse(myFileList.get(position).getFileUri()));
                             }
                         }else{
                             //No Limit Selection
                             myFileList.get(position).setIsSelected(true);
-                            holder.checkBox.setVisibility(View.VISIBLE);
-                            holder.checkBox.setChecked(true);
+                            currentViewCheckBox.setVisibility(View.VISIBLE);
+                            currentViewCheckBox.setChecked(true);
 
                             callback.onAlbumItemSelected(Uri.parse(myFileList.get(position).getFileUri()));
                         }
@@ -167,17 +195,35 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
     //to declare item in recyclerview (textview,image)
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView textView;
-        private ImageView imgView;
-        private ImageView checkIC;
-        private CheckBox checkBox;
+        //File Name
+        private TextView mAlbumItemFileNameInGridView;
+        private TextView mAlbumItemFileNameInListView;
+
+        //Thumbnail
+        private ImageView mAlbumItemThumbnailInGridView;
+        private ImageView mAlbumItemThumbnailInListView;
+
+        //Checkbox
+        private MaterialCheckBox mAlbumItemCheckBoxInGridView;
+        private MaterialCheckBox mAlbumItemCheckBoxInListView;
+
+        //Layout
+        private LinearLayout mAlbumInGridView;
+        private RelativeLayout mAlbumInListView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            imgView = itemView.findViewById(R.id.Album_item_ImgView);
-            textView = itemView.findViewById(R.id.Album_item_TextView);
-            checkIC = itemView.findViewById(R.id.Album_item_Selected_Image);
-            checkBox = itemView.findViewById(R.id.FilePicker_checkbox);
+            mAlbumItemFileNameInGridView = itemView.findViewById(R.id.album_item_file_name_in_grid_view);
+            mAlbumItemFileNameInListView = itemView.findViewById(R.id.album_item_file_name_in_list_view);
+
+            mAlbumItemThumbnailInGridView = itemView.findViewById(R.id.album_item_thumbnail_in_grid_view);
+            mAlbumItemThumbnailInListView = itemView.findViewById(R.id.album_item_thumbnail_in_list_view);
+
+            mAlbumItemCheckBoxInGridView = itemView.findViewById(R.id.album_item_checkbox_in_grid_view);
+            mAlbumItemCheckBoxInListView = itemView.findViewById(R.id.album_item_checkbox_in_list_view);
+
+            mAlbumInGridView = itemView.findViewById(R.id.grid_view_album_linear_layout);
+            mAlbumInListView = itemView.findViewById(R.id.list_view_album_relative_layout);
         }
     }
 
@@ -185,7 +231,6 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     public void setSelectionCount(int count) {
         this.SelectionCount = count;
     }
-
 
     @Override
     public Filter getFilter() {
@@ -224,5 +269,9 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
     public void setMaxFileSelection(int maxFileSelection){
         //Set the maximum file that the users could select
         this.mMaxFileSelection = maxFileSelection;
+    }
+
+    public void setCurrentView(int view){
+        this.mCurrentView = view;
     }
 }

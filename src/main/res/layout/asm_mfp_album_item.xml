@@ -1,54 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/AlbumBG"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    >
-    <ImageView
-        android:id="@+id/Album_item_ImgView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:adjustViewBounds="true"
-        android:layout_marginBottom="15dp"
+    android:layout_margin="3dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    card_view:cardElevation="2dp"
+    card_view:cardCornerRadius="5dp">
 
-        android:src="@drawable/tasklist"
-
-
-
-        />
-
-    <LinearLayout
+    <!-- Album UI in List View Format -->
+    <RelativeLayout
+        android:id="@+id/list_view_album_relative_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone">
 
-        android:orientation="vertical"
-        android:padding="14dp">
-
-
-
-
-
-    <TextView
-        android:id="@+id/Album_item_TextView"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:text="file name"
-        android:textSize="15dp" />
         <ImageView
-            android:id="@+id/Album_item_Selected_Image"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/album_item_check"
-            android:visibility="gone" />
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:visibility="invisible"
-            android:id="@+id/FilePicker_checkbox"
-            android:enabled="false"
-            android:layout_height="wrap_content"/>
+            android:id="@+id/album_item_thumbnail_in_list_view"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:adjustViewBounds="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/tasklist"/>
 
+        <TextView
+            android:id="@+id/album_item_file_name_in_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="FileName"
+            android:layout_marginEnd="10dp"
+            android:textSize="20sp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/album_item_thumbnail_in_list_view"
+            android:layout_toStartOf="@id/album_item_checkbox_in_list_view"/>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/album_item_checkbox_in_list_view"
+            android:layout_height="30dp"
+            android:layout_width="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:enabled="false"
+            android:visibility="invisible"/>
+
+    </RelativeLayout>
+
+    <!-- Album UI in Grid View Format -->
+    <LinearLayout
+        android:id="@+id/grid_view_album_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/album_item_thumbnail_in_grid_view"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:adjustViewBounds="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/tasklist"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:id="@+id/album_item_file_name_in_grid_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FileName"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:layout_toStartOf="@id/album_item_checkbox_in_grid_view"
+                android:layout_centerHorizontal="true"/>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/album_item_checkbox_in_grid_view"
+                android:layout_height="30dp"
+                android:layout_width="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
+                android:enabled="false"
+                android:visibility="gone"
+                android:checked="true"/>
+
+        </RelativeLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.cardview.widget.CardView>

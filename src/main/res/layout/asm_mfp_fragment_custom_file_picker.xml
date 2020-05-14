@@ -30,7 +30,8 @@
             android:id="@+id/Custom_Recycler_View"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50dp"
+            android:layout_margin="5dp"
+            android:padding="5dp"
             tools:listitem="@layout/asm_mfp_album_item" />
 
         <ProgressBar
