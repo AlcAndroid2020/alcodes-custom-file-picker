@@ -63,7 +63,13 @@
         app:showAsAction="never"
         android:title="UnSelect All"
         android:visible="false"
+        />
 
+    <item
+        android:id="@+id/SelectFileType"
+        app:showAsAction="never"
+        android:title="SelectFileType"
+        android:visible="true"
         />
 
 </menu>
