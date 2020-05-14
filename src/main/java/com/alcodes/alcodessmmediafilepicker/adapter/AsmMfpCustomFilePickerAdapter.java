@@ -1,5 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.adapter;
 
+/*
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -137,3 +138,4 @@ public class AsmMfpCustomFilePickerAdapter extends BaseAdapter implements Filter
             }
         }
 }
+*/

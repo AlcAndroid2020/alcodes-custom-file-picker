@@ -30,28 +30,12 @@
         android:title="Share"/>
     <item
         android:id="@+id/Custom_ChangeLayout"
-        android:title="Grid View Format"
-        />
+        android:title="Grid View Format" />
 
     <item
-        android:id="@+id/sortingNameAscending"
+        android:id="@+id/sorting"
         app:showAsAction="never"
-        android:title="Ascending Order Name"/>
-
-    <item
-        android:id="@+id/sortingNameDescending"
-        app:showAsAction="never"
-        android:title="Descending Order Name"/>
-
-    <item
-        android:id="@+id/sortingDateAscending"
-        app:showAsAction="never"
-        android:title="Ascending Order Date"/>
-
-    <item
-        android:id="@+id/sortingDateDescending"
-        app:showAsAction="never"
-        android:title="Descending Order Date"/>
+        android:title="Sort" />
 
     <item
         android:id="@+id/SelectAll"

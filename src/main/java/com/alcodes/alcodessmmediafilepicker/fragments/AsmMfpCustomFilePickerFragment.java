@@ -42,6 +42,8 @@ import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePic
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentCustomFilePickerBinding;
+import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
+import com.alcodes.alcodessmmediafilepicker.dialogs.AsmMfpSortByDialog;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 
@@ -52,9 +54,12 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback{
+public class AsmMfpCustomFilePickerFragment extends Fragment
+        implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback, SortByDialogCallback {
 
     public static final String EXTRA_INT_MAX_FILE_SELECTION = "EXTRA_INT_MAX_FILE_SELECTION";
+
+    private static final String DEFAULT_SORTING_STYLE = "SortingDateDescending";
 
     private AsmMfpFragmentCustomFilePickerBinding mDataBinding;
     private NavController mNavController;
@@ -107,7 +112,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         super.onActivityCreated(savedInstanceState);
 
         //Init Max File Selection
-        mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
+        Intent intent = requireActivity().getIntent();
+        Bundle extras = intent.getExtras();
+
+        if(extras != null){
+            mMaxFileSelection = extras.getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
+        }
 
         //Init AppCompatActivity
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
@@ -117,13 +127,15 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         mGridLayoutManager = new GridLayoutManager(requireContext(), 2);
 
         //Set Default Layout to Linear
-
         mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mfpMainSharedViewModel = new ViewModelProvider(
                 mNavController.getBackStackEntry(R.id.asm_mfp_mainfragment),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())
         ).get(AsmMfpCustomFilePickerViewModel.class);
+
+        //Set Default Sorting in View Model
+        mfpMainSharedViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
         if(mfpMainSharedViewModel.getSearching().getValue() != null){
             searching = mfpMainSharedViewModel.getSearching().getValue();
@@ -329,26 +341,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
                 mfpMainSharedViewModel.setIsGrid(IsGrid);
                 item.setTitle("List View Format");
             }
-        }
-        if (item.getItemId() == R.id.sortingNameAscending) {
-            sortingMyFileList("SortingNameAscending");
-            mfpMainSharedViewModel.setSortingStyle("SortingNameAscending");
             initAdapter();
         }
-        if (item.getItemId() == R.id.sortingNameDescending) {
-            sortingMyFileList("SortingNameDescending");
-            mfpMainSharedViewModel.setSortingStyle("SortingNameDescending");
-            initAdapter();
-        }
-        if (item.getItemId() == R.id.sortingDateAscending) {
-            sortingMyFileList("SortingDateAscending");
-            mfpMainSharedViewModel.setSortingStyle("SortingDateAscending");
-            initAdapter();
-        }
-        if (item.getItemId() == R.id.sortingDateDescending) {
-            sortingMyFileList("SortingDateDescending");
-            mfpMainSharedViewModel.setSortingStyle("SortingDateDescending");
-            initAdapter();
+
+        if (item.getItemId() == R.id.sorting){
+            //Pass Callback and CurrentSortingStyle
+            AsmMfpSortByDialog.newInstance(this, mfpMainSharedViewModel.getSortingStyle().getValue()).show(getParentFragmentManager(), AsmMfpSortByDialog.TAG);
         }
 
         if(item.getItemId() == R.id.SelectAll){
@@ -516,6 +514,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             cursor.close();
         }
 
+        //Sorting
+        initDefaultSortingStyle();
+
         if (mAdapter != null)
             mAdapter.notifyDataSetChanged();
         //after finish for external then continue to internal storage
@@ -587,6 +588,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             cursor.close();
         }
 
+        //Sorting
+        initDefaultSortingStyle();
+
         if (mAdapter != null)
             mAdapter.notifyDataSetChanged();
 
@@ -646,6 +650,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
 
         }
         cursor.close();
+
+        //Sorting
+        initDefaultSortingStyle();
     }
 
     private void openVideoMediaStoreFile(int folderid) {
@@ -700,6 +707,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             mfpMainSharedViewModel.addFileToMyFileList(myFile);
         }
         cursor.close();
+
+        //Sorting
+        initDefaultSortingStyle();
     }
 
     private void initAdapter(){
@@ -707,8 +717,24 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         //Set the Maximum File Selection
         mAdapter.setMaxFileSelection(mMaxFileSelection);
 
+        //Set Current View Mode
+        if(mfpMainSharedViewModel.getIsGrid().getValue() != null){
+            if(mfpMainSharedViewModel.getIsGrid().getValue()){
+                mAdapter.setCurrentView(1);
+            }else{
+                mAdapter.setCurrentView(0);
+            }
+        }
+
         mDataBinding.CustomRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
+    }
+
+    private void initDefaultSortingStyle(){
+        //Once every file is loaded, the files will be sorted to newest to oldest.
+        if(mfpMainSharedViewModel.getSortingStyle().getValue() != null){
+            sortingMyFileList(mfpMainSharedViewModel.getSortingStyle().getValue());
+        }
     }
 
     @Override
@@ -897,6 +923,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
                 }
             }
         }
+    }
+
+    @Override
+    public void onSortByDialogPositiveButtonClicked(String sortingStyle) {
+        sortingMyFileList(sortingStyle);
+        mfpMainSharedViewModel.setSortingStyle(sortingStyle);
+        initAdapter();
     }
 
     public class SortByName implements Comparator<MyFile> {
