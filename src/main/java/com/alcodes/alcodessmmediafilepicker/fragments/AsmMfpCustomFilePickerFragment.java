@@ -98,9 +98,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //Init Max File Selection
-        mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
-
         //Init AppCompatActivity
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
 
@@ -131,6 +128,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             isInSideAlbum = mfpMainSharedViewModel.getIsInsideAlbum().getValue();
         } else {
             mfpMainSharedViewModel.setIsInsideAlbum(false);
+        }
+        //Init Max File Selection
+        if(mfpMainSharedViewModel.getMaxSelection().getValue() != null){
+            mMaxFileSelection = mfpMainSharedViewModel.getMaxSelection().getValue();
+        }else{
+            mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
         }
 
         if (mfpMainSharedViewModel.getMyFileList().getValue() != null &&
@@ -217,6 +220,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         if (mfpMainSharedViewModel.getSortingStyle().getValue() != null) {
             sortingMyFileList(mfpMainSharedViewModel.getSortingStyle().getValue());
         }
+        if(mfpMainSharedViewModel.getMaxSelection().getValue() != null){
+            mMaxFileSelection = mfpMainSharedViewModel.getMaxSelection().getValue();
+        }
     }
 
     @Override
@@ -227,6 +233,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         mfpMainSharedViewModel.setIsInsideAlbum(isInSideAlbum);
         mfpMainSharedViewModel.setSearching(searching);
         mfpMainSharedViewModel.setPickerFileType(PickerFileType);
+        mfpMainSharedViewModel.setMaxSelection(mMaxFileSelection);
     }
 
     @Override
