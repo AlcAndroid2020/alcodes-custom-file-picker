@@ -125,6 +125,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())
         ).get(AsmMfpCustomFilePickerViewModel.class);
 
+        if(mfpMainSharedViewModel.getMaxSelection().getValue() != null){
+            mMaxFileSelection = mfpMainSharedViewModel.getMaxSelection().getValue();
+        }else{
+            mfpMainSharedViewModel.setMaxSelection(mMaxFileSelection);
+        }
+
         if(mfpMainSharedViewModel.getSearching().getValue() != null){
             searching = mfpMainSharedViewModel.getSearching().getValue();
         }else{
@@ -158,6 +164,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             }
 
             initAdapter();
+
         }
 
         //for action mode search bar
@@ -187,6 +194,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
             }
         });
     }
+
+
 
     @Override
     public void onResume() {
@@ -228,6 +237,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         }
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
@@ -235,6 +245,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         mfpMainSharedViewModel.saveSelectionList(selectionList);
         mfpMainSharedViewModel.setIsInsideAlbum(isInSideAlbum);
         mfpMainSharedViewModel.setSearching(searching);
+        mfpMainSharedViewModel.setMaxSelection(mMaxFileSelection);
         mfpMainSharedViewModel.setPickerFileType(PickerFileType);
     }
 
@@ -366,6 +377,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
                 mActionMode = mAppCompatActivity.startSupportActionMode(mActionModeCallback);
 
             initAdapter();
+        }
+
+        if (item.getItemId() == R.id.SelectFileType){
+            promptSelection();
         }
         return super.onOptionsItemSelected(item);
     }
