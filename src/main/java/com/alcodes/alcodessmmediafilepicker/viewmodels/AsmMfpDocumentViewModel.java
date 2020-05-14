@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<String>> Selectionlist = new MutableLiveData<ArrayList<String>>();//selected files list
-    private MutableLiveData<Integer> SelectionLimit = new MutableLiveData<Integer>(10); //select limit counter
+    private MutableLiveData<Integer> SelectionLimit = new MutableLiveData<Integer>(0); //select limit counter
     private MutableLiveData<ArrayList<MyFile>> mFileList = new MutableLiveData<ArrayList<MyFile>>(); //to store file list
     private MutableLiveData<Boolean> mIsSearch = new MutableLiveData<>(false);  ///for custom search bar
     private MutableLiveData<Boolean> isSwitched = new MutableLiveData<>(false);

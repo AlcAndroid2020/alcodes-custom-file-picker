@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +39,8 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpCustomFilePickerFragment.EXTRA_INT_MAX_FILE_SELECTION;
+
 public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
     View view;
     private RecyclerView recyclerView;
@@ -58,7 +61,9 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
     //for limit selection
     private int SelecLimitCount;
-    private Boolean isSelectedAll = false;
+    //private Boolean isSelectedAll = false;
+    private Boolean isLimited = false;
+    private int mMaxFileSelection;
 
     public AsmMfpDocumentPickerDocxFragment() {
 
@@ -130,9 +135,12 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 }
             }
         });
-
+        mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
+        Toast.makeText(getContext(), mMaxFileSelection + " max" + mAdapter.getSelectLimitCounter(), Toast.LENGTH_SHORT).show();
+        if (mMaxFileSelection != 0)
+            isLimited = true;
         //get user selection limit ,by default is 10item
-
+/*
         mDocumentViewModel.getSelectionLimit().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
@@ -142,7 +150,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 mAdapter.notifyDataSetChanged();
 
             }
-        });
+        });*/
 
         String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
         String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
@@ -196,13 +204,17 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         searchView.setOnQueryTextListener(this);
         searchView.setQueryHint("Search..");
 
+        MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
+        if (isLimited)
+            SelectAll.setVisible(false);
+
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
-            isSelectedAll = true;
 
             mDocumentViewModel.setSelectionLimit(99);
             for (int i = 0; i < mFileList.size(); i++) {
@@ -230,8 +242,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         if (mActionMode == null)
             mActionMode = getActivity().startActionMode(mActionModeCallback);
         //select all remaining
-        if (!isSelectedAll)
-            mActionMode.invalidate();
+        //   if (!isSelectedAll)
+        //  mActionMode.invalidate();
         mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
         mDocumentViewModel.setSelectionList(TotalselectedList);
 
@@ -249,9 +261,9 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         }
         mDocumentViewModel.setSelectionList(TotalselectedList);
         //to reactive selectall
-        isSelectedAll = false;
-        //  if(mActionMode!=null)
-        //  mActionMode.invalidate();
+        // isL= false;
+        if (mActionMode != null)
+            mActionMode.invalidate();
 
         if (TotalselectedList.size() == 0 && mActionMode != null)
             mActionMode.finish();
@@ -271,7 +283,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     Boolean isUnselected = false;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-        MenuItem unLimitItem;
+       // MenuItem unLimitItem;
         MenuItem selectall;
 
         @Override
@@ -284,13 +296,12 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             checkItem.setVisible(true);
             MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
             unSelectItem.setVisible(true);
-            unLimitItem = menu.findItem(R.id.Doc_FilePicker_UnLimitedSelection);
+            //unLimitItem = menu.findItem(R.id.Doc_FilePicker_UnLimitedSelection);
 
-            if (SelecLimitCount != 99)
-                unLimitItem.setVisible(true);
+
 
             selectall = menu.findItem(R.id.Doc_FilePicker_SelectAll);
-            if (!isSelectedAll)
+            if (!isLimited)
                 selectall.setVisible(true);
 
             else
@@ -304,7 +315,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 
-            if (!isSelectedAll)
+            if (!isLimited)
                 selectall.setVisible(true);
 
             else
@@ -334,7 +345,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 resetFileList();
                 //close actionmode
                 mActionMode.finish();
-                isSelectedAll = false;
+
 
             }
             if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
@@ -354,13 +365,13 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
 
             }
-            if (item.getItemId() == R.id.Doc_FilePicker_UnLimitedSelection) {
-                mDocumentViewModel.setSelectionLimit(99);
-                unLimitItem.setVisible(false);
-            }
+           // if (item.getItemId() == R.id.Doc_FilePicker_UnLimitedSelection) {
+            //    mDocumentViewModel.setSelectionLimit(99);
+            //    unLimitItem.setVisible(false);
+          //  }
             if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
-                unLimitItem.setVisible(false);
-                isSelectedAll = true;
+              //  unLimitItem.setVisible(false);
+                //isSelectedAll = true;
                 mDocumentViewModel.setSelectionLimit(99);
                 for (int i = 0; i < mFileList.size(); i++) {
                     //to prevent adding already selected item
@@ -413,6 +424,9 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     private void initAdapter() {
         mAdapter = new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(), mFileList, AsmMfpDocumentPickerDocxFragment.this);
         recyclerView.setAdapter(mAdapter);
+        if (TotalselectedList.size() != 0)
+            mAdapter.setSelectedCounter(TotalselectedList.size());
+        mAdapter.setSelectLimitCounter(mMaxFileSelection);
     }
 
     @Override
