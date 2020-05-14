@@ -47,6 +47,14 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         SelectionLimit.setValue(count);
     }
 
+    public void setFileList(ArrayList<MyFile> list) {
+
+
+        mFileList.setValue(list);
+    }
+
+    ;
+
     public LiveData<ArrayList<MyFile>> getFileList(ArrayList<String> FileTypes, String type) {
 
         ArrayList<MyFile> FileList = new ArrayList<>();

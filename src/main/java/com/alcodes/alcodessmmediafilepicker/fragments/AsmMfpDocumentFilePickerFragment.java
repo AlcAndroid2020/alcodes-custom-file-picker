@@ -19,7 +19,6 @@ import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerA
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerViewPagerAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
-import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     private AsmMfpDocumentFilePickerActivity mActivity;
     private Boolean isSelected;
     private ArrayList<MyFile> myfilelist = new ArrayList<>();
+    AsmMfpDocumentPickerViewPagerAdapter mAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         viewPager = mDataBinding.DocFilePickerViewPager;
         isSelected = false;
         //adapter to add fragment
-        AsmMfpDocumentPickerViewPagerAdapter mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
+        mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
 
         mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), "PDF");
         mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), "DOCX");
@@ -86,6 +86,13 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
 
         inflater.inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
 
+
+    }
+    //after unselect to clear the selected item
+
+    public void refreshFragments() {
+        tabLayout.invalidate();
+        tabLayout.refreshDrawableState();
 
     }
 

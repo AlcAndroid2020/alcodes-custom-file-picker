@@ -1,5 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -60,7 +62,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     private Boolean isSearching = false;
 
     //for limit selection
-    private int SelecLimitCount;
     //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
@@ -140,17 +141,22 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         if (mMaxFileSelection != 0)
             isLimited = true;
         //get user selection limit ,by default is 10item
-/*
+
         mDocumentViewModel.getSelectionLimit().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
 
-                SelecLimitCount = integer;
-                mAdapter.setSelectLimitCounter(SelecLimitCount);
+                mMaxFileSelection = integer;
+                mAdapter.setSelectLimitCounter(mMaxFileSelection);
                 mAdapter.notifyDataSetChanged();
-
+                if (mMaxFileSelection == 0)
+                    isLimited = false;
+                else
+                    isLimited = true;
+                getActivity().invalidateOptionsMenu();
             }
-        });*/
+        });
+
 
         String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
         String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
@@ -180,7 +186,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         });
 
         //to active action mode when switch to another tab
-
 
     }
 
@@ -217,7 +222,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
 
-            mDocumentViewModel.setSelectionLimit(99);
+            mDocumentViewModel.setSelectionLimit(0);
             for (int i = 0; i < mFileList.size(); i++) {
                 mFileList.get(i).setIsSelected(true);
                 TotalselectedList.add(mFileList.get(i).getFileUri());
@@ -228,8 +233,55 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
         }
+        if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
+            PromptLimitDialog();
+
+
+        }
+
+
         return super.onOptionsItemSelected(item);
 
+    }
+
+    private void PromptLimitDialog() {
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Limit File Selection ");
+        final EditText input = new EditText(getContext());
+        input.setHint("Enter selection number here");
+
+        builder.setView(input);
+        builder.setMessage("0= No Limit");
+
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mDocumentViewModel.setSelectionLimit(Integer.valueOf(input.getText().toString()));
+                mMaxFileSelection = Integer.valueOf(input.getText().toString());
+                mAdapter.setSelectLimitCounter(mMaxFileSelection);
+
+
+                //if limited again then hide select all option
+                if (mMaxFileSelection != 0)
+                    isLimited = true;
+                else
+                    isLimited = false;
+                getActivity().invalidateOptionsMenu();
+
+                mDocumentViewModel.setSelectionLimit(mMaxFileSelection);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.show();
     }
 
     @Override
@@ -247,7 +299,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         //  mActionMode.invalidate();
         mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
         mDocumentViewModel.setSelectionList(TotalselectedList);
-
+        Toast.makeText(getContext(), mMaxFileSelection + " test", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -278,7 +330,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
     @Override
     public int onNullSelectionLimit() {
-        return SelecLimitCount;
+        return mMaxFileSelection;
     }
 
     Boolean isUnselected = false;
@@ -346,6 +398,9 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                 //close actionmode
                 mActionMode.finish();
 
+                //   AsmMfpDocumentPickerPdfFragment pdf = new AsmMfpDocumentPickerPdfFragment();
+                //  pdf.refreshRecyclerView();
+
 
             }
             if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
@@ -365,14 +420,13 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
 
             }
-            // if (item.getItemId() == R.id.Doc_FilePicker_UnLimitedSelection) {
-            //    mDocumentViewModel.setSelectionLimit(99);
-            //    unLimitItem.setVisible(false);
-            //  }
+            if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
+                PromptLimitDialog();
+            }
             if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
                 //  unLimitItem.setVisible(false);
                 //isSelectedAll = true;
-                mDocumentViewModel.setSelectionLimit(99);
+                mDocumentViewModel.setSelectionLimit(0);
                 for (int i = 0; i < mFileList.size(); i++) {
                     //to prevent adding already selected item
                     if (!mFileList.get(i).getIsSelected()) {
@@ -415,7 +469,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         TotalselectedList.clear();
         //update viewmodel as adapter will update along
         mDocumentViewModel.setSelectionList(TotalselectedList);
-        mDocumentViewModel.setSelectionLimit(SelecLimitCount);
+        mDocumentViewModel.setSelectionLimit(mMaxFileSelection);
 
 
     }
