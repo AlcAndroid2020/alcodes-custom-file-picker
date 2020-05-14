@@ -45,7 +45,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback {
-
     public static final String EXTRA_INT_MAX_FILE_SELECTION = "EXTRA_INT_MAX_FILE_SELECTION";
 
     private AsmMfpFragmentCustomFilePickerBinding mDataBinding;
@@ -142,6 +141,14 @@ public class AsmMfpCustomFilePickerFragment extends Fragment implements AsmMfpCu
         } else {
             mfpMainSharedViewModel.setIsInsideAlbum(false);
         }
+
+        //Init Max File Selection
+        if(mfpMainSharedViewModel.getMaxSelection().getValue() != null){
+            mMaxFileSelection = mfpMainSharedViewModel.getMaxSelection().getValue();
+        }else{
+            mMaxFileSelection = 0;
+        }
+
 
         if (mfpMainSharedViewModel.getMyFileList().getValue() != null &&
                 mfpMainSharedViewModel.getMyFileList().getValue().size() != 0 &&

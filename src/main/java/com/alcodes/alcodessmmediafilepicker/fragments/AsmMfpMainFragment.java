@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -17,11 +18,14 @@ import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePic
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpRecyclerViewFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.MainBindingCallback;
+import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 
 public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback {
+    public static final String EXTRA_INT_MAX_FILE_SELECTION = "EXTRA_INT_MAX_FILE_SELECTION";
 
     private AsmMfpFragmentMainBinding mDataBinding;
     private NavController mNavController;
+    private AsmMfpCustomFilePickerViewModel mfpMainSharedViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +47,16 @@ public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback
 
         // Init binding callback.
         mDataBinding.setBindingCallback(this);
+        mfpMainSharedViewModel = new ViewModelProvider(
+                this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())
+        ).get(AsmMfpCustomFilePickerViewModel.class);
+
+        if(requireActivity().getIntent().getExtras() != null){
+            mfpMainSharedViewModel.setMaxSelection(requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
+        }else {
+            mfpMainSharedViewModel.setMaxSelection(0);
+        }
     }
 
 
