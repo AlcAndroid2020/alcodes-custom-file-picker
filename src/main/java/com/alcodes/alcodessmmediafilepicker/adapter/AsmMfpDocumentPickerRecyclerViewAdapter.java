@@ -31,6 +31,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     ArrayList<MyFile> resultlist;
     private int SelectedCounter;
     private int SelectLimitCounter;
+    private Boolean isSearching = false;
 
     public AsmMfpDocumentPickerRecyclerViewAdapter(Context Context, ArrayList<MyFile> FileList, DocumentFilePickerCallbacks callbacks) {
         this.mContext = Context;
@@ -70,11 +71,28 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.tv_FileName.setText(mFileList.get(position).getFileName());
 
-        if (mFileList.get(position).getIsSelected())
-            holder.checkBox.setVisibility(View.VISIBLE);
-        holder.checkBox.setChecked(true);
-        //holder.iv_CheckIcon.setVisibility(View.VISIBLE);
+        //refresh view everytime
+        holder.checkBox.setVisibility(View.INVISIBLE);
+        holder.checkBox.setChecked(false);
 
+
+        if (!isSearching) {
+            if (mFileList.get(position).getIsSelected()) {
+                holder.checkBox.setVisibility(View.VISIBLE);
+                holder.checkBox.setChecked(true);
+            } else {
+                holder.checkBox.setVisibility(View.INVISIBLE);
+                holder.checkBox.setChecked(false);
+
+            }
+        } else {
+
+            if (mFileList.get(position).getIsSelected()) {
+                holder.checkBox.setVisibility(View.VISIBLE);
+                holder.checkBox.setChecked(true);
+            }
+
+        }
 
         //detect which file type then set suitable file icon
         if (mFileList.get(position).getFileType() != null) {
@@ -121,21 +139,31 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
                     if (SelectLimitCounter != 0) {
                         if (SelectedCounter < SelectLimitCounter) {
 
-                            holder.checkBox.setVisibility(View.VISIBLE);
-                            holder.checkBox.setChecked(true);
+                            //prevent when searching check double item
 
                             mFileList.get(position).setIsSelected(true);
                             callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
+                       /*     if (!isSearching) {
+                                holder.checkBox.setVisibility(View.VISIBLE);
+                                holder.checkBox.setChecked(true);
+
+                            }*/
+
                         }
 
 
                     } else {
 
-                        holder.checkBox.setVisibility(View.VISIBLE);
-                        holder.checkBox.setChecked(true);
 
                         mFileList.get(position).setIsSelected(true);
                         callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
+
+
+                      /*  if (!isSearching) {
+                            holder.checkBox.setVisibility(View.VISIBLE);
+                            holder.checkBox.setChecked(true);
+
+                        }*/
                     }
 
 
@@ -184,6 +212,13 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         return this.SelectLimitCounter;
     }
 
+    public void setIsSearching(Boolean searching) {
+        this.isSearching = searching;
+    }
+
+    public Boolean getIsSearching() {
+        return isSearching;
+    }
 
     //to declare item in recyclerview (textview,image)
     public static class MyViewHolder extends RecyclerView.ViewHolder {

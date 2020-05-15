@@ -44,10 +44,10 @@
         android:id="@+id/Text_view_Item_Document_FileSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="File size"
         android:layout_below="@+id/Text_view_Item_Document_FileName"
         android:layout_toEndOf="@id/Image_view_Item_Document_Icon"
         android:layout_toRightOf="@id/empty_view1"
+        android:text="File size"
 
         android:textStyle="bold|italic" />
 
@@ -59,17 +59,18 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
-        android:visibility="gone"
-        android:src="@drawable/document_item_check" />
+        android:src="@drawable/document_item_check"
+        android:visibility="gone" />
+
     <CheckBox
-        android:layout_width="wrap_content"
         android:id="@+id/Doc_Picker_checkbox"
-        android:enabled="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+        android:layout_alignParentRight="true"
+        android:checked="true"
+        android:enabled="false"
 
-        android:visibility="gone"
-
-        android:layout_height="wrap_content"/>
+        android:visibility="gone" />
 
 </RelativeLayout>
