@@ -145,7 +145,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
 
         if(mfpMainSharedViewModel.getSearching().getValue() != null){
-
             searching = mfpMainSharedViewModel.getSearching().getValue();
         } else {
             mfpMainSharedViewModel.setSearching(false);
