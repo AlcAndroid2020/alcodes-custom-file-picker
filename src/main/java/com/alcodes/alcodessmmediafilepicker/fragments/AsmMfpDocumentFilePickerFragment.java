@@ -59,9 +59,9 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
 
         mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), "PDF");
         mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), "DOCX");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), "PPT");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
+//        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), "PPT");
+//        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
+//        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
 
 
         //adapter setup

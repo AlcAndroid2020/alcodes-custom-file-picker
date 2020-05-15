@@ -80,7 +80,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         setHasOptionsMenu(true);
 
 
-
     }
 
     @Override
@@ -143,6 +142,10 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
             }
         });
+        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+        ArrayList<String> FilType = new ArrayList<>();
+        FilType.add(pdf);
+
 
         if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
@@ -152,13 +155,24 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
         if (mDocumentViewModel.getMyFileList().getValue() != null &&
                 mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
+
+            mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+                @Override
+                public void onChanged(ArrayList<MyFile> myFiles) {
+                    if (myFiles.size() != 0) {
+                        if (myFiles.get(0).getFileType() == "PDF") {
+
+                            mFileList = myFiles;
+                            initAdapter();
+                        }
+                    }
+                }
+            });
 
 
         } else {
-            String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-            ArrayList<String> FilType = new ArrayList<>();
+            pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+            FilType = new ArrayList<>();
             FilType.add(pdf);
             mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
                 @Override
@@ -174,6 +188,8 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             });
 
         }
+
+        ///////////////////////////////////////////////////
 
 
     }

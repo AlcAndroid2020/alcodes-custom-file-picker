@@ -136,8 +136,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
                     //to active action mode as pervious tab already selected item
-                   // if (mActionMode == null)
-                     //   mActionMode = getActivity().startActionMode(mActionModeCallback);
+                    // if (mActionMode == null)
+                    //   mActionMode = getActivity().startActionMode(mActionModeCallback);
                     Toast.makeText(getContext(), "active action mode doc", Toast.LENGTH_SHORT).show();
 
                 }
@@ -175,26 +175,36 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         });
 
 
-
-
         if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
         } else {
             mDocumentViewModel.setIsSearching(false);
         }
 
+        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
+        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
+        ArrayList<String> FileType = new ArrayList<>();
+        FileType.addAll(Arrays.asList(doc, docx));
+
         if (mDocumentViewModel.getMyFileList().getValue() != null &&
                 mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
-
+            mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+                @Override
+                public void onChanged(ArrayList<MyFile> myFiles) {
+                    if (myFiles.size() != 0) {
+                        if (myFiles.get(0).getFileType() == "doc") {
+                            mFileList = myFiles;
+                            initAdapter();
+                        }
+                    }
+                }
+            });
 
         } else {
-            String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
-            String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
-            ArrayList<String> FileType = new ArrayList<>();
+            doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
+            docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
+            FileType = new ArrayList<>();
             FileType.addAll(Arrays.asList(doc, docx));
-
 
             mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
                 @Override
@@ -237,7 +247,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
 
-         searchView = (SearchView) menu.findItem(R.id.Doc_FilePicker_SearchFilter).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.Doc_FilePicker_SearchFilter).getActionView();
 
         if (!isSearching) {
             if (mDocumentViewModel.getSearchingText().getValue() != null && !mDocumentViewModel.getSearchingText().getValue().equals("")) {
@@ -292,6 +302,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         return super.onOptionsItemSelected(item);
 
     }
+
     private void PromptLimitDialog() {
 
 
@@ -401,7 +412,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             unSelectItem.setVisible(true);
 
 
-
             selectall = menu.findItem(R.id.Doc_FilePicker_SelectAll);
             if (!isLimited)
                 selectall.setVisible(true);
@@ -447,8 +457,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 resetFileList();
                 //close actionmode
                 mActionMode.finish();
-
-
 
 
             }
@@ -553,6 +561,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mAdapter.getFilter().filter(newText);
         return false;
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -581,7 +590,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     @Override
     public void onPause() {
         super.onPause();
-        mDocumentViewModel.saveMyFileList(mFileList);
+        mDocumentViewModel.setFileList(mFileList);
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
     }
