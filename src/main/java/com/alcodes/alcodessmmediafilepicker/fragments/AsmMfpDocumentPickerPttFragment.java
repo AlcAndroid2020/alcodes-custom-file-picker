@@ -133,11 +133,25 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                     TotalselectedList = strings;
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
+                    //to active action mode as pervious tab already selected item
+                    //if (mActionMode == null)
+                    //    mActionMode = getActivity().startActionMode(mActionModeCallback);
+                    Toast.makeText(getContext(), "active action mode ptt", Toast.LENGTH_SHORT).show();
+
+                }
+                //when unselect all this able to clear all  selected item
+                if(strings.size()==0){
+                    recyclerView.setAdapter(null);
+
+                    for (int i = 0; i < mFileList.size(); i++) {
+                        if (mFileList.get(i).getIsSelected())
+                            mFileList.get(i).setIsSelected(false);
+                    }
+                    initAdapter();
                 }
             }
         });
         mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
-        Toast.makeText(getContext(), mMaxFileSelection + " max" + mAdapter.getSelectLimitCounter(), Toast.LENGTH_SHORT).show();
         if (mMaxFileSelection != 0)
             isLimited = true;
         //get user selection limit ,by default is 10item
@@ -298,7 +312,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         //  mActionMode.invalidate();
         mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
         mDocumentViewModel.setSelectionList(TotalselectedList);
-        Toast.makeText(getContext(), mMaxFileSelection + " test", Toast.LENGTH_SHORT).show();
 
     }
 
