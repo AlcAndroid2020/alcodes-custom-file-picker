@@ -67,6 +67,9 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     private Boolean isLimited = false;
     private int mMaxFileSelection;
 
+    private SearchView.OnQueryTextListener queryTextListener;
+    SearchView searchView;
+
     public AsmMfpDocumentPickerXlsFragment() {
 
     }
@@ -235,12 +238,30 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
 
         //for search filter
-        MenuItem searchItem = menu.findItem(R.id.Doc_FilePicker_SearchFilter);
 
+        searchView = (SearchView) menu.findItem(R.id.Doc_FilePicker_SearchFilter).getActionView();
 
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint("Search..");
+        if (!isSearching) {
+            if (mDocumentViewModel.getSearchingText().getValue() != null && !mDocumentViewModel.getSearchingText().getValue().equals("")) {
+
+                searchView.setQuery(mDocumentViewModel.getSearchingText().getValue() + "", true);
+            }
+        }
+        queryTextListener = new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                mDocumentViewModel.setSearchingText(s);
+                return false;
+            }
+        };
+        searchView.setOnQueryTextListener(queryTextListener);
+
 
         MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
         if (isLimited)
