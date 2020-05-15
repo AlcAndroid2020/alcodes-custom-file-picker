@@ -1,6 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -301,12 +302,17 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         });
 
         MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
+        MenuItem selectFileTpyeItem = menu.findItem(R.id.SelectFileType);
         if (isInSideAlbum) {
-            selectAllItem.setVisible(true);
+            if(selectionList.size() == mMaxFileSelection || selectionList.size() == myFileList.size())
+                selectAllItem.setVisible(true);
+            selectFileTpyeItem.setVisible(false);
         } else {
             selectAllItem.setVisible(false);
+            selectFileTpyeItem.setVisible(true);
         }
     }
+
 
     private void sortingMyFileList(String sortingStyle) {
         if (sortingStyle.equals("SortingNameAscending")) {
@@ -475,7 +481,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //list to get file in same folder
         myFileList.clear();
         mfpMainSharedViewModel.clearMyFileList();
-        ArrayList<String> filelist = new ArrayList<>();
+        ArrayList<String> fileList = new ArrayList<>();
         if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
 
             String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -524,8 +530,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 myFile.setIsFolder(true);
                 myFile.setFolderID(FolderID);
 
-                if (!filelist.contains(foldername)) {
-                    filelist.add(foldername);
+                if (!fileList.contains(foldername)) {
+                    fileList.add(foldername);
                     myFileList.add(myFile);
                     mfpMainSharedViewModel.addFileToMyFileList(myFile);
                 } else {
@@ -839,6 +845,20 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             //unselection
             MenuItem unSelectItem = menu.findItem(R.id.UnSelectAll);
             unSelectItem.setVisible(true);
+
+            //Sorting
+            MenuItem sortingItem = menu.findItem(R.id.sorting);
+            sortingItem.setVisible(false);
+
+            //SelectFileType
+            MenuItem selectFileTypeItem = menu.findItem(R.id.SelectFileType);
+            selectFileTypeItem.setVisible(false);
+
+            //selectAll
+            MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
+            if(selectionList.size() == mMaxFileSelection || selectionList.size() == myFileList.size())
+            selectAllItem.setVisible(false);
+
 
             mode.setTitle(selectionList.size() + "item(s) selected");
             return true;
