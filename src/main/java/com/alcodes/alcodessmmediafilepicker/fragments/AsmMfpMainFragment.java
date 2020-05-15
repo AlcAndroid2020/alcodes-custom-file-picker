@@ -1,6 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,10 @@ import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePic
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpRecyclerViewFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.MainBindingCallback;
+import com.alcodes.alcodessmmediafilepicker.utils.AsmMfpSharedPreferenceHelper;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
+
+import timber.log.Timber;
 
 public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback {
     public static final String EXTRA_INT_MAX_FILE_SELECTION = "EXTRA_INT_MAX_FILE_SELECTION";
@@ -48,15 +52,29 @@ public class AsmMfpMainFragment extends Fragment  implements MainBindingCallback
         // Init binding callback.
         mDataBinding.setBindingCallback(this);
         mfpMainSharedViewModel = new ViewModelProvider(
-                this,
+                mNavController.getBackStackEntry(R.id.asm_mfp_nav_main),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())
         ).get(AsmMfpCustomFilePickerViewModel.class);
 
         if(requireActivity().getIntent().getExtras() != null){
+            //When it was directing to here from Main Module
             mfpMainSharedViewModel.setMaxSelection(requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
-        }else {
-            mfpMainSharedViewModel.setMaxSelection(0);
+            //Save maxFileSelection into Shared Preferences
+            AsmMfpSharedPreferenceHelper.getInstance(requireContext())
+                    .edit()
+                    .putInt(EXTRA_INT_MAX_FILE_SELECTION, requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0))
+                    .apply();
+        }else{
+            //When it was directing to here within Sub Module
+            if(mfpMainSharedViewModel.getMaxSelection().getValue() != null){
+                mfpMainSharedViewModel.setMaxSelection(mfpMainSharedViewModel.getMaxSelection().getValue());
+            }else{
+                //When it returns from another acitivity, get the shared preference value
+                mfpMainSharedViewModel.setMaxSelection(AsmMfpSharedPreferenceHelper.getInstance(requireContext()).getInt(EXTRA_INT_MAX_FILE_SELECTION,0));
+            }
         }
+
+        Timber.e("" + mfpMainSharedViewModel.getMaxSelection().getValue());
     }
 
 
