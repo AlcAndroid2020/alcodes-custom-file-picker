@@ -3,6 +3,7 @@ package com.alcodes.alcodessmmediafilepicker.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -58,6 +59,10 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     private int SelecLimitCount;
     private Boolean isSelectedAll = false;
 
+    private Parcelable savedRecyclerLayoutState;
+    private static String LIST_STATE = "list_state";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
+
     private AsmMfpCustomFilePickerViewModel mfpMainSharedViewModel;
 
     public AsmMfpDocumentPickerPdfFragment() {
@@ -67,7 +72,14 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
+
+//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+//        manager.setOrientation(LinearLayoutManager.VERTICAL);
+//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
+//        recyclerView.setLayoutManager(manager);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         initAdapter();
@@ -78,6 +90,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
 
 
     }
@@ -142,10 +155,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
             }
         });
-        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-        ArrayList<String> FilType = new ArrayList<>();
-        FilType.add(pdf);
-
 
         if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
@@ -153,26 +162,14 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setIsSearching(false);
         }
 
-        if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
 
-            mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-                @Override
-                public void onChanged(ArrayList<MyFile> myFiles) {
-                    if (myFiles.size() != 0) {
-                        if (myFiles.get(0).getFileType() == "PDF") {
-
-                            mFileList = myFiles;
-                            initAdapter();
-                        }
-                    }
-                }
-            });
-
-
+        if (savedInstanceState != null) {
+            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+            initAdapter();
         } else {
-            pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-            FilType = new ArrayList<>();
+            String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+            ArrayList<String> FilType = new ArrayList<>();
             FilType.add(pdf);
             mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
                 @Override
@@ -186,11 +183,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                     }
                 }
             });
-
         }
-
-        ///////////////////////////////////////////////////
-
 
     }
 
@@ -473,9 +466,9 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     @Override
     public void onResume() {
         super.onResume();
-        if (mDocumentViewModel.getMyFileList().getValue() != null) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-        }
+//        if (mDocumentViewModel.getMyPdfFileList().getValue() != null) {
+//            mFileList = mDocumentViewModel.getMyPdfFileList().getValue();
+//        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
         }
@@ -498,8 +491,34 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     @Override
     public void onPause() {
         super.onPause();
-        mDocumentViewModel.saveMyFileList(mFileList);
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+
+//        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+//        ArrayList<String> FilType = new ArrayList<>();
+//        FilType.add(pdf);
+//        mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+//            @Override
+//            public void onChanged(ArrayList<MyFile> myFiles) {
+//                if (myFiles.size() != 0) {
+//                    if (myFiles.get(0).getFileType() == "PDF") {
+//
+//                        mFileList = myFiles;
+                        outState.putParcelableArrayList(LIST_STATE, mFileList);
+                        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
+//                    }
+//                }
+//            }
+//        });
+
+
+
+
     }
 }

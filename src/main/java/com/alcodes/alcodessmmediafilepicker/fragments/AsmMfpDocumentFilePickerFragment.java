@@ -48,6 +48,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //   return super.onCreateView(inflater, container, savedInstanceState);
+
         mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
 
         tabLayout = mDataBinding.DocFilePickerTabLayout;
@@ -59,9 +60,9 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
 
         mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), "PDF");
         mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), "DOCX");
-//        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), "PPT");
-//        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
-//        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), "PPT");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
 
 
         //adapter setup

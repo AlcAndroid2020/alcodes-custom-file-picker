@@ -126,12 +126,6 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         isSwitched.setValue(IsSwitched);
     }
 
-    public void saveMyFileList(ArrayList<MyFile> myFileList){
-        mMyFileList.setValue(myFileList);
-    }
-    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
-        return mMyFileList;
-    }
 
 
     public MutableLiveData<String> getSearchingText() {
@@ -141,6 +135,22 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     public void setSearchingText(String searchingText){
         mSearchingText.setValue(searchingText);
     }
+
+
+//    public void saveMyFileList(ArrayList<MyFile> myFileList){
+//        mMyFileList.setValue(myFileList);
+//    }
+//    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
+//        return mMyFileList;
+//    }
+//
+//
+//    public void saveMyPdfFileList(ArrayList<MyFile> myFileList){
+//        mMyFileList.setValue(myFileList);
+//    }
+//    public MutableLiveData<ArrayList<MyFile>> getMyPdfFileList() {
+//        return mMyFileList;
+//    }
 
 
 }
