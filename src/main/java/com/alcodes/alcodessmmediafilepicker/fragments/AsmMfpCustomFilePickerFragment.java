@@ -53,8 +53,6 @@ import timber.log.Timber;
 public class AsmMfpCustomFilePickerFragment extends Fragment
         implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback, SortByDialogCallback {
 
-    public static final String EXTRA_INT_MAX_FILE_SELECTION = "EXTRA_INT_MAX_FILE_SELECTION";
-
     private static final String DEFAULT_SORTING_STYLE = "SortingDateDescending";
 
     private AsmMfpFragmentCustomFilePickerBinding mDataBinding;
@@ -111,10 +109,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         Intent intent = requireActivity().getIntent();
         Bundle extras = intent.getExtras();
 
-        if(extras != null){
-            mMaxFileSelection = extras.getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
-        }
-
         //Init AppCompatActivity
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
 
@@ -126,13 +120,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mfpMainSharedViewModel = new ViewModelProvider(
-                mNavController.getBackStackEntry(R.id.asm_mfp_mainfragment),
+                mNavController.getBackStackEntry(R.id.asm_mfp_nav_main),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())
         ).get(AsmMfpCustomFilePickerViewModel.class);
-
-
-
-      
 
         if(mfpMainSharedViewModel.getMaxSelection().getValue() != null){
             mMaxFileSelection = mfpMainSharedViewModel.getMaxSelection().getValue();
@@ -374,6 +364,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectionList.clear();
             //Before selecting all, check whether there is a max file selection.
             for (int i = 0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : myFileList.size()); i++) {
+                // To Prevent Index Out Of Bound when the condition is based on mMaxFileSelection.
+                // (E.g. maxFileSelection: 9 but myFileList: 4)
+                if(i >= myFileList.size()){ break; }
                 myFileList.get(i).setIsSelected(true);
                 selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
             }
@@ -464,7 +457,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         } else if (PickerFileType.equals("Document")) {
             mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
             Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
-            intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
+            intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
 
             startActivity(intent);
         }

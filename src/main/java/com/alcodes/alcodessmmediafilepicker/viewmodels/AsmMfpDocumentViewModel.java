@@ -13,6 +13,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment;
+import com.alcodes.alcodessmmediafilepicker.utils.AsmMfpSharedPreferenceHelper;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.io.File;
@@ -50,6 +52,12 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
 
     public void setSelectionLimit(Integer count) {
         SelectionLimit.setValue(count);
+
+        //Save into SharedPreferences so that customFilePickerActivity is updated as well
+        AsmMfpSharedPreferenceHelper.getInstance(getApplication())
+                .edit()
+                .putInt(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, count)
+                .apply();
     }
 
     public void setFileList(ArrayList<MyFile> list) {
