@@ -43,7 +43,7 @@ import java.util.Arrays;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpCustomFilePickerFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
+public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
     View view;
     private RecyclerView recyclerView;
     private NavController mNavController;
@@ -59,13 +59,15 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     //for action mode custom search bar
     private EditText CustomSearchBar;
     private Button ClearTextBtn;
-    private Boolean isSearching = false;
+    private Boolean isSearching;
 
     //for limit selection
     private int SelecLimitCount;
     //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
+    private SearchView searchView;
+    private Integer mViewPagerPosition;
 
     public AsmMfpDocumentPickerDocxFragment() {
 
@@ -100,13 +102,12 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mAdapter.getFilter().filter(s.toString());
+                mDocumentViewModel.setSearchingText(s.toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                mAdapter.getFilter().filter(s.toString());
-
-
             }
         });
         ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
@@ -114,6 +115,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             @Override
             public void onClick(View v) {
                 CustomSearchBar.setText(null);
+                CustomSearchBar.setVisibility(View.INVISIBLE);
+                v.setVisibility(View.INVISIBLE);
 
                 initAdapter();
 
@@ -135,8 +138,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                     //to active action mode as pervious tab already selected item
                    // if (mActionMode == null)
                      //   mActionMode = getActivity().startActionMode(mActionModeCallback);
-                    Toast.makeText(getContext(), "active action mode doc", Toast.LENGTH_SHORT).show();
-
                 }
 
                 //when unselect all this able to clear all  selected item
@@ -171,54 +172,58 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             }
         });
 
-
-
-
         if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
         } else {
             mDocumentViewModel.setIsSearching(false);
         }
 
-        if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
-
-
-        } else {
+//        if (mDocumentViewModel.getMyFileList().getValue() != null &&
+//                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
+//            mFileList = mDocumentViewModel.getMyFileList().getValue();
+//            initAdapter();
+//
+//
+//        } else {
             String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
             String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
             ArrayList<String> FileType = new ArrayList<>();
             FileType.addAll(Arrays.asList(doc, docx));
-
-
-            mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-                @Override
-                public void onChanged(ArrayList<MyFile> myFiles) {
-                    if (myFiles.size() != 0) {
-                        if (myFiles.get(0).getFileType() == "doc") {
-                            mFileList = myFiles;
-                            initAdapter();
-                        }
-                    }
-                }
-            });
-        }
-
-
-        mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean != null) {
-                    isSearching = aBoolean;
-                }
-            }
-        });
+            mFileList = mDocumentViewModel.getFileList(FileType, "doc").getValue();
+//        }
 
         //to active action mode when switch to another tab
 
+        //to active action mode when switch to another tab
+        if(mDocumentViewModel.getViewPagerPosition().getValue() != null){
+            mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
+        }
 
+        mDocumentViewModel.getViewPagerPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer position) {
+                if(!mViewPagerPosition.equals(position)){
+                    mViewPagerPosition = position;
+                    if(mDocumentViewModel.getSearchingText().getValue() != null) {
+                        if(searchView != null){
+                            searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), true);
+                        }
+                    }
+                    if (mDocumentViewModel.getIsSearching().getValue() != null) {
+                        isSearching = mDocumentViewModel.getIsSearching().getValue();
+                        if (isSearching) {
+                            CustomSearchBar.setVisibility(View.VISIBLE);
+                            ClearTextBtn.setVisibility(View.VISIBLE);
+                        }
+                        //click search btn for second time to hide the custom search bar
+                        else {
+                            CustomSearchBar.setVisibility(View.INVISIBLE);
+                            ClearTextBtn.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -236,11 +241,12 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
         //for search filter
         MenuItem searchItem = menu.findItem(R.id.Doc_FilePicker_SearchFilter);
-
-
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search..");
+
+        if(mDocumentViewModel.getSearchingText().getValue() != null) {
+            searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), true);
+        }
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -258,7 +264,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
         if (isLimited)
             SelectAll.setVisible(false);
-
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -280,16 +285,12 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         }
         if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
             PromptLimitDialog();
-
-
         }
 
         return super.onOptionsItemSelected(item);
 
     }
     private void PromptLimitDialog() {
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Limit File Selection ");
         final EditText input = new EditText(getContext());
@@ -343,7 +344,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
         mDocumentViewModel.setSelectionList(TotalselectedList);
 
-
     }
 
     @Override
@@ -352,8 +352,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         for (int i = 0; i < TotalselectedList.size(); i++) {
             if (TotalselectedList.get(i).equals(uri.toString()))
                 TotalselectedList.remove(i);
-
-
         }
         mDocumentViewModel.setSelectionList(TotalselectedList);
         //to reactive selectall
@@ -402,7 +400,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 selectall.setVisible(true);
 
             else
-
                 selectall.setVisible(false);
 
 
@@ -414,9 +411,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
             if (!isLimited)
                 selectall.setVisible(true);
-
             else
-
                 selectall.setVisible(false);
             return false;
         }
@@ -442,14 +437,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 resetFileList();
                 //close actionmode
                 mActionMode.finish();
-
-
-
-
             }
             if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
-
-
                 if (!isSearching) {
                     CustomSearchBar.setVisibility(View.VISIBLE);
                     ClearTextBtn.setVisibility(View.VISIBLE);
@@ -461,8 +450,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                     ClearTextBtn.setVisibility(View.INVISIBLE);
                     mDocumentViewModel.setIsSearching(false);
                 }
-
-
             }
             if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
                 PromptLimitDialog();
@@ -494,13 +481,11 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             //hide custom search bar
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
 
             //for refresh + clear all list
             // resetFileList();
+            mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
-            mActionMode = null;
-
         }
     };
 
@@ -514,8 +499,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         //update viewmodel as adapter will update along
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setSelectionLimit(SelecLimitCount);
-
-
     }
 
 
@@ -528,32 +511,11 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     }
 
     @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-
-        mAdapter.getFilter().filter(newText);
-        return false;
-    }
-    @Override
     public void onResume() {
         super.onResume();
-        if (mDocumentViewModel.getMyFileList().getValue() != null) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-        }
+//        if (mDocumentViewModel.getMyFileList().getValue() != null) {
+//            mFileList = mDocumentViewModel.getMyFileList().getValue();
+//        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
         }
@@ -565,11 +527,11 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             }
             //click search btn for second time to hide the custom search bar
             else {
-
                 CustomSearchBar.setVisibility(View.INVISIBLE);
                 ClearTextBtn.setVisibility(View.INVISIBLE);
             }
         }
+        initAdapter();
 
     }
 
@@ -581,4 +543,13 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mDocumentViewModel.setIsSearching(isSearching);
     }
 
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem item) {
+        return false;
+    }
 }

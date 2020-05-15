@@ -56,16 +56,9 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         return mSelectionList;
     }
 
-    public void saveSelectionList(ArrayList<Uri> selectionList){
+    public void saveSelectionList(ArrayList<Uri> selectionList) {
         mSelectionList.setValue(selectionList);
     }
-
-    /*public void removeSelectionList(Uri unSelectionList){
-        List<Uri> dataHolders = mSelectionList.getValue();
-        int getIndex = dataHolders.indexOf(unSelectionList);
-
-        mSelectionList.getValue().remove(getIndex);
-    }*/
 
     public void clearSelectionList(){
         mSelectionList.setValue(null);

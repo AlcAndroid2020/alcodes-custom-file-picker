@@ -215,7 +215,6 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     public class CustomFilter extends Filter {
 
         @Override
-
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
             resultlist = new ArrayList<>();

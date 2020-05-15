@@ -28,6 +28,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> isSwitched = new MutableLiveData<>(false);
     private final MutableLiveData<ArrayList<MyFile>> mMyFileList = new MutableLiveData<>();
     private final MutableLiveData<String>  mSearchingText = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
 
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
@@ -53,12 +54,8 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     }
 
     public void setFileList(ArrayList<MyFile> list) {
-
-
         mFileList.setValue(list);
     }
-
-    ;
 
     public LiveData<ArrayList<MyFile>> getFileList(ArrayList<String> FileTypes, String type) {
 
@@ -142,5 +139,11 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         mSearchingText.setValue(searchingText);
     }
 
+    public MutableLiveData<Integer> getViewPagerPosition() {
+        return mViewPagerPosition;
+    }
 
+    public void setViewPagerPosition(Integer position){
+        mViewPagerPosition.setValue(position);
+    }
 }

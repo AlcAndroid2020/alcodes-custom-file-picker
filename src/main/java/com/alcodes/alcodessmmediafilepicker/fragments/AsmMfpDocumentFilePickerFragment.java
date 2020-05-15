@@ -6,10 +6,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.viewpager.widget.ViewPager;
@@ -19,6 +21,7 @@ import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerA
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerViewPagerAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
+import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -32,6 +35,8 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     private Boolean isSelected;
     private ArrayList<MyFile> myfilelist = new ArrayList<>();
     AsmMfpDocumentPickerViewPagerAdapter mAdapter;
+    private Integer mViewPagerPosition;
+    private AsmMfpDocumentViewModel mDocumentViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +47,33 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
+                get(AsmMfpDocumentViewModel.class);
+
+        mViewPagerPosition = viewPager.getCurrentItem();
+        mDocumentViewModel.setViewPagerPosition(viewPager.getCurrentItem());
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position != mViewPagerPosition){
+                    mViewPagerPosition = position;
+                    mDocumentViewModel.setViewPagerPosition(position);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Nullable
@@ -63,13 +95,25 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
         mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
 
-
         //adapter setup
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-
         return mDataBinding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mDocumentViewModel.getViewPagerPosition().getValue() != null){
+            mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mDocumentViewModel.setViewPagerPosition(mViewPagerPosition);
     }
 
     @Override
@@ -90,7 +134,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     public void refreshFragments() {
         tabLayout.invalidate();
         tabLayout.refreshDrawableState();
-
     }
 
 }
