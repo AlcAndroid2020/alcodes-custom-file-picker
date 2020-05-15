@@ -27,7 +27,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
 
     private MutableLiveData<Boolean> isSwitched = new MutableLiveData<>(false);
     private final MutableLiveData<ArrayList<MyFile>> mMyFileList = new MutableLiveData<>();
-    private final MutableLiveData<String>  mSearchingText = new MutableLiveData<>();
+    private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
 
 
@@ -123,19 +123,12 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         isSwitched.setValue(IsSwitched);
     }
 
-    public void saveMyFileList(ArrayList<MyFile> myFileList){
-        mMyFileList.setValue(myFileList);
-    }
-    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
-        return mMyFileList;
-    }
-
 
     public MutableLiveData<String> getSearchingText() {
         return mSearchingText;
     }
 
-    public void setSearchingText(String searchingText){
+    public void setSearchingText(String searchingText) {
         mSearchingText.setValue(searchingText);
     }
 
@@ -143,7 +136,22 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         return mViewPagerPosition;
     }
 
-    public void setViewPagerPosition(Integer position){
+    public void setViewPagerPosition(Integer position) {
         mViewPagerPosition.setValue(position);
     }
+//    public void saveMyFileList(ArrayList<MyFile> myFileList){
+//        mMyFileList.setValue(myFileList);
+//    }
+//    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
+//        return mMyFileList;
+//    }
+//
+//
+//    public void saveMyPdfFileList(ArrayList<MyFile> myFileList){
+//        mMyFileList.setValue(myFileList);
+//    }
+//    public MutableLiveData<ArrayList<MyFile>> getMyPdfFileList() {
+//        return mMyFileList;
+//    }
+
 }

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -69,6 +70,10 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     private Integer mViewPagerPosition;
     private SearchView searchView;
 
+    private Parcelable savedRecyclerLayoutState;
+    private static String LIST_STATE = "list_state";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
+
     public AsmMfpDocumentPickerTxtFragment() {
 
     }
@@ -76,9 +81,16 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+//        manager.setOrientation(LinearLayoutManager.VERTICAL);
+//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
+//        recyclerView.setLayoutManager(manager);
+
         initAdapter();
         return view;
     }
@@ -179,9 +191,9 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setIsSearching(false);
         }
 
-//        if (mDocumentViewModel.getMyFileList().getValue() != null &&
-//                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-//            mFileList = mDocumentViewModel.getMyFileList().getValue();
+//        if (savedInstanceState != null) {
+//            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
+//            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
 //            initAdapter();
 //        } else {
             String txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
@@ -193,37 +205,37 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             mFileList = mDocumentViewModel.getFileList(FileType, "TXT").getValue();
 //        }
 
-        //to active action mode when switch to another tab
-        if(mDocumentViewModel.getViewPagerPosition().getValue() != null){
-            mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
-        }
+            //to active action mode when switch to another tab
+            if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
+                mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
+            }
 
-        mDocumentViewModel.getViewPagerPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer position) {
-                if(!mViewPagerPosition.equals(position)){
-                    mViewPagerPosition = position;
-                    if(mDocumentViewModel.getSearchingText().getValue() != null) {
-                        if(searchView != null){
-                            searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), true);
+            mDocumentViewModel.getViewPagerPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+                @Override
+                public void onChanged(Integer position) {
+                    if (!mViewPagerPosition.equals(position)) {
+                        mViewPagerPosition = position;
+                        if (mDocumentViewModel.getSearchingText().getValue() != null) {
+                            if (searchView != null) {
+                                searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), true);
+                            }
                         }
-                    }
-                    if (mDocumentViewModel.getIsSearching().getValue() != null) {
-                        isSearching = mDocumentViewModel.getIsSearching().getValue();
-                        if (isSearching) {
-                            CustomSearchBar.setVisibility(View.VISIBLE);
-                            ClearTextBtn.setVisibility(View.VISIBLE);
-                        }
-                        //click search btn for second time to hide the custom search bar
-                        else {
-                            CustomSearchBar.setVisibility(View.INVISIBLE);
-                            ClearTextBtn.setVisibility(View.INVISIBLE);
+                        if (mDocumentViewModel.getIsSearching().getValue() != null) {
+                            isSearching = mDocumentViewModel.getIsSearching().getValue();
+                            if (isSearching) {
+                                CustomSearchBar.setVisibility(View.VISIBLE);
+                                ClearTextBtn.setVisibility(View.VISIBLE);
+                            }
+                            //click search btn for second time to hide the custom search bar
+                            else {
+                                CustomSearchBar.setVisibility(View.INVISIBLE);
+                                ClearTextBtn.setVisibility(View.INVISIBLE);
+                            }
                         }
                     }
                 }
-            }
-        });
-
+            });
+//        }
     }
 
     @Override
@@ -246,6 +258,12 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         if(mDocumentViewModel.getSearchingText().getValue() != null) {
             searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), true);
         }
+        if (!isSearching) {
+            if (mDocumentViewModel.getSearchingText().getValue() != null && !mDocumentViewModel.getSearchingText().getValue().equals("")) {
+
+                searchView.setQuery(mDocumentViewModel.getSearchingText().getValue() + "", true);
+            }
+        }
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -256,6 +274,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             @Override
             public boolean onQueryTextChange(String newText) {
                 mAdapter.getFilter().filter(newText);
+                mDocumentViewModel.setSearchingText(newText);
                 return false;
             }
         });
@@ -543,8 +562,31 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     @Override
     public void onPause() {
         super.onPause();
-        mDocumentViewModel.saveMyFileList(mFileList);
+
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+//        String txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
+//        String rtx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx");
+//        String rtf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf");
+//        String html = MimeTypeMap.getSingleton().getMimeTypeFromExtension("html");
+//        ArrayList<String> FileType = new ArrayList<>();
+//        FileType.addAll(Arrays.asList(txt, rtx, rtf, html));
+//        mDocumentViewModel.getFileList(FileType, "TXT").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+//            @Override
+//            public void onChanged(ArrayList<MyFile> myFiles) {
+//                if (myFiles.size() != 0) {
+//                    if (myFiles.get(0).getFileType() == "TXT") {
+//                        mFileList = myFiles;
+                        outState.putParcelableArrayList(LIST_STATE, mFileList);
+                        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
+//                    }
+//                }
+//            }
+//        });
     }
 }
