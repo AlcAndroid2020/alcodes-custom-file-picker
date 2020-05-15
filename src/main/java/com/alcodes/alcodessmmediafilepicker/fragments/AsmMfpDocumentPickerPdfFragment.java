@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
+import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
@@ -62,6 +64,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     private int mMaxFileSelection;
     private Integer mViewPagerPosition;
     private SearchView searchView;
+    private AsmMfpFragmentDocumentFilePickerBinding mDataBinding;
 
     private AsmMfpDocumentViewModel mDocumentViewModel;
     private NavController mNavController;
@@ -90,6 +93,8 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
+
         initAdapter();
         return view;
     }
@@ -128,14 +133,30 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 CustomSearchBar.setText(null);
                 CustomSearchBar.setVisibility(View.INVISIBLE);
                 v.setVisibility(View.INVISIBLE);
-
-
             }
         });
 
         mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
+
+        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+        ArrayList<String> FilType = new ArrayList<>();
+        FilType.add(pdf);
+        mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "PDF") {
+
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
+
+        mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
 
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
@@ -151,6 +172,18 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
                 }
 
+                //when unselect all this able to clear all  selected item
+                if (strings.size() == 0) {
+                    recyclerView.setAdapter(null);
+
+                    for (int i = 0; i < mFileList.size(); i++) {
+                        if (mFileList.get(i).getIsSelected()) {
+                            mFileList.get(i).setIsSelected(false);
+
+                        }
+                    }
+                    initAdapter();
+                }
             }
         });
 
@@ -171,20 +204,20 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
         });
 
-        if (mDocumentViewModel.getIsSearching().getValue() != null) {
+
+       if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
         } else {
             mDocumentViewModel.setIsSearching(false);
         }
-
 
 //        if (savedInstanceState != null) {
 //            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
 //            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
 //            initAdapter();
 //        } else {
-            String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-            ArrayList<String> FilType = new ArrayList<>();
+            pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+            FilType = new ArrayList<>();
             FilType.add(pdf);
             mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
 //        }
@@ -219,6 +252,37 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 }
             });
 //        }
+     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
+                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+            initAdapter();
+
+
+        } else {*/
+
+        //}
+        mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean != null) {
+                    isSearching = aBoolean;
+                    mAdapter.setIsSearching(isSearching);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        //to active action mode when switch to another tab
+
+    }
+
+    private void showSelecteditem() {
+        for (int i = 0; i < mFileList.size(); i++) {
+            if (mFileList.get(i).getIsSelected()) {
+                Toast.makeText(getContext(), mFileList.get(i).getFileName(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     @Override
@@ -290,6 +354,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         return super.onOptionsItemSelected(item);
 
     }
+
     private void PromptLimitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Limit File Selection ");
@@ -470,15 +535,12 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 initAdapter();
             }
 
-
             return true;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
             //when user unselect all item / clicked back button action mode
-
             //hide custom search bar
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
@@ -488,7 +550,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             // resetFileList();
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
-
         }
     };
 
@@ -557,8 +618,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-
 //        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
 //        ArrayList<String> FilType = new ArrayList<>();
 //        FilType.add(pdf);
@@ -569,8 +628,8 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 //                    if (myFiles.get(0).getFileType() == "PDF") {
 //
 //                        mFileList = myFiles;
-                        outState.putParcelableArrayList(LIST_STATE, mFileList);
-                        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
+//                        outState.putParcelableArrayList(LIST_STATE, mFileList);
+//                        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
 //                    }
 //                }
 //            }

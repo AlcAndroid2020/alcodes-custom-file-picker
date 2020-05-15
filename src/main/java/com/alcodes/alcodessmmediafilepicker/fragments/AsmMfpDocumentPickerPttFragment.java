@@ -56,7 +56,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
     private AsmMfpFragmentDocumentFilePickerBinding mDataBinding;
     private AsmMfpDocumentViewModel mDocumentViewModel;
 
-
     //for action mode custom search bar
     private EditText CustomSearchBar;
     private Button ClearTextBtn;
@@ -84,6 +83,8 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
+
         initAdapter();
         return view;
     }
@@ -103,6 +104,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         CustomSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
@@ -113,8 +115,8 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
+
         });
         ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
         ClearTextBtn.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +135,26 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
+        String ptt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
+        String pttx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
+
+        ArrayList<String> FileType = new ArrayList<>();
+        FileType.addAll(Arrays.asList(ptt, pttx));
+
+        mDocumentViewModel.getFileList(FileType, "PTT").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "PTT") {
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
+
+        mFileList = mDocumentViewModel.getFileList(FileType, "PTT").getValue();
+
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
             @Override
@@ -147,13 +169,16 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
                 }
 
+
                 //when unselect all this able to clear all  selected item
                 if (strings.size() == 0) {
                     recyclerView.setAdapter(null);
 
                     for (int i = 0; i < mFileList.size(); i++) {
-                        if (mFileList.get(i).getIsSelected())
+                        if (mFileList.get(i).getIsSelected()) {
                             mFileList.get(i).setIsSelected(false);
+
+                        }
                     }
                     initAdapter();
                 }
@@ -185,15 +210,16 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setIsSearching(false);
         }
 
+
 //        if (savedInstanceState != null) {
 //            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
 //            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
 //            initAdapter();
 //        } else {
-            String ptt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
-            String pttx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
+            ptt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
+            pttx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
 
-            ArrayList<String> FileType = new ArrayList<>();
+            FileType = new ArrayList<>();
             FileType.addAll(Arrays.asList(ptt, pttx));
             mFileList = mDocumentViewModel.getFileList(FileType, "PTT").getValue();
 //        }
@@ -229,6 +255,37 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 }
             });
 //        }
+     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
+                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+            initAdapter();
+
+
+        } else {*/
+
+        //}
+
+        mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean != null) {
+                    isSearching = aBoolean;
+                    mAdapter.setIsSearching(isSearching);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        //to active action mode when switch to another tab
+
+    }
+
+    private void showSelecteditem() {
+        for (int i = 0; i < mFileList.size(); i++) {
+            if (mFileList.get(i).getIsSelected()) {
+                Toast.makeText(getContext(), mFileList.get(i).getFileName(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -301,9 +358,8 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         return super.onOptionsItemSelected(item);
 
     }
+
     private void PromptLimitDialog() {
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Limit File Selection ");
         final EditText input = new EditText(getContext());
@@ -558,8 +614,8 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putParcelableArrayList(LIST_STATE, mFileList);
-        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
+//
+//        outState.putParcelableArrayList(LIST_STATE, mFileList);
+//        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
     }
 }

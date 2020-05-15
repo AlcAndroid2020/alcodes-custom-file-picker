@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,6 +83,8 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
+
         initAdapter();
         return view;
     }
@@ -130,6 +131,22 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
+        String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
+        String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
+        ArrayList<String> FileType = new ArrayList<>();
+        FileType.addAll(Arrays.asList(xls, xlsx));
+        mDocumentViewModel.getFileList(FileType, "XLS").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "XLS") {
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
+
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
             @Override
@@ -143,14 +160,15 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                     //   mActionMode = getActivity().startActionMode(mActionModeCallback);
 
                 }
-
                 //when unselect all this able to clear all  selected item
                 if (strings.size() == 0) {
                     recyclerView.setAdapter(null);
 
                     for (int i = 0; i < mFileList.size(); i++) {
-                        if (mFileList.get(i).getIsSelected())
+                        if (mFileList.get(i).getIsSelected()) {
                             mFileList.get(i).setIsSelected(false);
+
+                        }
                     }
                     initAdapter();
                 }
@@ -176,22 +194,34 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             }
         });
 
-        if (mDocumentViewModel.getIsSearching().getValue() != null) {
+       if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
         } else {
             mDocumentViewModel.setIsSearching(false);
         }
-
 //        if (savedInstanceState != null) {
 //            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
 //            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
 //            initAdapter();
 //        } else {
-            String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
-            String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
+            xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
+            xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
 
-            ArrayList<String> FileType = new ArrayList<>();
+            FileType = new ArrayList<>();
             FileType.addAll(Arrays.asList(xls, xlsx));
+
+            mDocumentViewModel.getFileList(FileType, "XLS").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+                @Override
+                public void onChanged(ArrayList<MyFile> myFiles) {
+                    if (myFiles.size() != 0) {
+                        if (myFiles.get(0).getFileType() == "XLS") {
+                            mFileList = myFiles;
+                            initAdapter();
+                        }
+                    }
+                }
+            });
+
             mFileList = mDocumentViewModel.getFileList(FileType, "XLS").getValue();
 //        }
 
@@ -226,7 +256,30 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                 }
             });
 //        }
+     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
+                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+            initAdapter();
+
+
+        } else {*/
+
+        //}
+
+        mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean != null) {
+                    isSearching = aBoolean;
+                    mAdapter.setIsSearching(isSearching);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        //to active action mode when switch to another tab
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -298,6 +351,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         return super.onOptionsItemSelected(item);
 
     }
+
     private void PromptLimitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Limit File Selection ");
@@ -514,7 +568,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         return true;
     }
 
-    @Override
     public void onResume() {
         super.onResume();
 //        if (mDocumentViewModel.getMyFileList().getValue() != null) {
@@ -550,8 +603,8 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(LIST_STATE, mFileList);
-        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
+//        outState.putParcelableArrayList(LIST_STATE, mFileList);
+//        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
 
     }
 }
