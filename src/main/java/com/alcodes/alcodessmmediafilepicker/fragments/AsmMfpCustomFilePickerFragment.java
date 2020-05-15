@@ -879,6 +879,22 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 }
             }
 
+            if (item.getItemId() == R.id.SelectAll) {
+                //Clear it to avoid duplicate data in the same array list
+                selectionList.clear();
+                //Before selecting all, check whether there is a max file selection.
+                for (int i = 0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : myFileList.size()); i++) {
+                    myFileList.get(i).setIsSelected(true);
+                    selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+                }
+
+                mfpMainSharedViewModel.saveSelectionList(selectionList);
+
+                mActionMode.setTitle(selectionList.size() + "item(s) selected");
+
+                initAdapter();
+            }
+
             //unselect the user selection
             if (item.getItemId() == R.id.UnSelectAll) {
                 selectionList.clear();
