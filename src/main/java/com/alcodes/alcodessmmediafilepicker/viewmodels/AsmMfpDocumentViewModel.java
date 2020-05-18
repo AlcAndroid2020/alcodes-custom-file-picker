@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.ActionMode;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -31,6 +32,8 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<MyFile>> mMyFileList = new MutableLiveData<>();
     private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
+    private MutableLiveData<ActionMode> mActionModel = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isSwipe =new MutableLiveData<>(false);
 
     private MutableLiveData<ArrayList<MyFile>> mpdfFileList = new MutableLiveData<>(); //to store file list
     private final MutableLiveData<ArrayList<MyFile>> mMypttFileList = new MutableLiveData<>();
@@ -128,13 +131,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         mIsSearch.setValue(IsSearch);
     }
 
-    public LiveData<Boolean> getIsSwitched() {
-        return isSwitched;
-    }
 
-    public void setIsSwtiched(Boolean IsSwitched) {
-        isSwitched.setValue(IsSwitched);
-    }
 
 
     public MutableLiveData<String> getSearchingText() {
@@ -151,6 +148,36 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
 
     public void setViewPagerPosition(Integer position) {
         mViewPagerPosition.setValue(position);
+    }
+
+    //    public void saveMyFileList(ArrayList<MyFile> myFileList){
+//        mMyFileList.setValue(myFileList);
+//    }
+//    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
+//        return mMyFileList;
+//    }
+//
+//
+//    public void saveMyPdfFileList(ArrayList<MyFile> myFileList){
+//        mMyFileList.setValue(myFileList);
+//    }
+//    public MutableLiveData<ArrayList<MyFile>> getMyPdfFileList() {
+//        return mMyFileList;
+//    }
+    public MutableLiveData<ActionMode> getActionMode() {
+
+        return mActionModel;
+    }
+    public void setActionMode(ActionMode ActionMode){
+
+        mActionModel.setValue(ActionMode);
+    }
+    public MutableLiveData<Boolean> getIsSwiped() {
+
+        return isSwipe;
+    }
+    public void setIsSwiped(Boolean isSwipe){
+        this.isSwipe.setValue(isSwipe);
     }
 
     public void saveMyFileList(ArrayList<MyFile> myFileList){
@@ -187,5 +214,4 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     public MutableLiveData<ArrayList<MyFile>> getMyxlsFileList() {
         return mMyxlsFileList;
     }
-
 }

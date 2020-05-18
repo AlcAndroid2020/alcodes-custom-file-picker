@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,6 +54,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
+
         mViewPagerPosition = viewPager.getCurrentItem();
         mDocumentViewModel.setViewPagerPosition(viewPager.getCurrentItem());
 
@@ -70,6 +70,11 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
                     mViewPagerPosition = position;
                     mDocumentViewModel.setViewPagerPosition(position);
                 }
+
+
+                //maintain action mode
+
+                mDocumentViewModel.setIsSwiped(true);
             }
 
             @Override

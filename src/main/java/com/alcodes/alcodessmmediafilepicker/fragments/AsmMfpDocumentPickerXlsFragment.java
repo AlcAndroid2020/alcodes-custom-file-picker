@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,7 +69,10 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     private int mMaxFileSelection;
     private Integer mViewPagerPosition;
     private SearchView searchView;
-
+    private Boolean isSwiped = false;
+    private Parcelable savedRecyclerLayoutState;
+    private static String LIST_STATE = "list_state";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     public AsmMfpDocumentPickerXlsFragment() {
 
@@ -197,14 +201,21 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setIsSearching(false);
         }
 
-        if (mDocumentViewModel.getSelectionList().getValue() != null &&
-                mDocumentViewModel.getSelectionList().getValue().size() != 0) {
-            TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
-            if (mActionMode == null)
-                mActionMode = getActivity().startActionMode(mActionModeCallback);
-            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
+        mDocumentViewModel.getFileList(FileType, "XLS").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "XLS") {
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
 
-        }
+        mFileList = mDocumentViewModel.getFileList(FileType, "XLS").getValue();
+//        }
+
         //to active action mode when switch to another tab
         if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
             mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
@@ -233,7 +244,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                         ClearTextBtn.setVisibility(View.INVISIBLE);
                     }
                 }
-
                 if (mDocumentViewModel.getMyxlsFileList().getValue() != null &&
                         mDocumentViewModel.getMyxlsFileList().getValue().size() != 0) {
                     mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
@@ -242,6 +252,16 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                 }
             }
         });
+//        }
+     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
+                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+            initAdapter();
+
+
+        } else {*/
+
+        //}
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -254,9 +274,12 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             }
         });
 
-
-
-        //to active action mode when switch to another tab
+        mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                isSwiped = aBoolean;
+            }
+        });
     }
 
 
@@ -521,15 +544,31 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //when user unselect all item / clicked back button action mode
-            //hide custom search bar
+            //old code
+       /*
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
+            mDocumentViewModel.setIsSearching(false);
 
             //for refresh + clear all list
             // resetFileList();
-            mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
+            mActionMode = null;*/
+            //if swipe
+            if (isSwiped) {
+                CustomSearchBar.setVisibility(View.INVISIBLE);
+                ClearTextBtn.setVisibility(View.INVISIBLE);
+                mDocumentViewModel.setIsSearching(false);
+                initAdapter();
+                mActionMode = null;
+                mDocumentViewModel.setIsSwiped(false);
+            } else {
+                //if no swipe
+                mActionMode = null;
+
+                resetFileList();
+                initAdapter();
+            }
         }
     };
 
@@ -593,11 +632,13 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
     }
-
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
 
+
         Type = "application/pdf";
+
+
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");

@@ -71,7 +71,14 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     private SearchView searchView;
     private Integer mViewPagerPosition;
 
+
     public String sharefiletype = "";
+
+    private Boolean isSwiped = false;
+    private Parcelable savedRecyclerLayoutState;
+    private static String LIST_STATE = "list_state";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
+
 
     public AsmMfpDocumentPickerDocxFragment() {
 
@@ -268,17 +275,30 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             }
         });
 
-        //to active action mode when switch to another tab
+/*
+        mDocumentViewModel.getActionMode().observe(getViewLifecycleOwner(), new Observer<ActionMode>() {
+            @Override
+            public void onChanged(ActionMode actionMode) {
+                if (actionMode != null) {
 
-    }
+                    mActionMode = actionMode;
+                    Toast.makeText(getContext(), "action mode on docs", Toast.LENGTH_SHORT).show();
+                }
 
-    private void showSelecteditem() {
-        for (int i = 0; i < mFileList.size(); i++) {
-            if (mFileList.get(i).getIsSelected()) {
-                Toast.makeText(getContext(), mFileList.get(i).getFileName(), Toast.LENGTH_SHORT).show();
             }
-        }
+        });*/
+        mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                isSwiped = aBoolean;
+
+
+            }
+        });
+
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -337,9 +357,14 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 mFileList.get(i).setIsSelected(true);
                 TotalselectedList.add(mFileList.get(i).getFileUri());
             }
-            if (mActionMode == null)
+            if (mActionMode == null) {
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
+
+
+
+            }
             mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
+
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
         }
@@ -487,6 +512,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 resetFileList();
                 //close actionmode
                 mActionMode.finish();
+
             }
             if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
                 if (!isSearching) {
@@ -505,6 +531,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 PromptLimitDialog();
             }
             if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
+
                 mDocumentViewModel.setSelectionLimit(0);
                 for (int i = 0; i < mFileList.size(); i++) {
                     //to prevent adding already selected item
@@ -538,16 +565,33 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //when user unselect all item / clicked back button action mode
-
-            //hide custom search bar
+            //old code
+       /*
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
+            mDocumentViewModel.setIsSearching(false);
 
             //for refresh + clear all list
             // resetFileList();
-            mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
+            mActionMode = null;*/
+            //if swipe
+            if (isSwiped) {
+                CustomSearchBar.setVisibility(View.INVISIBLE);
+                ClearTextBtn.setVisibility(View.INVISIBLE);
+                mDocumentViewModel.setIsSearching(false);
+                initAdapter();
+                mActionMode = null;
+                mDocumentViewModel.setIsSwiped(false);
+            } else {
+                //if no swipe
+                mActionMode = null;
+
+                resetFileList();
+                initAdapter();
+            }
+
+
         }
     };
 

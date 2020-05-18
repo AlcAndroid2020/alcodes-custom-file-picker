@@ -69,7 +69,10 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     private int mMaxFileSelection;
     private Integer mViewPagerPosition;
     private SearchView searchView;
-
+    private Boolean isSwiped = false;
+    private Parcelable savedRecyclerLayoutState;
+    private static String LIST_STATE = "list_state";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     public AsmMfpDocumentPickerTxtFragment() {
 
@@ -83,7 +86,10 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
 
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+//        manager.setOrientation(LinearLayoutManager.VERTICAL);
+//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
+//        recyclerView.setLayoutManager(manager);
 
         mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
 
@@ -136,7 +142,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
-
         String txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
         String rtx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx");
         String rtf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf");
@@ -157,7 +162,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         });
 
         mFileList = mDocumentViewModel.getFileList(FileType, "TXT").getValue();
-        
+
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
             @Override
@@ -213,11 +218,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setIsSearching(false);
         }
 
-        //to active action mode when switch to another tab
-        if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
-            mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
-        }
-
         if (mDocumentViewModel.getSelectionList().getValue() != null &&
                 mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
@@ -225,6 +225,11 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
             mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
+        }
+
+        //to active action mode when switch to another tab
+        if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
+            mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
         }
 
         mDocumentViewModel.getViewPagerPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
@@ -249,18 +254,15 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                             ClearTextBtn.setVisibility(View.INVISIBLE);
                         }
                     }
-
-                    if (mDocumentViewModel.getMytxtFileList().getValue() != null &&
-                            mDocumentViewModel.getMytxtFileList().getValue().size() != 0) {
-                        mFileList = mDocumentViewModel.getMytxtFileList().getValue();
-                        initAdapter();
-
-                    }
                 }
             }
         });
+        if (mDocumentViewModel.getMytxtFileList().getValue() != null &&
+                mDocumentViewModel.getMytxtFileList().getValue().size() != 0) {
+            mFileList = mDocumentViewModel.getMytxtFileList().getValue();
+            initAdapter();
 
-
+        }
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -271,9 +273,16 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 }
             }
         });
-        //to active action mode when switch to another tab
+
+        mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                isSwiped = aBoolean;
 
 
+            }
+        });
     }
 
     private void showSelecteditem() {
@@ -531,7 +540,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 mDocumentViewModel.setSelectionList(TotalselectedList);
                 initAdapter();
             }
-
             if (item.getItemId() == R.id.ShareWith) {
                 ArrayList<String> FileList = new ArrayList<>();
                 for (int i = 0; i < mDocumentViewModel.getSelectionList().getValue().size(); i++) {
@@ -545,22 +553,38 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 }
 
             }
+
             return true;
         }
 
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //when user unselect all item / clicked back button action mode
-
-            //hide custom search bar
+            //old code
+       /*
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
+            mDocumentViewModel.setIsSearching(false);
 
             //for refresh + clear all list
             // resetFileList();
-            mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
+            mActionMode = null;*/
+            //if swipe
+            if (isSwiped) {
+                CustomSearchBar.setVisibility(View.INVISIBLE);
+                ClearTextBtn.setVisibility(View.INVISIBLE);
+                mDocumentViewModel.setIsSearching(false);
+                initAdapter();
+                mActionMode = null;
+                mDocumentViewModel.setIsSwiped(false);
+            } else {
+                //if no swipe
+                mActionMode = null;
+
+                resetFileList();
+                initAdapter();
+            }
         }
     };
 
