@@ -89,14 +89,11 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         }
 
         //args
-
         String[] args = FileTypes.toArray(new String[FileTypes.size()]);
-
 
         Cursor fileCursor = getApplication().getContentResolver().query(table, column, where, args, null);
 
         while (fileCursor.moveToNext()) {
-
             //your code
             int dataColumn = fileCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
             int sizeColumn = fileCursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE);
@@ -124,7 +121,6 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
 
     public LiveData<Boolean> getIsSearching() {
         return mIsSearch;
-
     }
 
     public void setIsSearching(Boolean IsSearch) {
