@@ -71,6 +71,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     private SearchView searchView;
     private Integer mViewPagerPosition;
 
+    public String sharefiletype = "";
+
     public AsmMfpDocumentPickerDocxFragment() {
 
     }
@@ -132,6 +134,24 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
+        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
+        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
+        ArrayList<String> FileType = new ArrayList<>();
+        FileType.addAll(Arrays.asList(doc, docx));
+
+        mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "doc") {
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
+        mFileList = mDocumentViewModel.getFileList(FileType, "doc").getValue();
+
 
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
@@ -142,8 +162,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
                     //to active action mode as pervious tab already selected item
-                   // if (mActionMode == null)
-                     //   mActionMode = getActivity().startActionMode(mActionModeCallback);
+                    // if (mActionMode == null)
+                    //   mActionMode = getActivity().startActionMode(mActionModeCallback);
                 }
 
                 //when unselect all this able to clear all  selected item
@@ -181,31 +201,21 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         });
 
 
-       if (mDocumentViewModel.getIsSearching().getValue() != null) {
+        if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
         } else {
             mDocumentViewModel.setIsSearching(false);
         }
 
-        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
-        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
-        ArrayList<String> FileType = new ArrayList<>();
-        FileType.addAll(Arrays.asList(doc, docx));
 
-        mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-            @Override
-            public void onChanged(ArrayList<MyFile> myFiles) {
-                if (myFiles.size() != 0) {
-                    if (myFiles.get(0).getFileType() == "doc") {
-                        mFileList = myFiles;
-                        initAdapter();
-                    }
-                }
-            }
-        });
-        mFileList = mDocumentViewModel.getFileList(FileType, "doc").getValue();
+        if (mDocumentViewModel.getSelectionList().getValue() != null &&
+                mDocumentViewModel.getSelectionList().getValue().size() != 0) {
+            TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
+            if (mActionMode == null)
+                mActionMode = getActivity().startActionMode(mActionModeCallback);
+            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
 
-
+        }
 
         //to active action mode when switch to another tab
         if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
@@ -241,9 +251,10 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                     initAdapter();
 
                 }
+
+
             }
         });
-
 
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
@@ -286,7 +297,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search..");
 
-        if(mDocumentViewModel.getSearchingText().getValue() != null) {
+        if (mDocumentViewModel.getSearchingText().getValue() != null) {
             searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), true);
         }
 
@@ -335,6 +346,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
             PromptLimitDialog();
         }
+
 
         return super.onOptionsItemSelected(item);
 
@@ -424,12 +436,15 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         // MenuItem unLimitItem;
         MenuItem selectall;
+
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
             //for select item
             MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
             checkItem.setVisible(true);
+            MenuItem shareItem = menu.findItem(R.id.ShareWith);
+            shareItem.setVisible(true);
             MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
             unSelectItem.setVisible(true);
             selectall = menu.findItem(R.id.Doc_FilePicker_SelectAll);
@@ -504,6 +519,20 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 mDocumentViewModel.setSelectionList(TotalselectedList);
                 initAdapter();
             }
+
+            if (item.getItemId() == R.id.ShareWith) {
+                ArrayList<String> FileList = new ArrayList<>();
+                for (int i = 0; i < mDocumentViewModel.getSelectionList().getValue().size(); i++) {
+
+                    FileList.add(mDocumentViewModel.getSelectionList().getValue().get(i));
+
+                }
+
+                if (mDocumentViewModel.getSelectionList().getValue() != null) {
+                    StartShare(FileList);
+                }
+
+            }
             return true;
         }
 
@@ -564,6 +593,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 ClearTextBtn.setVisibility(View.INVISIBLE);
             }
         }
+
+
         initAdapter();
 
     }
@@ -574,6 +605,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
         mDocumentViewModel.saveMyFileList(mFileList);
+
     }
 
     @Override
@@ -584,6 +616,30 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     @Override
     public boolean onMenuItemActionCollapse(MenuItem item) {
         return false;
+    }
+
+    public void StartShare(ArrayList<String> mFileList) {
+        String Type = "";
+
+        Type = "application/pdf";
+
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType(Type);
+
+        ArrayList<Uri> files = new ArrayList<>();
+
+        for (String path : mFileList /* List of the files you want to send */) {
+            String shareUri = path;
+
+            files.add(Uri.parse(shareUri));
+        }
+
+        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        startActivity(intent);
     }
 
 }
