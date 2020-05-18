@@ -154,11 +154,11 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         //adapter to add fragment
         mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
 
-        mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), "PDF");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), "DOCX");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), "PPT");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), getResources().getString(R.string.pdf));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), getResources().getString(R.string.Word));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), getResources().getString(R.string.powerpoint));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), getResources().getString(R.string.txt));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), getResources().getString(R.string.excel));
 
         //adapter setup
         viewPager.setAdapter(mAdapter);

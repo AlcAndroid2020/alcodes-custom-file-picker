@@ -21,38 +21,38 @@
         app:showAsAction="always|collapseActionView"
         android:icon="@drawable/ic_check_black_24dp"
         android:visible="false"
-        android:title="Done"/>
+        android:title="@string/done"/>
 
     <item
         android:id="@+id/ShareWith"
         app:showAsAction="always|collapseActionView"
         android:visible="false"
-        android:title="Share"/>
+        android:title="@string/Share"/>
     <item
         android:id="@+id/Custom_ChangeLayout"
-        android:title="Grid View Format" />
+        android:title="@string/GridViewFormat" />
 
     <item
         android:id="@+id/sorting"
         app:showAsAction="never"
-        android:title="Sort" />
+        android:title="@string/Sort" />
 
     <item
         android:id="@+id/SelectAll"
         app:showAsAction="never"
-        android:title="Select All" />
+        android:title="@string/SelectAll" />
 
     <item
         android:id="@+id/UnSelectAll"
         app:showAsAction="never"
-        android:title="UnSelect All"
+        android:title="@string/UnSelectAll"
         android:visible="false"
         />
 
     <item
         android:id="@+id/SelectFileType"
         app:showAsAction="never"
-        android:title="SelectFileType"
+        android:title="@string/SelectFileType"
         android:visible="true"
         />
 

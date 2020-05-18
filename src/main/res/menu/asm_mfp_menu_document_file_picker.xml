@@ -5,7 +5,7 @@
     <item
         android:id="@+id/Doc_FilePicker_DoneSelection"
         android:icon="@drawable/ic_check_black_24dp"
-        android:title="Done"
+        android:title="@string/done"
         android:visible="false"
         app:showAsAction="always|collapseActionView" />
 
@@ -17,7 +17,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/Doc_FilePicker_UnselectAll"
-        android:title="Unselect All"
+        android:title="@string/UnSelectAll"
         android:visible="false"
 
         />
@@ -29,12 +29,12 @@
         />
     <item
         android:id="@+id/Doc_FilePicker_SetSelectLimit"
-        android:title="Change Select Limit"
+        android:title="@string/ChangeSelectLimit"
         />
 
     <item
         android:id="@+id/Doc_FilePicker_SelectAll"
-        android:title="Select All"
+        android:title="@string/SelectAll"
 
         />
 
@@ -42,7 +42,7 @@
         android:id="@+id/ShareWith"
         app:showAsAction="always|collapseActionView"
         android:visible="false"
-        android:title="Share"/>
+        android:title="@string/Share"/>
 
 
 </menu>

@@ -421,11 +421,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
     private void promptSelection() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Which file type you prefer ?");
+        builder.setTitle(getResources().getString(R.string.SelectMessage1));
         builder.setCancelable(false);
-        builder.setMessage("select one of these");
+        builder.setMessage(getResources().getString(R.string.SelectMessage1));
 
-        builder.setPositiveButton("Image", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.image), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 PickerFileType = "Image";
@@ -434,7 +434,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
             }
         });
-        builder.setNegativeButton("Video", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.video), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 PickerFileType = "Video";
@@ -443,7 +443,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
             }
         });
-        builder.setNeutralButton("Document", new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(getResources().getString(R.string.document), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 PickerFileType = "Document";
@@ -788,7 +788,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
 
         if (mActionMode != null)
-            mActionMode.setTitle(selectionList.size() + "item(s) selected");
+            mActionMode.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
         if (selectionList.size() == 0) {
             mActionMode.setTitle("Alcodes Gallery Viewer Demo");
@@ -812,7 +812,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (mActionMode == null) {
             mActionMode = mAppCompatActivity.startSupportActionMode(mActionModeCallback);
         }
-        mActionMode.setTitle(selectionList.size() + "item(s) selected");
+        mActionMode.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
@@ -852,7 +852,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectAllItem.setVisible(false);
 
 
-            mode.setTitle(selectionList.size() + "item(s) selected");
+            mode.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
             return true;
         }
 
@@ -902,7 +902,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
                 mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
 
-                mActionMode.setTitle(selectionList.size() + "item(s) selected");
+                mActionMode.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
                 initAdapter();
             }

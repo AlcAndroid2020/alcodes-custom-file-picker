@@ -212,7 +212,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
             if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
-            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
         }
 
@@ -337,7 +337,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             }
             if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
-            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
         }
@@ -399,7 +399,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         //select all remaining
         //   if (!isSelectedAll)
         //  mActionMode.invalidate();
-        mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+        mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
 
@@ -423,7 +423,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         mAdapter.setSelectedCounter(TotalselectedList.size());
 
         if (mActionMode != null)
-            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
     }
 
     @Override
@@ -520,7 +520,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 }
                 if (mActionMode == null)
                     mActionMode = getActivity().startActionMode(mActionModeCallback);
-                mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+                mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
                 mDocumentViewModel.setSelectionList(TotalselectedList);
                 initAdapter();
             }

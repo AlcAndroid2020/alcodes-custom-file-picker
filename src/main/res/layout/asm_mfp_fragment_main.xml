@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:onClick="@{() -> bindingCallback.onCustomPickerButtonClicked()}"
 
-            android:text="Custom File Picker"/>
+            android:text="@string/btn_customFilePicker"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

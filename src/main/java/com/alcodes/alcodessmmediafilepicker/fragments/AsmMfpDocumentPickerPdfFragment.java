@@ -166,6 +166,23 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         });
 
         //get user selection limit ,by default is 10item
+        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+        ArrayList<String> FilType = new ArrayList<>();
+        FilType.add(pdf);
+        mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "PDF") {
+
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
+
+        mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
 
         mDocumentViewModel.getSelectionLimit().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
@@ -193,7 +210,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
             if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
-            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
         }
 
@@ -318,7 +335,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
             if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
-            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
         }
@@ -379,7 +396,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         //select all remaining
         if (!isSelectedAll)
             mActionMode.invalidate();
-        mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+        mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
 
@@ -401,7 +418,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         mAdapter.setSelectedCounter(TotalselectedList.size());
 
         if (mActionMode != null)
-            mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
     }
 
     @Override
@@ -507,7 +524,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 }
                 if (mActionMode == null)
                     mActionMode = getActivity().startActionMode(mActionModeCallback);
-                mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
+                mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
                 mDocumentViewModel.setSelectionList(TotalselectedList);
                 initAdapter();
             }

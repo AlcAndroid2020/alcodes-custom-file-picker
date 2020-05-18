@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="hello_blank_fragment" tools:ignore="ResourceName">Hello blank fragment</string>
+    <string name="btn_customFilePicker" tools:ignore="ResourceName">自定义文件选择器</string>
+    <string name="video" tools:ignore="ResourceName">影片</string>
+    <string name="image" tools:ignore="ResourceName">照片</string>
+    <string name="document" tools:ignore="ResourceName">文件</string>
+    <string name="SelectMessage1" tools:ignore="ResourceName">那种文件类型您选择？</string>
+    <string name="SelectMessage2" tools:ignore="ResourceName">从以下选择一项</string>
+    <string name="Word" tools:ignore="ResourceName">文档</string>
+    <string name="pdf" tools:ignore="ResourceName">PDF</string>
+    <string name="powerpoint" tools:ignore="ResourceName">幻灯</string>
+    <string name="excel" tools:ignore="ResourceName">表格</string>
+    <string name="txt" tools:ignore="ResourceName">TXT</string>
+
+    <string name="Done" tools:ignore="ResourceName">完成</string>
+    <string name="Share" tools:ignore="ResourceName">分享</string>
+    <string name="Sort" tools:ignore="ResourceName">排列</string>
+    <string name="GridViewFormat" tools:ignore="ResourceName">网格视图</string>
+    <string name="SelectAll" tools:ignore="ResourceName">全选</string>
+    <string name="UnSelectAll" tools:ignore="ResourceName">取消全选</string>
+    <string name="SelectFileType" tools:ignore="ResourceName">选择文件类型</string>
+    <string name="ChangeSelectLimit" tools:ignore="ResourceName">更换选择限制</string>
+    <string name="ItemSelect" tools:ignore="ResourceName">项文件已选择</string>
+
+
+
 
 </resources>

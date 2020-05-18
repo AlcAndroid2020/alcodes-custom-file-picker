@@ -1,8 +1,34 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="asm_mfp_app_name">Media File Picker</string>
+    <string name="asm_mfp_app_name" tools:ignore="MissingTranslation">Media File Picker</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" tools:ignore="ResourceName">Hello blank fragment</string>
+
+    <string name="btn_customFilePicker" tools:ignore="ResourceName">Custom File Picker</string>
+    <string name="video" tools:ignore="ResourceName">Video File</string>
+    <string name="image" tools:ignore="ResourceName">Image File</string>
+    <string name="document" tools:ignore="ResourceName">Docuemnt File</string>
+    <string name="SelectMessage1" tools:ignore="ResourceName">Which file type you prefer ?</string>
+    <string name="SelectMessage2" tools:ignore="ResourceName">select one of these</string>
+    <string name="Word" tools:ignore="ResourceName">DOCX</string>
+    <string name="pdf" tools:ignore="ResourceName">PDF</string>
+    <string name="powerpoint" tools:ignore="ResourceName">PTT</string>
+    <string name="excel" tools:ignore="ResourceName">XLS</string>
+    <string name="txt" tools:ignore="ResourceName">txt</string>
+
+    <string name="Done" tools:ignore="ResourceName">Done</string>
+    <string name="Share" tools:ignore="ResourceName">Share</string>
+    <string name="Sort" tools:ignore="ResourceName">Sort</string>
+    <string name="GridViewFormat" tools:ignore="ResourceName">GridView Format</string>
+    <string name="SelectAll" tools:ignore="ResourceName">Select All</string>
+    <string name="UnSelectAll" tools:ignore="ResourceName">UnSelect All</string>
+    <string name="SelectFileType" tools:ignore="ResourceName">Select File Type</string>
+
+    <string name="ChangeSelectLimit" tools:ignore="ResourceName">Change Select Limit</string>
+    <string name="ItemSelect" tools:ignore="ResourceName">item(s) selected</string>
+
+
+
 
 </resources>
