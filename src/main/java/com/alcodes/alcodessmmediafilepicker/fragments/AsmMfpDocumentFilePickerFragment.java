@@ -1,5 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -58,7 +60,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -71,7 +72,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }

@@ -134,7 +134,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //Set Default Sorting in View Model
         mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
-
         if(mfpCustomFilePickerViewModel.getSearching().getValue() != null){
             searching = mfpCustomFilePickerViewModel.getSearching().getValue();
         } else {
@@ -157,7 +156,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }else{
             mMaxFileSelection = 0;
         }
-
 
         if (mfpCustomFilePickerViewModel.getMyFileList().getValue() != null &&
                 mfpCustomFilePickerViewModel.getMyFileList().getValue().size() != 0 &&
@@ -205,8 +203,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
         });
     }
-
-
 
     @Override
     public void onResume() {
@@ -301,7 +297,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectFileTpyeItem.setVisible(true);
         }
     }
-
 
     private void sortingMyFileList(String sortingStyle) {
         if (sortingStyle.equals("SortingNameAscending")) {
@@ -411,7 +406,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         for (String path : mFileList /* List of the files you want to send */) {
             String shareUri = path;
-
             files.add(Uri.parse(shareUri));
         }
 
@@ -555,7 +549,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mfpCustomFilePickerViewModel.clearMyFileList();
         ArrayList<String> filelist = new ArrayList<>();
         if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-
             String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permission, PERMISSION_STORGE_CODE);
         } else {
