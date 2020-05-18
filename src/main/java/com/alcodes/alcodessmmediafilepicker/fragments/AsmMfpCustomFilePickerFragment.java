@@ -290,11 +290,14 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
         });
 
-        MenuItem selectFileTypeItem = menu.findItem(R.id.SelectFileType);
+        MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
+        MenuItem selectFileTpyeItem = menu.findItem(R.id.SelectFileType);
         if (isInSideAlbum) {
-            selectFileTypeItem.setVisible(false);
+            selectAllItem.setVisible(true);
+            selectFileTpyeItem.setVisible(false);
         } else {
-            selectFileTypeItem.setVisible(true);
+            selectAllItem.setVisible(false);
+            selectFileTpyeItem.setVisible(true);
         }
     }
 
