@@ -69,9 +69,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     private Integer mViewPagerPosition;
     private SearchView searchView;
 
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     public AsmMfpDocumentPickerXlsFragment() {
 
@@ -253,18 +250,15 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                             ClearTextBtn.setVisibility(View.INVISIBLE);
                         }
                     }
+
+                    if (mDocumentViewModel.getMyxlsFileList().getValue() != null &&
+                            mDocumentViewModel.getMyxlsFileList().getValue().size() != 0) {
+                        mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+                        initAdapter();
+
+                    }
                 }
             });
-//        }
-     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
-
-
-        } else {*/
-
-        //}
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -570,9 +564,9 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
     public void onResume() {
         super.onResume();
-//        if (mDocumentViewModel.getMyFileList().getValue() != null) {
-//            mFileList = mDocumentViewModel.getMyFileList().getValue();
-//        }
+        if (mDocumentViewModel.getMyxlsFileList().getValue() != null) {
+            mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
         }
@@ -594,17 +588,10 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     @Override
     public void onPause() {
         super.onPause();
-//        mDocumentViewModel.saveMyFileList(mFileList);
+        mDocumentViewModel.saveMyxlsFileList(mFileList);
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
 
-//        outState.putParcelableArrayList(LIST_STATE, mFileList);
-//        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
-
-    }
 }

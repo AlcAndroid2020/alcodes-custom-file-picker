@@ -71,10 +71,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     private SearchView searchView;
     private Integer mViewPagerPosition;
 
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
-
     public AsmMfpDocumentPickerDocxFragment() {
 
     }
@@ -83,12 +79,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
-
-//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-//        manager.setOrientation(LinearLayoutManager.VERTICAL);
-//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
-//        recyclerView.setLayoutManager(manager);
-
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -142,23 +132,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
-        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
-        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
-        ArrayList<String> FileType = new ArrayList<>();
-        FileType.addAll(Arrays.asList(doc, docx));
-
-        mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-            @Override
-            public void onChanged(ArrayList<MyFile> myFiles) {
-                if (myFiles.size() != 0) {
-                    if (myFiles.get(0).getFileType() == "doc") {
-                        mFileList = myFiles;
-                        initAdapter();
-                    }
-                }
-            }
-        });
-        mFileList = mDocumentViewModel.getFileList(FileType, "doc").getValue();
 
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
@@ -214,6 +187,26 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             mDocumentViewModel.setIsSearching(false);
         }
 
+        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
+        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
+        ArrayList<String> FileType = new ArrayList<>();
+        FileType.addAll(Arrays.asList(doc, docx));
+
+        mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "doc") {
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
+        mFileList = mDocumentViewModel.getFileList(FileType, "doc").getValue();
+
+
+
         //to active action mode when switch to another tab
         if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
             mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
@@ -242,18 +235,17 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                         }
                     }
                 }
+                if (mDocumentViewModel.getMyFileList().getValue() != null &&
+                        mDocumentViewModel.getMyFileList().getValue().size() != 0) {
+                    mFileList = mDocumentViewModel.getMyFileList().getValue();
+                    initAdapter();
+
+                }
             }
         });
-//        }
-     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
 
 
-        } else {*/
 
-        //}
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -554,7 +546,9 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     @Override
     public void onResume() {
         super.onResume();
-
+        if (mDocumentViewModel.getMyFileList().getValue() != null) {
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
         }
@@ -579,6 +573,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+        mDocumentViewModel.saveMyFileList(mFileList);
     }
 
     @Override
@@ -591,25 +586,4 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         return false;
     }
 
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-//        String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
-//        String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
-//        ArrayList<String> FileType = new ArrayList<>();
-//        FileType.addAll(Arrays.asList(doc, docx));
-
-//        mDocumentViewModel.getFileList(FileType, "doc").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-//            @Override
-//            public void onChanged(ArrayList<MyFile> myFiles) {
-//                if (myFiles.size() != 0) {
-//                    if (myFiles.get(0).getFileType() == "doc") {
-//                        mFileList = myFiles;
-//                        outState.putParcelableArrayList(LIST_STATE, mFileList);
-//                        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
-//                    }
-//                }
-//            }
-//        });
-//        outState.putParcelableArrayList(LIST_STATE, mFileList);
-    }
 }

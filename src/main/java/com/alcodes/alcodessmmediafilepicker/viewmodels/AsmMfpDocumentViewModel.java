@@ -32,6 +32,11 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
 
+    private MutableLiveData<ArrayList<MyFile>> mpdfFileList = new MutableLiveData<>(); //to store file list
+    private final MutableLiveData<ArrayList<MyFile>> mMypttFileList = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<MyFile>> mMytxtFileList = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<MyFile>> mMyxlsFileList = new MutableLiveData<>();
+
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
         super(application);
@@ -147,19 +152,40 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     public void setViewPagerPosition(Integer position) {
         mViewPagerPosition.setValue(position);
     }
-//    public void saveMyFileList(ArrayList<MyFile> myFileList){
-//        mMyFileList.setValue(myFileList);
-//    }
-//    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
-//        return mMyFileList;
-//    }
-//
-//
-//    public void saveMyPdfFileList(ArrayList<MyFile> myFileList){
-//        mMyFileList.setValue(myFileList);
-//    }
-//    public MutableLiveData<ArrayList<MyFile>> getMyPdfFileList() {
-//        return mMyFileList;
-//    }
+
+    public void saveMyFileList(ArrayList<MyFile> myFileList){
+        mMyFileList.setValue(myFileList);
+    }
+    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
+        return mMyFileList;
+    }
+
+    public void saveMyPDFFileList(ArrayList<MyFile> mypdfFileList){
+        mpdfFileList.setValue(mypdfFileList);
+    }
+    public MutableLiveData<ArrayList<MyFile>> getMyPDFFileList() {
+        return mpdfFileList;
+    }
+
+    public void saveMyPttFileList(ArrayList<MyFile> mypttFileList){
+        mMypttFileList.setValue(mypttFileList);
+    }
+    public MutableLiveData<ArrayList<MyFile>> getMyPttFileList() {
+        return mMypttFileList;
+    }
+
+    public void saveMytxtFileList(ArrayList<MyFile> mytxtFileList){
+        mMytxtFileList.setValue(mytxtFileList);
+    }
+    public MutableLiveData<ArrayList<MyFile>> getMytxtFileList() {
+        return mMytxtFileList;
+    }
+
+    public void saveMyxlsFileList(ArrayList<MyFile> myxlsFileList){
+        mMyxlsFileList.setValue(myxlsFileList);
+    }
+    public MutableLiveData<ArrayList<MyFile>> getMyxlsFileList() {
+        return mMyxlsFileList;
+    }
 
 }

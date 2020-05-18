@@ -70,9 +70,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     private Integer mViewPagerPosition;
     private SearchView searchView;
 
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     public AsmMfpDocumentPickerTxtFragment() {
 
@@ -86,10 +83,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
 
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-//        manager.setOrientation(LinearLayoutManager.VERTICAL);
-//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
-//        recyclerView.setLayoutManager(manager);
+
 
         mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
 
@@ -218,11 +212,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setIsSearching(false);
         }
 
-//        if (savedInstanceState != null) {
-//            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
-//            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-//            initAdapter();
-//        } else {
             txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
             rtx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx");
             rtf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf");
@@ -230,7 +219,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             FileType = new ArrayList<>();
             FileType.addAll(Arrays.asList(txt, rtx, rtf, html));
             mFileList = mDocumentViewModel.getFileList(FileType, "TXT").getValue();
-//        }
+
 
             //to active action mode when switch to another tab
             if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
@@ -259,19 +248,16 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                                 ClearTextBtn.setVisibility(View.INVISIBLE);
                             }
                         }
+
+                        if (mDocumentViewModel.getMytxtFileList().getValue() != null &&
+                                mDocumentViewModel.getMytxtFileList().getValue().size() != 0) {
+                            mFileList = mDocumentViewModel.getMytxtFileList().getValue();
+                            initAdapter();
+
+                        }
                     }
                 }
             });
-//        }
-     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
-
-
-        } else {*/
-
-        //}
 
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
@@ -595,9 +581,9 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     @Override
     public void onResume() {
         super.onResume();
-//        if (mDocumentViewModel.getMyFileList().getValue() != null) {
-//            mFileList = mDocumentViewModel.getMyFileList().getValue();
-//        }
+        if (mDocumentViewModel.getMytxtFileList().getValue() != null) {
+            mFileList = mDocumentViewModel.getMytxtFileList().getValue();
+        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
         }
@@ -622,28 +608,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+        mDocumentViewModel.saveMytxtFileList(mFileList);
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-//        String txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
-//        String rtx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx");
-//        String rtf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf");
-//        String html = MimeTypeMap.getSingleton().getMimeTypeFromExtension("html");
-//        ArrayList<String> FileType = new ArrayList<>();
-//        FileType.addAll(Arrays.asList(txt, rtx, rtf, html));
-//        mDocumentViewModel.getFileList(FileType, "TXT").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-//            @Override
-//            public void onChanged(ArrayList<MyFile> myFiles) {
-//                if (myFiles.size() != 0) {
-//                    if (myFiles.get(0).getFileType() == "TXT") {
-//                        mFileList = myFiles;
-//                        outState.putParcelableArrayList(LIST_STATE, mFileList);
-//                        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
-//                    }
-//                }
-//            }
-//        });
-    }
 }

@@ -69,9 +69,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
     private int mMaxFileSelection;
     private SearchView searchView;
 
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     public AsmMfpDocumentPickerPttFragment() {
 
@@ -210,19 +207,13 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             mDocumentViewModel.setIsSearching(false);
         }
 
-
-//        if (savedInstanceState != null) {
-//            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
-//            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-//            initAdapter();
-//        } else {
             ptt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
             pttx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
 
             FileType = new ArrayList<>();
             FileType.addAll(Arrays.asList(ptt, pttx));
             mFileList = mDocumentViewModel.getFileList(FileType, "PTT").getValue();
-//        }
+
 
             //to active action mode when switch to another tab
             if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
@@ -250,20 +241,18 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                                 CustomSearchBar.setVisibility(View.INVISIBLE);
                                 ClearTextBtn.setVisibility(View.INVISIBLE);
                             }
+
+                            if (mDocumentViewModel.getMyPttFileList().getValue() != null &&
+                                    mDocumentViewModel.getMyPttFileList().getValue().size() != 0) {
+                                mFileList = mDocumentViewModel.getMyPttFileList().getValue();
+                                initAdapter();
+
+
+                            }
                         }
                     }
                 }
             });
-//        }
-     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
-
-
-        } else {*/
-
-        //}
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -584,6 +573,9 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
     @Override
     public void onResume() {
         super.onResume();
+        if (mDocumentViewModel.getMyPDFFileList().getValue() != null) {
+            mFileList = mDocumentViewModel.getMyPttFileList().getValue();
+        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
         }
@@ -609,13 +601,8 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+        mDocumentViewModel.saveMyPttFileList(mFileList);
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-//
-//        outState.putParcelableArrayList(LIST_STATE, mFileList);
-//        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
-    }
+
 }

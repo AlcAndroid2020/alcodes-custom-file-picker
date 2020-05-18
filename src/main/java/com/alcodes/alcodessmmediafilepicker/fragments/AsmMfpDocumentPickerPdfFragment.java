@@ -75,10 +75,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     //for limit selection
     private Boolean isSelectedAll = false;
 
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
-
     private AsmMfpCustomFilePickerViewModel mfpMainSharedViewModel;
 
     public AsmMfpDocumentPickerPdfFragment() {
@@ -89,11 +85,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
-
-//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-//        manager.setOrientation(LinearLayoutManager.VERTICAL);
-//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
-//        recyclerView.setLayoutManager(manager);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -144,23 +135,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
-        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-        ArrayList<String> FilType = new ArrayList<>();
-        FilType.add(pdf);
-        mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-            @Override
-            public void onChanged(ArrayList<MyFile> myFiles) {
-                if (myFiles.size() != 0) {
-                    if (myFiles.get(0).getFileType() == "PDF") {
 
-                        mFileList = myFiles;
-                        initAdapter();
-                    }
-                }
-            }
-        });
-
-        mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
 
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
@@ -192,6 +167,23 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         });
 
         //get user selection limit ,by default is 10item
+        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+        ArrayList<String> FilType = new ArrayList<>();
+        FilType.add(pdf);
+        mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+            @Override
+            public void onChanged(ArrayList<MyFile> myFiles) {
+                if (myFiles.size() != 0) {
+                    if (myFiles.get(0).getFileType() == "PDF") {
+
+                        mFileList = myFiles;
+                        initAdapter();
+                    }
+                }
+            }
+        });
+
+        mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
 
         mDocumentViewModel.getSelectionLimit().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
@@ -208,23 +200,12 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
         });
 
-
        if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
         } else {
             mDocumentViewModel.setIsSearching(false);
         }
 
-//        if (savedInstanceState != null) {
-//            mFileList = savedInstanceState.getParcelableArrayList(LIST_STATE);
-//            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-//            initAdapter();
-//        } else {
-            pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-            FilType = new ArrayList<>();
-            FilType.add(pdf);
-            mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
-//        }
             //to active action mode when switch to another tab
             if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
                 mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
@@ -252,19 +233,18 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                                 ClearTextBtn.setVisibility(View.INVISIBLE);
                             }
                         }
+                        if (mDocumentViewModel.getMyPDFFileList().getValue() != null &&
+                                mDocumentViewModel.getMyPDFFileList().getValue().size() != 0) {
+                            mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+                            initAdapter();
+
+
+                        }
                     }
                 }
             });
 //        }
-     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
 
-
-        } else {*/
-
-        //}
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -590,9 +570,9 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     @Override
     public void onResume() {
         super.onResume();
-//        if (mDocumentViewModel.getMyFileList().getValue() != null) {
-//            mFileList = mDocumentViewModel.getMyFileList().getValue();
-//        }
+        if (mDocumentViewModel.getMyPDFFileList().getValue() != null) {
+            mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
         }
@@ -617,26 +597,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-//        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-//        ArrayList<String> FilType = new ArrayList<>();
-//        FilType.add(pdf);
-//        mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-//            @Override
-//            public void onChanged(ArrayList<MyFile> myFiles) {
-//                if (myFiles.size() != 0) {
-//                    if (myFiles.get(0).getFileType() == "PDF") {
-//
-//                        mFileList = myFiles;
-//                        outState.putParcelableArrayList(LIST_STATE, mFileList);
-//                        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, recyclerView.getLayoutManager().onSaveInstanceState());
-//                    }
-//                }
-//            }
-//        });
+        mDocumentViewModel.saveMyPDFFileList(mFileList);
     }
 }

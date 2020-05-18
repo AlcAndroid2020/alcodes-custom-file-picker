@@ -1,5 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +39,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     AsmMfpDocumentPickerViewPagerAdapter mAdapter;
     private Integer mViewPagerPosition;
     private AsmMfpDocumentViewModel mDocumentViewModel;
+    private static final int PERMISSION_STORGE_CODE = 1000;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +66,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                if(position != mViewPagerPosition){
+                if (position != mViewPagerPosition) {
                     mViewPagerPosition = position;
                     mDocumentViewModel.setViewPagerPosition(position);
                 }
@@ -89,24 +92,19 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         isSelected = false;
         //adapter to add fragment
         mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
-
-        mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), "PDF");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), "DOCX");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), "PPT");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
-        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
-
-        //adapter setup
-        viewPager.setAdapter(mAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-
+        if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            requestPermissions(permission, PERMISSION_STORGE_CODE);
+        } else {
+            init();
+        }
         return mDataBinding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(mDocumentViewModel.getViewPagerPosition().getValue() != null){
+        if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
             mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
         }
     }
@@ -136,5 +134,36 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         tabLayout.invalidate();
         tabLayout.refreshDrawableState();
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_STORGE_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    init();
+                }
+            }
+        }
+    }
+
+    public void init() {
+        tabLayout = mDataBinding.DocFilePickerTabLayout;
+
+        viewPager = mDataBinding.DocFilePickerViewPager;
+        isSelected = false;
+        //adapter to add fragment
+        mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
+
+        mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), "PDF");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), "DOCX");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), "PPT");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), "TXT");
+        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), "XLS");
+
+        //adapter setup
+        viewPager.setAdapter(mAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
 
 }
