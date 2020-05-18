@@ -290,15 +290,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
         });
 
-        MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
-        MenuItem selectFileTpyeItem = menu.findItem(R.id.SelectFileType);
+        MenuItem selectFileTypeItem = menu.findItem(R.id.SelectFileType);
         if (isInSideAlbum) {
-            if(selectionList.size() == mMaxFileSelection || selectionList.size() == myFileList.size())
-                selectAllItem.setVisible(true);
-            selectFileTpyeItem.setVisible(false);
+            selectFileTypeItem.setVisible(false);
         } else {
-            selectAllItem.setVisible(false);
-            selectFileTpyeItem.setVisible(true);
+            selectFileTypeItem.setVisible(true);
         }
     }
 
@@ -787,8 +783,15 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
         mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
 
+
+
         if (mActionMode != null)
             mActionMode.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
+
+        //selectAll
+        MenuItem selectAllItem = mActionMode.getMenu().findItem(R.id.SelectAll);
+        if(selectionList.size() != mMaxFileSelection || selectionList.size() != myFileList.size())
+            selectAllItem.setVisible(true);
 
         if (selectionList.size() == 0) {
             mActionMode.setTitle("Alcodes Gallery Viewer Demo");
@@ -797,6 +800,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
+
     }
 
     @Override
@@ -816,6 +820,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
+
+        //selectAll
+        MenuItem selectAllItem = mActionMode.getMenu().findItem(R.id.SelectAll);
+        if(selectionList.size() == mMaxFileSelection || selectionList.size() == myFileList.size())
+            selectAllItem.setVisible(false);
     }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -849,7 +858,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             //selectAll
             MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
             if(selectionList.size() == mMaxFileSelection || selectionList.size() == myFileList.size())
-            selectAllItem.setVisible(false);
+                selectAllItem.setVisible(false);
 
 
             mode.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
@@ -905,6 +914,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mActionMode.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
                 initAdapter();
+
+                //selectAll
+                if(selectionList.size() == mMaxFileSelection || selectionList.size() == myFileList.size())
+                    item.setVisible(false);
             }
 
             //unselect the user selection
@@ -920,6 +933,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mfpCustomFilePickerViewModel.saveMyFileList(myFileList);
 
                 initAdapter();
+
 
                 //close actionmode
                 mActionMode.finish();
