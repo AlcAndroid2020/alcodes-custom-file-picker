@@ -85,11 +85,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-//        manager.setOrientation(LinearLayoutManager.VERTICAL);
-//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
-//        recyclerView.setLayoutManager(manager);
-
         mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
 
         initAdapter();

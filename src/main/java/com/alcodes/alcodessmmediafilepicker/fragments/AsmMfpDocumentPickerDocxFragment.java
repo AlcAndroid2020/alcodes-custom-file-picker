@@ -75,10 +75,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     public String sharefiletype = "";
 
     private Boolean isSwiped = false;
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
-
 
     public AsmMfpDocumentPickerDocxFragment() {
 

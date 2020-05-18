@@ -219,13 +219,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
         }
 
-        ptt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
-        pttx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
-
-        FileType = new ArrayList<>();
-        FileType.addAll(Arrays.asList(ptt, pttx));
-        mFileList = mDocumentViewModel.getFileList(FileType, "PTT").getValue();
-
         //to active action mode when switch to another tab
         if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
             mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
@@ -263,16 +256,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 }
             }
         });
-//        }
-     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
-
-
-        } else {*/
-
-        //}
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override

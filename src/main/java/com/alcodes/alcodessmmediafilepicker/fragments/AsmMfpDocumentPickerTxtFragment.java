@@ -70,9 +70,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
+
 
     public AsmMfpDocumentPickerTxtFragment() {
 
@@ -86,10 +84,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
 
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-//        manager.setOrientation(LinearLayoutManager.VERTICAL);
-//        recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
-//        recyclerView.setLayoutManager(manager);
 
         mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
 

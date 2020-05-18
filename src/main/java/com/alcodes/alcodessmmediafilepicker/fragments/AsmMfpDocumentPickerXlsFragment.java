@@ -70,9 +70,8 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
+
+
 
     public AsmMfpDocumentPickerXlsFragment() {
 
@@ -252,16 +251,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                 }
             }
         });
-//        }
-     /*   if (mDocumentViewModel.getMyFileList().getValue() != null &&
-                mDocumentViewModel.getMyFileList().getValue().size() != 0) {
-            mFileList = mDocumentViewModel.getMyFileList().getValue();
-            initAdapter();
 
-
-        } else {*/
-
-        //}
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
