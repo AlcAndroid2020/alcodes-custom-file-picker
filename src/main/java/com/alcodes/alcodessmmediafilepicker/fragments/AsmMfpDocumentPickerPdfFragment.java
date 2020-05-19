@@ -1,5 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,12 +9,14 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,6 +69,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
+    int oldRotation;
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
@@ -152,7 +156,12 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
         });
 
-        mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
+        if (mDocumentViewModel.getMyPDFFileList().getValue() != null) {
+            mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+        } else {
+            mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
+        }
+
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
             @Override
@@ -166,7 +175,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                     //   mActionMode = getActivity().startActionMode(mActionModeCallback);
 
                 }
-
 
                 //when unselect all this able to clear all  selected item
                 if (strings.size() == 0) {
@@ -211,9 +219,10 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         if (mDocumentViewModel.getSelectionList().getValue() != null &&
                 mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
-       if (mActionMode == null)
+            if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
             mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
+
         }
 
         //to active action mode when switch to another tab
@@ -248,13 +257,11 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                             mDocumentViewModel.getMyPDFFileList().getValue().size() != 0) {
                         mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
                         initAdapter();
-
-
                     }
                 }
             }
         });
-//        }
+
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -274,6 +281,24 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 isSwiped = aBoolean;
             }
         });
+
+        mDocumentViewModel.getOriginalPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                if(integer!=null){
+
+                    oldRotation=integer;
+                }else{
+                    Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    oldRotation = display.getRotation();
+                }
+            }
+        });
+
+
+
+
+
     }
 
     private void showSelecteditem() {
@@ -302,13 +327,9 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         searchView.setQueryHint("Search..");
 
         if (!isSearching && mDocumentViewModel.getSearchingText().getValue() != null && !mDocumentViewModel.getSearchingText().getValue().equals("")) {
-            searchView.setFocusable(true);
             searchView.setIconified(false);
-            searchView.requestFocusFromTouch();
         } else {
-            searchView.setFocusable(false);
             searchView.setIconified(true);
-            searchView.clearFocus();
         }
         if (mDocumentViewModel.getSearchingText().getValue() != null) {
             searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), false);
@@ -559,7 +580,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             //old code
-
+       /*
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
             mDocumentViewModel.setIsSearching(false);
@@ -567,25 +588,25 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             //for refresh + clear all list
             // resetFileList();
             initAdapter();
-            mActionMode = null;
+            mActionMode = null;*/
             //if swipe
-          /*  if (isSwiped) {
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
-                mDocumentViewModel.setIsSearching(false);
+            if (isSwiped) {
                 initAdapter();
                 mActionMode = null;
                 mDocumentViewModel.setIsSwiped(false);
-                Toast.makeText(getContext(), " NO REST", Toast.LENGTH_SHORT).show();
-
             } else {
                 //if no swipe
-                mActionMode = null;
-                Toast.makeText(getContext(), " RESET", Toast.LENGTH_SHORT).show();
+                Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                int CurrentRotation = display.getRotation();
+                //if no rotate =click on done button
+                if (CurrentRotation == oldRotation) {
 
-                resetFileList();
-                initAdapter();
-            }*/
+
+                    mActionMode = null;
+                    resetFileList();
+                    initAdapter();
+                }
+            }
 
         }
     };
@@ -648,18 +669,22 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 ClearTextBtn.setVisibility(View.INVISIBLE);
             }
         }
+        if (mDocumentViewModel.getIsSwiped() != null) {
+            //  isSwiped = mDocumentViewModel.getIsSwiped().getValue();
+
+        }
         initAdapter();
-        Toast.makeText(getContext(), "onresume pdf", Toast.LENGTH_SHORT).show();
     }
+
+    Boolean isRotate = false;
 
     @Override
     public void onPause() {
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-       // mDocumentViewModel.saveMyPDFFileList(mFileList);
-        Toast.makeText(getContext(), "onpause pdf", Toast.LENGTH_SHORT).show();
-
+        mDocumentViewModel.saveMyPDFFileList(mFileList);
+        isRotate = true;
     }
 
     public void StartShare(ArrayList<String> mFileList) {
