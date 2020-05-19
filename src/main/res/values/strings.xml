@@ -20,6 +20,12 @@
     <string name="Done" tools:ignore="ResourceName">Done</string>
     <string name="Share" tools:ignore="ResourceName">Share</string>
     <string name="Sort" tools:ignore="ResourceName">Sort</string>
+    <string name="Sortby" tools:ignore="ResourceName">Sort By</string>
+    <string name="Name" tools:ignore="ResourceName">Name</string>
+    <string name="Date" tools:ignore="ResourceName">Date</string>
+    <string name="Ascending" tools:ignore="ResourceName">Ascending</string>
+    <string name="Descending" tools:ignore="ResourceName">Descending</string>
+    <string name="Order" tools:ignore="ResourceName">Order</string>
     <string name="GridViewFormat" tools:ignore="ResourceName">GridView Format</string>
     <string name="SelectAll" tools:ignore="ResourceName">Select All</string>
     <string name="UnSelectAll" tools:ignore="ResourceName">UnSelect All</string>
@@ -27,8 +33,7 @@
 
     <string name="ChangeSelectLimit" tools:ignore="ResourceName">Change Select Limit</string>
     <string name="ItemSelect" tools:ignore="ResourceName">item(s) selected</string>
-
-
+    <string name="ListViewFormat" tools:ignore="ResourceName">List View Format</string>
 
 
 </resources>

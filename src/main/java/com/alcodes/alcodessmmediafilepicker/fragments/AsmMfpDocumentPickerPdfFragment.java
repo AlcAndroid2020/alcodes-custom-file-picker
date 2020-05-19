@@ -571,9 +571,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             mActionMode = null;*/
             //if swipe
             if (isSwiped) {
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
-                mDocumentViewModel.setIsSearching(false);
                 initAdapter();
                 mActionMode = null;
                 mDocumentViewModel.setIsSwiped(false);
@@ -654,6 +651,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+        mDocumentViewModel.saveMyPDFFileList(mFileList);
     }
 
     public void StartShare(ArrayList<String> mFileList) {

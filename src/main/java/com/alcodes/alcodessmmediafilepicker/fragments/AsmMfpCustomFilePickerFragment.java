@@ -343,12 +343,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
                 IsGrid = false;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("Grid View Format");
+                item.setTitle(getResources().getString(R.string.GridViewFormat));
             } else {
                 mDataBinding.CustomRecyclerView.setLayoutManager(mGridLayoutManager);
                 IsGrid = true;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("List View Format");
+                item.setTitle(getResources().getString(R.string.ListViewFormat));
             }
             initAdapter();
         }
@@ -790,7 +790,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectAllItem.setVisible(true);
 
         if (selectionList.size() == 0) {
-            mActionMode.setTitle("Alcodes Gallery Viewer Demo");
+            mActionMode.setTitle(getResources().getString(R.string.app_name));
             mActionMode.finish();
         }
 

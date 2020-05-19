@@ -575,9 +575,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             mActionMode = null;*/
             //if swipe
             if (isSwiped) {
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
-                mDocumentViewModel.setIsSearching(false);
                 initAdapter();
                 mActionMode = null;
                 mDocumentViewModel.setIsSwiped(false);
