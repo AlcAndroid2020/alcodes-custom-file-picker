@@ -127,9 +127,6 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         mIsSearch.setValue(IsSearch);
     }
 
-
-
-
     public MutableLiveData<String> getSearchingText() {
         return mSearchingText;
     }

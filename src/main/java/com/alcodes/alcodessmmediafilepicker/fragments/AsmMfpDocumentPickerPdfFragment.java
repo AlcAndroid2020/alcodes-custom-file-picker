@@ -152,7 +152,12 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
         });
 
-        mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
+        if(mDocumentViewModel.getMyPDFFileList().getValue() != null){
+            mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+        }else {
+            mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
+        }
+
         //get selection list from viewmodel
         mDocumentViewModel.getSelectionList().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
             @Override
@@ -166,7 +171,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                     //   mActionMode = getActivity().startActionMode(mActionModeCallback);
 
                 }
-
 
                 //when unselect all this able to clear all  selected item
                 if (strings.size() == 0) {
@@ -249,8 +253,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                             mDocumentViewModel.getMyPDFFileList().getValue().size() != 0) {
                         mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
                         initAdapter();
-
-
                     }
                 }
             }
@@ -303,13 +305,9 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         searchView.setQueryHint("Search..");
 
         if(!isSearching && mDocumentViewModel.getSearchingText().getValue() != null && !mDocumentViewModel.getSearchingText().getValue().equals("")){
-            searchView.setFocusable(true);
             searchView.setIconified(false);
-            searchView.requestFocusFromTouch();
         }else{
-            searchView.setFocusable(false);
             searchView.setIconified(true);
-            searchView.clearFocus();
         }
         if(mDocumentViewModel.getSearchingText().getValue() != null) {
             searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), false);
@@ -571,9 +569,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             mActionMode = null;*/
             //if swipe
             if (isSwiped) {
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
-                mDocumentViewModel.setIsSearching(false);
                 initAdapter();
                 mActionMode = null;
                 mDocumentViewModel.setIsSwiped(false);
@@ -654,6 +649,8 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+
+        mDocumentViewModel.saveMyPDFFileList(mFileList);
 
     }
 

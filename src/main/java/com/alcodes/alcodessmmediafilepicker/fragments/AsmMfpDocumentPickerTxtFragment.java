@@ -654,6 +654,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+        mDocumentViewModel.saveMytxtFileList(mFileList);
 
     }
 
