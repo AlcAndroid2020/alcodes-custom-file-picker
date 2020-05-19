@@ -41,6 +41,8 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
 public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
@@ -80,7 +82,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.asm_mfp_document_fragment, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.pdf_RecyclerView);
@@ -147,7 +148,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             public void onChanged(ArrayList<MyFile> myFiles) {
                 if (myFiles.size() != 0) {
                     if (myFiles.get(0).getFileType() == "PDF") {
-
                         mFileList = myFiles;
                         initAdapter();
                     }
@@ -221,7 +221,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
             mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-
         }
 
         //to active action mode when switch to another tab

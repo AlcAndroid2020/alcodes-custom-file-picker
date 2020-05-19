@@ -189,6 +189,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 }
             }
         });
+
         mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
         Timber.e("CHECK: " + mMaxFileSelection);
         if (mMaxFileSelection != 0)
