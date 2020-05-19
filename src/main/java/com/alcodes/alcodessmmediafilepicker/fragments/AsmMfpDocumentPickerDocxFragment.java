@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -128,7 +126,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 CustomSearchBar.setText("");
                 CustomSearchBar.setVisibility(View.INVISIBLE);
                 ClearTextBtn.setVisibility(View.INVISIBLE);
-                if(searchView != null){
+                if (searchView != null) {
                     searchView.setQuery("", false);
                 }
                 isSearching = false;
@@ -157,9 +155,9 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             }
         });
 
-        if(mDocumentViewModel.getMyFileList().getValue() != null){
+        if (mDocumentViewModel.getMyFileList().getValue() != null) {
             mFileList = mDocumentViewModel.getMyFileList().getValue();
-        }else{
+        } else {
             mFileList = mDocumentViewModel.getFileList(FileType, "doc").getValue();
         }
 
@@ -210,19 +208,19 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             }
         });
 
-       if (mDocumentViewModel.getIsSearching().getValue() != null) {
+        if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
-       } else {
-           isSearching = false;
-       }
+        } else {
+            isSearching = false;
+        }
 
-       if (mDocumentViewModel.getSelectionList().getValue() != null &&
+        if (mDocumentViewModel.getSelectionList().getValue() != null &&
                 mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
             if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
             mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-       }
+        }
 
         //to active action mode when switch to another tab
         if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
@@ -278,6 +276,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 isSwiped = aBoolean;
             }
         });
+
     }
 
     @Override
@@ -288,7 +287,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mNavController = Navigation.findNavController(view);
     }
 
-    Boolean isUnSelect = false;
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -297,12 +295,12 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search..");
 
-        if(!isSearching && mDocumentViewModel.getSearchingText().getValue() != null && !mDocumentViewModel.getSearchingText().getValue().equals("")){
+        if (!isSearching && mDocumentViewModel.getSearchingText().getValue() != null && !mDocumentViewModel.getSearchingText().getValue().equals("")) {
             searchView.setIconified(false);
-        }else{
+        } else {
             searchView.setIconified(true);
         }
-        if(mDocumentViewModel.getSearchingText().getValue() != null) {
+        if (mDocumentViewModel.getSearchingText().getValue() != null) {
             searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), false);
             mAdapter.getFilter().filter(mDocumentViewModel.getSearchingText().getValue());
         }
@@ -555,9 +553,10 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 mActionMode = null;
                 mDocumentViewModel.setIsSwiped(false);
             } else {
-                //if no swipe
+                //if clicked done button
                 mActionMode = null;
                 initAdapter();
+
             }
         }
     };
@@ -599,19 +598,19 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
             if (isSearching) {
-                if(CustomSearchBar.getVisibility() != View.VISIBLE){
+                if (CustomSearchBar.getVisibility() != View.VISIBLE) {
                     CustomSearchBar.setVisibility(View.VISIBLE);
                     ClearTextBtn.setVisibility(View.VISIBLE);
                 }
-                if(mDocumentViewModel.getSearchingText().getValue() != null){
+                if (mDocumentViewModel.getSearchingText().getValue() != null) {
                     CustomSearchBar.setText(mDocumentViewModel.getSearchingText().getValue());
-                }else{
+                } else {
                     CustomSearchBar.setText("");
                 }
             }
             //click search btn for second time to hide the custom search bar
             else {
-                if(CustomSearchBar.getVisibility() == View.VISIBLE){
+                if (CustomSearchBar.getVisibility() == View.VISIBLE) {
                     CustomSearchBar.setVisibility(View.INVISIBLE);
                     ClearTextBtn.setVisibility(View.INVISIBLE);
                 }

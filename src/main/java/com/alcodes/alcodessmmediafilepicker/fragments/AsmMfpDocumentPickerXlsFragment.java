@@ -199,13 +199,13 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             }
         });
 
-       if (mDocumentViewModel.getIsSearching().getValue() != null) {
+        if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
-       } else {
-           isSearching = false;
-       }
+        } else {
+            isSearching = false;
+        }
 
-       mDocumentViewModel.getFileList(FileType, "XLS").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+        mDocumentViewModel.getFileList(FileType, "XLS").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
             @Override
             public void onChanged(ArrayList<MyFile> myFiles) {
                 if (myFiles.size() != 0) {
@@ -215,50 +215,50 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                     }
                 }
             }
-       });
+        });
 
-       if(mDocumentViewModel.getMyxlsFileList().getValue() != null){
-           mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
-       }else{
-           mFileList = mDocumentViewModel.getFileList(FileType, "XLS").getValue();
-       }
+        if(mDocumentViewModel.getMyxlsFileList().getValue() != null){
+            mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+        }else{
+            mFileList = mDocumentViewModel.getFileList(FileType, "XLS").getValue();
+        }
 
-       if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
+        if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
             mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
-       }
+        }
 
-       mDocumentViewModel.getViewPagerPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-        @Override
-        public void onChanged(Integer position) {
-            if (!mViewPagerPosition.equals(position)) {
-                mViewPagerPosition = position;
-                if (mDocumentViewModel.getSearchingText().getValue() != null) {
-                    if(searchView != null) {
-                        searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), false);
-                        mAdapter.getFilter().filter(mDocumentViewModel.getSearchingText().getValue());
+        mDocumentViewModel.getViewPagerPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer position) {
+                if (!mViewPagerPosition.equals(position)) {
+                    mViewPagerPosition = position;
+                    if (mDocumentViewModel.getSearchingText().getValue() != null) {
+                        if(searchView != null) {
+                            searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), false);
+                            mAdapter.getFilter().filter(mDocumentViewModel.getSearchingText().getValue());
+                        }
                     }
                 }
-            }
-            if (mDocumentViewModel.getIsSearching().getValue() != null) {
-                isSearching = mDocumentViewModel.getIsSearching().getValue();
-                if (isSearching) {
-                    CustomSearchBar.setVisibility(View.VISIBLE);
-                    ClearTextBtn.setVisibility(View.VISIBLE);
+                if (mDocumentViewModel.getIsSearching().getValue() != null) {
+                    isSearching = mDocumentViewModel.getIsSearching().getValue();
+                    if (isSearching) {
+                        CustomSearchBar.setVisibility(View.VISIBLE);
+                        ClearTextBtn.setVisibility(View.VISIBLE);
+                    }
+                    //click search btn for second time to hide the custom search bar
+                    else {
+                        CustomSearchBar.setVisibility(View.INVISIBLE);
+                        ClearTextBtn.setVisibility(View.INVISIBLE);
+                    }
                 }
-                //click search btn for second time to hide the custom search bar
-                else {
-                    CustomSearchBar.setVisibility(View.INVISIBLE);
-                    ClearTextBtn.setVisibility(View.INVISIBLE);
-                }
-            }
 
-            if (mDocumentViewModel.getMyxlsFileList().getValue() != null &&
-                    mDocumentViewModel.getMyxlsFileList().getValue().size() != 0) {
-                mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
-                initAdapter();
+                if (mDocumentViewModel.getMyxlsFileList().getValue() != null &&
+                        mDocumentViewModel.getMyxlsFileList().getValue().size() != 0) {
+                    mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+                    initAdapter();
+                }
             }
-        }
-       });
+        });
 
         //}
         //to active action mode when switch to another tab
