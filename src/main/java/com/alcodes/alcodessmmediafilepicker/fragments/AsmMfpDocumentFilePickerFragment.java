@@ -62,8 +62,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-
             }
 
             @Override
@@ -80,7 +78,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
@@ -104,6 +101,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         } else {
             init();
         }
+
         viewPager.setOffscreenPageLimit(5);
         return mDataBinding.getRoot();
     }

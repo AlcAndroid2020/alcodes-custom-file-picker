@@ -118,14 +118,16 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             }
 
         });
-        ClearTextBtn = getActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
+        ClearTextBtn = requireActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
         ClearTextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CustomSearchBar.setText(null);
+                CustomSearchBar.setText("");
                 CustomSearchBar.setVisibility(View.INVISIBLE);
-                v.setVisibility(View.INVISIBLE);
-                searchView.setQuery("", false);
+                ClearTextBtn.setVisibility(View.INVISIBLE);
+                if(searchView != null){
+                    searchView.setQuery("", false);
+                }
                 isSearching = false;
                 mDocumentViewModel.setIsSearching(isSearching);
             }
@@ -172,7 +174,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                     //   mActionMode = getActivity().startActionMode(mActionModeCallback);
 
                 }
-
 
                 //when unselect all this able to clear all  selected item
                 if (strings.size() == 0) {
@@ -318,7 +319,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         if (isLimited)
             SelectAll.setVisible(false);
 
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -342,7 +342,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         }
 
         return super.onOptionsItemSelected(item);
-
     }
 
     private void PromptLimitDialog() {
@@ -385,7 +384,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
     @Override
     public void onDocumentSelected(Uri uri) {
         //    selectedList.add(String.valueOf(uri));
-
         //update with viewmodel
         TotalselectedList.add(uri.toString());
 
@@ -424,7 +422,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
     public int onNullSelectionLimit() {
         return mMaxFileSelection;
     }
-
 
     Boolean isUnselected = false;
 
@@ -476,14 +473,12 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                     startActivity(intent);
                 }
             }
-
             if (item.getItemId() == R.id.Doc_FilePicker_UnselectAll) {
                 //for refresh + clear all list
                 resetFileList();
                 //close actionmode
                 mActionMode.finish();
             }
-
             if (item.getItemId() == R.id.Doc_FilePicker_SearchFilter) {
                 if (!isSearching) {
                     CustomSearchBar.setVisibility(View.VISIBLE);
@@ -499,11 +494,9 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                     mDocumentViewModel.setIsSearching(isSearching);
                 }
             }
-
             if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
                 PromptLimitDialog();
             }
-
             if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
 
                 mDocumentViewModel.setSelectionLimit(0);
@@ -538,7 +531,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             return true;
         }
 
-
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             //old code
@@ -560,8 +552,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             } else {
                 //if no swipe
                 mActionMode = null;
-
-                resetFileList();
                 initAdapter();
             }
         }
@@ -606,12 +596,18 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
+            if (mActionMode == null)
+                mActionMode = getActivity().startActionMode(mActionModeCallback);
+            mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         }
+        initAdapter();
         if (mDocumentViewModel.getIsSearching().getValue() != null) {
             isSearching = mDocumentViewModel.getIsSearching().getValue();
             if (isSearching) {
-                CustomSearchBar.setVisibility(View.VISIBLE);
-                ClearTextBtn.setVisibility(View.VISIBLE);
+                if(CustomSearchBar.getVisibility() != View.VISIBLE){
+                    CustomSearchBar.setVisibility(View.VISIBLE);
+                    ClearTextBtn.setVisibility(View.VISIBLE);
+                }
                 if(mDocumentViewModel.getSearchingText().getValue() != null){
                     CustomSearchBar.setText(mDocumentViewModel.getSearchingText().getValue());
                 }else{
@@ -620,16 +616,12 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             }
             //click search btn for second time to hide the custom search bar
             else {
-
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
+                if(CustomSearchBar.getVisibility() == View.VISIBLE){
+                    CustomSearchBar.setVisibility(View.INVISIBLE);
+                    ClearTextBtn.setVisibility(View.INVISIBLE);
+                }
             }
         }
-        if(mDocumentViewModel.getIsSwiped()!=null){
-            isSwiped= mDocumentViewModel.getIsSwiped().getValue();
-        }
-        initAdapter();
-
     }
 
     @Override
@@ -638,7 +630,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
         mDocumentViewModel.saveMyPttFileList(mFileList);
-
     }
 
     public void StartShare(ArrayList<String> mFileList) {
