@@ -213,7 +213,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         if (mDocumentViewModel.getSelectionList().getValue() != null &&
                 mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
-            if (mActionMode == null)
+           if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
             mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
@@ -569,7 +569,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             //old code
-       /*
+
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
             mDocumentViewModel.setIsSearching(false);
@@ -577,15 +577,16 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             //for refresh + clear all list
             // resetFileList();
             initAdapter();
-            mActionMode = null;*/
+            mActionMode = null;
             //if swipe
-            if (isSwiped) {
+      /*      if (isSwiped) {
                 CustomSearchBar.setVisibility(View.INVISIBLE);
                 ClearTextBtn.setVisibility(View.INVISIBLE);
                 mDocumentViewModel.setIsSearching(false);
                 initAdapter();
                 mActionMode = null;
                 mDocumentViewModel.setIsSwiped(false);
+
             } else {
                 //if no swipe
                 mActionMode = null;
@@ -593,7 +594,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 resetFileList();
                 initAdapter();
             }
-
+*/
 
         }
     };
@@ -656,7 +657,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-        mDocumentViewModel.saveMyFileList(mFileList);
+     //   mDocumentViewModel.saveMyFileList(mFileList);
 
     }
 

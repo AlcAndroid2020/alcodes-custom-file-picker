@@ -215,7 +215,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         if (mDocumentViewModel.getSelectionList().getValue() != null &&
                 mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
-            if (mActionMode == null)
+       if (mActionMode == null)
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
             mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
@@ -564,7 +564,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             //old code
-       /*
+
             CustomSearchBar.setVisibility(View.INVISIBLE);
             ClearTextBtn.setVisibility(View.INVISIBLE);
             mDocumentViewModel.setIsSearching(false);
@@ -572,9 +572,9 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             //for refresh + clear all list
             // resetFileList();
             initAdapter();
-            mActionMode = null;*/
+            mActionMode = null;
             //if swipe
-            if (isSwiped) {
+        /*    if (isSwiped) {
                 CustomSearchBar.setVisibility(View.INVISIBLE);
                 ClearTextBtn.setVisibility(View.INVISIBLE);
                 mDocumentViewModel.setIsSearching(false);
@@ -587,7 +587,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
 
                 resetFileList();
                 initAdapter();
-            }
+            }*/
         }
     };
 
@@ -657,7 +657,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-        mDocumentViewModel.saveMytxtFileList(mFileList);
+     //   mDocumentViewModel.saveMytxtFileList(mFileList);
     }
 
     public void StartShare(ArrayList<String> mFileList) {
