@@ -653,7 +653,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-        mDocumentViewModel.saveMyFileList(mFileList);
+
 
     }
 

@@ -617,7 +617,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     @Override
     public void onPause() {
         super.onPause();
-        mDocumentViewModel.saveMyxlsFileList(mFileList);
+
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
     }

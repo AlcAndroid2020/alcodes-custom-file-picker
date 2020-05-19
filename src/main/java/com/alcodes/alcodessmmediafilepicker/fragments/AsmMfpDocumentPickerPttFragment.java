@@ -641,7 +641,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-        mDocumentViewModel.saveMyPttFileList(mFileList);
+
     }
 
     public void StartShare(ArrayList<String> mFileList) {
