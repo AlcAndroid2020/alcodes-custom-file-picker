@@ -101,6 +101,8 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         } else {
             init();
         }
+
+        viewPager.setOffscreenPageLimit(5);
         return mDataBinding.getRoot();
     }
 
