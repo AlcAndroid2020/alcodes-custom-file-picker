@@ -171,9 +171,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } else {
                 promptSelection();
             }
-
             initAdapter();
-
         }
 
         //for action mode search bar
