@@ -16,14 +16,23 @@
     <string name="Done" tools:ignore="ResourceName">完成</string>
     <string name="Share" tools:ignore="ResourceName">分享</string>
     <string name="Sort" tools:ignore="ResourceName">排列</string>
+    <string name="Sortby" tools:ignore="ResourceName">排列为</string>
+    <string name="Name" tools:ignore="ResourceName">名称</string>
+    <string name="Date" tools:ignore="ResourceName">日期</string>
+    <string name="Ascending" tools:ignore="ResourceName">顺序</string>
+    <string name="Descending" tools:ignore="ResourceName">逆序</string>
+    <string name="Order" tools:ignore="ResourceName">排序</string>
     <string name="GridViewFormat" tools:ignore="ResourceName">网格视图</string>
     <string name="SelectAll" tools:ignore="ResourceName">全选</string>
     <string name="UnSelectAll" tools:ignore="ResourceName">取消全选</string>
     <string name="SelectFileType" tools:ignore="ResourceName">选择文件类型</string>
     <string name="ChangeSelectLimit" tools:ignore="ResourceName">更换选择限制</string>
     <string name="ItemSelect" tools:ignore="ResourceName">项文件已选择</string>
+    <string name="ListViewFormat" tools:ignore="ResourceName">列表视图格式</string>
 
-
+    <string name="LimitFileSelection" tools:ignore="ResourceName">限制文件选择</string>
+    <string name="selectionnumber" tools:ignore="ResourceName">输入限制数量</string>
+    <string name="NoLimit" tools:ignore="ResourceName">0= 无限制</string>
 
 
 </resources>

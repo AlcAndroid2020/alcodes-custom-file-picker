@@ -653,7 +653,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         String Type = "";
 
 
-        Type = "application/pdf";
+        Type = "*/*";
 
 
         Intent intent = new Intent();

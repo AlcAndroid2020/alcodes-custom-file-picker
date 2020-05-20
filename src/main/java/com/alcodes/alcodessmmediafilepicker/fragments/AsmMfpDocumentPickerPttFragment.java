@@ -346,14 +346,14 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
     private void PromptLimitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Limit File Selection ");
+        builder.setTitle(getResources().getString(R.string.LimitFileSelection));
         final EditText input = new EditText(getContext());
-        input.setHint("Enter selection number here");
+        input.setHint(getResources().getString(R.string.selectionnumber));
 
         builder.setView(input);
-        builder.setMessage("0= No Limit");
+        builder.setMessage(getResources().getString(R.string.NoLimit));
 
-        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.Okay), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mDocumentViewModel.setSelectionLimit(Integer.valueOf(input.getText().toString()));
@@ -370,7 +370,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 mDocumentViewModel.setSelectionLimit(mMaxFileSelection);
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -629,13 +629,15 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
+
         mDocumentViewModel.saveMyPttFileList(mFileList);
+
     }
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
 
-        Type = "application/pdf";
+        Type = "*/*";
 
 
         Intent intent = new Intent();

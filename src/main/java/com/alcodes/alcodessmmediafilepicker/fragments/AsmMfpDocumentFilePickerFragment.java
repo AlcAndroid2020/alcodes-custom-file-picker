@@ -55,7 +55,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
-
         mViewPagerPosition = viewPager.getCurrentItem();
         mDocumentViewModel.setViewPagerPosition(viewPager.getCurrentItem());
 
@@ -70,7 +69,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
                     mViewPagerPosition = position;
                     mDocumentViewModel.setViewPagerPosition(position);
                 }
-
 
                 //maintain action mode
                 mDocumentViewModel.setIsSwiped(true);
@@ -128,7 +126,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         mNavController = Navigation.findNavController(view);
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.asm_mfp_menu_document_file_picker, menu);
@@ -169,6 +166,5 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
-
 
 }

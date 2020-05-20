@@ -341,12 +341,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
                 IsGrid = false;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("Grid View Format");
+                item.setTitle(getResources().getString(R.string.GridViewFormat));
             } else {
                 mDataBinding.CustomRecyclerView.setLayoutManager(mGridLayoutManager);
                 IsGrid = true;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("List View Format");
+                item.setTitle(getResources().getString(R.string.ListViewFormat));
             }
             initAdapter();
         }
@@ -533,7 +533,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         initDefaultSortingStyle();
 
         if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+            initAdapter();
         //after finish for external then continue to internal storage
         if (mActionMode == null && selectionList.size() != 0) {
             mActionMode = mAppCompatActivity.startSupportActionMode(mActionModeCallback);
@@ -606,7 +606,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         initDefaultSortingStyle();
 
         if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+            initAdapter();
 
         if (mActionMode == null && selectionList.size() != 0) {
             mActionMode = mAppCompatActivity.startSupportActionMode(mActionModeCallback);
@@ -739,7 +739,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mAdapter.setCurrentView(0);
             }
         }
-
         mDataBinding.CustomRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
@@ -788,7 +787,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectAllItem.setVisible(true);
 
         if (selectionList.size() == 0) {
-            mActionMode.setTitle("Alcodes Gallery Viewer Demo");
+            mActionMode.setTitle(getResources().getString(R.string.app_name));
             mActionMode.finish();
         }
 
@@ -848,6 +847,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             //SelectFileType
             MenuItem selectFileTypeItem = menu.findItem(R.id.SelectFileType);
             selectFileTypeItem.setVisible(false);
+
+            //changeViewFormat
+            MenuItem changeViewFormatItem = menu.findItem(R.id.Custom_ChangeLayout);
+            changeViewFormatItem.setVisible(false);
 
             //selectAll
             MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
