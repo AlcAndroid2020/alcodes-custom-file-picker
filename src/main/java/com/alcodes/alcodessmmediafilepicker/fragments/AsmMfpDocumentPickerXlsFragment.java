@@ -44,8 +44,8 @@ import java.util.Arrays;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
-    View view;
+public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks{
+    private View view;
     private RecyclerView recyclerView;
     private NavController mNavController;
 
@@ -64,14 +64,11 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
     //for limit selection
     private int SelecLimitCount;
-    //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
-
-
 
     public AsmMfpDocumentPickerXlsFragment() {
 
@@ -161,9 +158,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
                     //to active action mode as pervious tab already selected item
-                    // if (mActionMode == null)
-                    //   mActionMode = getActivity().startActionMode(mActionModeCallback);
-
                 }
                 //when unselect all this able to clear all  selected item
                 if (strings.size() == 0) {
@@ -172,7 +166,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
                     for (int i = 0; i < mFileList.size(); i++) {
                         if (mFileList.get(i).getIsSelected()) {
                             mFileList.get(i).setIsSelected(false);
-
                         }
                     }
                     initAdapter();
@@ -260,7 +253,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
             }
         });
 
-        //}
         //to active action mode when switch to another tab
     }
 
@@ -383,8 +375,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         if (mActionMode == null)
             mActionMode = getActivity().startActionMode(mActionModeCallback);
         //select all remaining
-        //   if (!isSelectedAll)
-        //  mActionMode.invalidate();
         mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
@@ -552,16 +542,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         if (TotalselectedList.size() != 0)
             mAdapter.setSelectedCounter(TotalselectedList.size());
         mAdapter.setSelectLimitCounter(mMaxFileSelection);
-    }
-
-    @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
-        return true;
     }
 
     public void onResume() {

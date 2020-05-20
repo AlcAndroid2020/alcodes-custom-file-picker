@@ -44,8 +44,8 @@ import timber.log.Timber;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
-    View view;
+public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks {
+    private View view;
     private RecyclerView recyclerView;
     private NavController mNavController;
 
@@ -63,14 +63,10 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
     //for limit selection
     private int SelecLimitCount;
-    //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
     private SearchView searchView;
     private Integer mViewPagerPosition;
-
-
-    public String sharefiletype = "";
 
     private Boolean isSwiped = false;
 
@@ -258,18 +254,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 }
             }
         });
-/*
-        mDocumentViewModel.getActionMode().observe(getViewLifecycleOwner(), new Observer<ActionMode>() {
-            @Override
-            public void onChanged(ActionMode actionMode) {
-                if (actionMode != null) {
 
-                    mActionMode = actionMode;
-                    Toast.makeText(getContext(), "action mode on docs", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });*/
         mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -537,16 +522,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //old code
-       /*
-            CustomSearchBar.setVisibility(View.INVISIBLE);
-            ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
-
-            //for refresh + clear all list
-            // resetFileList();
-            initAdapter();
-            mActionMode = null;*/
             //if swipe
             if (isSwiped) {
                 initAdapter();
@@ -624,16 +599,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
         mDocumentViewModel.saveMyFileList(mFileList);
-    }
-
-    @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
-        return false;
-    }
-
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
-        return false;
     }
 
     public void StartShare(ArrayList<String> mFileList) {

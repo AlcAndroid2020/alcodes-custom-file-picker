@@ -44,8 +44,8 @@ import java.util.Arrays;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
-    View view;
+public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks {
+    private View view;
     private RecyclerView recyclerView;
     private NavController mNavController;
 
@@ -63,15 +63,11 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
     //for limit selection
     private int SelecLimitCount;
-    //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private Integer mViewPagerPosition;
     private int mMaxFileSelection;
     private SearchView searchView;
     private Boolean isSwiped = false;
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     public AsmMfpDocumentPickerPttFragment() {
 
@@ -170,9 +166,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
                     //to active action mode as pervious tab already selected item
-                    // if (mActionMode == null)
-                    //   mActionMode = getActivity().startActionMode(mActionModeCallback);
-
                 }
 
                 //when unselect all this able to clear all  selected item
@@ -391,8 +384,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         if (mActionMode == null)
             mActionMode = getActivity().startActionMode(mActionModeCallback);
         //select all remaining
-        //   if (!isSelectedAll)
-        //  mActionMode.invalidate();
         mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
@@ -517,15 +508,12 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             if (item.getItemId() == R.id.ShareWith) {
                 ArrayList<String> FileList = new ArrayList<>();
                 for (int i = 0; i < mDocumentViewModel.getSelectionList().getValue().size(); i++) {
-
                     FileList.add(mDocumentViewModel.getSelectionList().getValue().get(i));
-
                 }
 
                 if (mDocumentViewModel.getSelectionList().getValue() != null) {
                     StartShare(FileList);
                 }
-
             }
 
             return true;
@@ -533,17 +521,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //old code
-       /*
-            CustomSearchBar.setVisibility(View.INVISIBLE);
-            ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
-
-            //for refresh + clear all list
-            // resetFileList();
-            mDocumentViewModel.setSelectionList(TotalselectedList);
-            initAdapter();
-            mActionMode = null;*/
             //if swipe
             if (isSwiped) {
                 initAdapter();
@@ -576,16 +553,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         if (TotalselectedList.size() != 0)
             mAdapter.setSelectedCounter(TotalselectedList.size());
         mAdapter.setSelectLimitCounter(mMaxFileSelection);
-    }
-
-    @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
-        return true;
     }
 
     @Override
@@ -629,17 +596,12 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-
         mDocumentViewModel.saveMyPttFileList(mFileList);
-
     }
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
-
         Type = "*/*";
-
-
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
