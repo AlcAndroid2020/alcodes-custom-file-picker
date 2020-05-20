@@ -572,9 +572,21 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //identify what file type are user pick
         if (PickerFileType.equals("Image")) {
             openImageMediaStoreFolder();
+            mDataBinding.textviewFileTypeNotFound.setText(requireContext().getString(R.string.NoGeneralFilesFound, requireContext().getString(R.string.NoImagesFound)));
         } else if (PickerFileType.equals("Video")) {
             openVideoMediaStoreFolder();
-        } else if (PickerFileType.equals("Document")) {
+            mDataBinding.textviewFileTypeNotFound.setText(requireContext().getString(R.string.NoGeneralFilesFound, requireContext().getString(R.string.NoVideosFound)));
+        }
+
+        //Check and Show No Files Found Icon when There is no files in the devices
+        if(myFileList.size() != 0){
+            mDataBinding.linearLayoutNoFilesFound.setVisibility(View.GONE);
+        }else{
+            mDataBinding.linearLayoutNoFilesFound.setVisibility(View.VISIBLE);
+        }
+
+        if (PickerFileType.equals("Document")) {
+            mDataBinding.linearLayoutNoFilesFound.setVisibility(View.GONE);
             mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
             Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
             intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
