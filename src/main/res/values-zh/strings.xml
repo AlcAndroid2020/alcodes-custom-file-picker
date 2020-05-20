@@ -34,5 +34,8 @@
     <string name="selectionnumber" tools:ignore="ResourceName">输入限制数量</string>
     <string name="NoLimit" tools:ignore="ResourceName">0= 无限制</string>
 
+    <string name="NoGeneralFilesFound" tools:ignore="ResourceName">无%1$s</string>
+    <string name="NoVideosFound" tools:ignore="ResourceName">影片</string>
+    <string name="NoImagesFound" tools:ignore="ResourceName">照片</string>
 
 </resources>
