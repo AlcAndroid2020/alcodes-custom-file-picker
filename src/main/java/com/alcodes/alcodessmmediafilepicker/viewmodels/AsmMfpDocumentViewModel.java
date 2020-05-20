@@ -33,13 +33,13 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
     private MutableLiveData<ActionMode> mActionModel = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isSwipe =new MutableLiveData<>(false);
+    private MutableLiveData<Boolean> isSwipe = new MutableLiveData<>(false);
 
     private MutableLiveData<ArrayList<MyFile>> mpdfFileList = new MutableLiveData<>(); //to store file list
     private final MutableLiveData<ArrayList<MyFile>> mMypttFileList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<MyFile>> mMytxtFileList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<MyFile>> mMyxlsFileList = new MutableLiveData<>();
-
+    private final MutableLiveData<Integer> OriginalPosition = new MutableLiveData<>();
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
         super(application);
@@ -127,9 +127,6 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         mIsSearch.setValue(IsSearch);
     }
 
-
-
-
     public MutableLiveData<String> getSearchingText() {
         return mSearchingText;
     }
@@ -164,50 +161,66 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
 
         return mActionModel;
     }
-    public void setActionMode(ActionMode ActionMode){
+
+    public void setActionMode(ActionMode ActionMode) {
 
         mActionModel.setValue(ActionMode);
     }
+
     public MutableLiveData<Boolean> getIsSwiped() {
 
         return isSwipe;
     }
-    public void setIsSwiped(Boolean isSwipe){
+
+    public void setIsSwiped(Boolean isSwipe) {
         this.isSwipe.setValue(isSwipe);
     }
 
-    public void saveMyFileList(ArrayList<MyFile> myFileList){
+    public void saveMyFileList(ArrayList<MyFile> myFileList) {
         mMyFileList.setValue(myFileList);
     }
+
     public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
         return mMyFileList;
     }
 
-    public void saveMyPDFFileList(ArrayList<MyFile> mypdfFileList){
+    public void saveMyPDFFileList(ArrayList<MyFile> mypdfFileList) {
         mpdfFileList.setValue(mypdfFileList);
     }
+
     public MutableLiveData<ArrayList<MyFile>> getMyPDFFileList() {
         return mpdfFileList;
     }
 
-    public void saveMyPttFileList(ArrayList<MyFile> mypttFileList){
+    public void saveMyPttFileList(ArrayList<MyFile> mypttFileList) {
         mMypttFileList.setValue(mypttFileList);
     }
+
     public MutableLiveData<ArrayList<MyFile>> getMyPttFileList() {
         return mMypttFileList;
     }
 
-    public void saveMytxtFileList(ArrayList<MyFile> mytxtFileList){
+    public void saveMytxtFileList(ArrayList<MyFile> mytxtFileList) {
         mMytxtFileList.setValue(mytxtFileList);
     }
+
     public MutableLiveData<ArrayList<MyFile>> getMytxtFileList() {
         return mMytxtFileList;
     }
 
-    public void saveMyxlsFileList(ArrayList<MyFile> myxlsFileList){
+    public void saveMyxlsFileList(ArrayList<MyFile> myxlsFileList) {
         mMyxlsFileList.setValue(myxlsFileList);
     }
+
     public MutableLiveData<ArrayList<MyFile>> getMyxlsFileList() {
         return mMyxlsFileList;
+    }
+
+    public MutableLiveData<Integer> getOriginalPosition() {
+        return OriginalPosition;
+    }
+
+    public void setOriginalPosition(int position) {
+        OriginalPosition.setValue(position);
     }
 }

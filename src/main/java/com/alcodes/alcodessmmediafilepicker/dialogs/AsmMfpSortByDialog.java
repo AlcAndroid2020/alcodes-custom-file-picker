@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.afollestad.materialdialogs.DialogAction;
+import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpDialogFileSortingBinding;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -51,16 +52,16 @@ public class AsmMfpSortByDialog extends DialogFragment {
         initOrderRadioGroup();
 
         MaterialDialog.Builder builder = new MaterialDialog.Builder(requireActivity());
-        builder.title("Sort By")
+        builder.title(getResources().getString(R.string.Sortby))
                 .customView(mDatabinding.getRoot(), true)
-                .positiveText("Ok")
+                .positiveText(getResources().getString(R.string.Okay))
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         mCallback.onSortByDialogPositiveButtonClicked(getSortingStyle());
                     }
                 })
-                .negativeText("Cancel")
+                .negativeText(getResources().getString(R.string.Cancel))
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
