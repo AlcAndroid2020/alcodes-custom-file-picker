@@ -585,7 +585,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 initAdapter();
 
             }
-        
+
 /* able to maintain data at first rotate, able to clear before rotate by using done button
             Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             int CurrentRotation = display.getRotation();
