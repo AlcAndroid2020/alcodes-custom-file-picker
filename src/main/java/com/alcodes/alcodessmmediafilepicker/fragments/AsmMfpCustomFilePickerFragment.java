@@ -18,6 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -172,6 +174,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 promptSelection();
             }
             initAdapter();
+        }
+        if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue()!=null){
+
+            mDataBinding.getRoot().setBackgroundColor(mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
+            Toast.makeText(getContext(),"value"+mfpCustomFilePickerViewModel.getBackgroundColor().getValue(),Toast.LENGTH_SHORT).show();
         }
 
         //for action mode search bar
@@ -454,7 +461,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
             Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
             intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
-
+            intent.putExtra("color",mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
             startActivity(intent);
         }
     }

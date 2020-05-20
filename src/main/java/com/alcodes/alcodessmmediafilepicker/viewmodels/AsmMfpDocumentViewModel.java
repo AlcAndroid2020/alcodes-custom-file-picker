@@ -40,6 +40,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<MyFile>> mMytxtFileList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<MyFile>> mMyxlsFileList = new MutableLiveData<>();
     private final MutableLiveData<Integer> OriginalPosition = new MutableLiveData<>();
+    private final MutableLiveData<Integer> BackgroundColor=new MutableLiveData<>();
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
         super(application);
@@ -216,11 +217,12 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         return mMyxlsFileList;
     }
 
-    public MutableLiveData<Integer> getOriginalPosition() {
-        return OriginalPosition;
-    }
 
-    public void setOriginalPosition(int position) {
-        OriginalPosition.setValue(position);
+
+    public MutableLiveData<Integer> getBackgroundColor(){
+        return BackgroundColor;
+    }
+    public void setBackgroundColor(int color){
+        BackgroundColor.setValue(color);
     }
 }
