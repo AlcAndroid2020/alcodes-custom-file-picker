@@ -156,15 +156,14 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         //adapter to add fragment
         mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
 
-        mAdapter.AddFragment(new AsmMfpDocumentPickerPdfFragment(), getResources().getString(R.string.pdf));
-        mAdapter.AddFragment(new AsmMfpDocumentPickerDocxFragment(), getResources().getString(R.string.Word));
-        mAdapter.AddFragment(new AsmMfpDocumentPickerPttFragment(), getResources().getString(R.string.powerpoint));
-        mAdapter.AddFragment(new AsmMfpDocumentPickerTxtFragment(), getResources().getString(R.string.txt));
-        mAdapter.AddFragment(new AsmMfpDocumentPickerXlsFragment(), getResources().getString(R.string.excel));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerMergedFileTypeFragment("PDF"), getResources().getString(R.string.pdf));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerMergedFileTypeFragment("doc"), getResources().getString(R.string.Word));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerMergedFileTypeFragment("PTT"), getResources().getString(R.string.powerpoint));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerMergedFileTypeFragment("TXT"), getResources().getString(R.string.txt));
+        mAdapter.AddFragment(new AsmMfpDocumentPickerMergedFileTypeFragment("XLS"), getResources().getString(R.string.excel));
 
         //adapter setup
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
-
 }

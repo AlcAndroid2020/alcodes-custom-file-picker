@@ -94,8 +94,8 @@ public class AsmMfpDocumentFilePickerActivity extends AppCompatActivity {
     */
     @Override
     public void onBackPressed() {
-
         super.onBackPressed();
+
         Intent intent = new Intent(this, AsmMfpMainActivity.class);
         startActivity(intent);
     }

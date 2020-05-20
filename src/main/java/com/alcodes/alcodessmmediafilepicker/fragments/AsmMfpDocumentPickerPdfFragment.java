@@ -169,10 +169,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                     TotalselectedList = strings;
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
-                    //to active action mode as pervious tab already selected item
-                    // if (mActionMode == null)
-                    //   mActionMode = getActivity().startActionMode(mActionModeCallback);
-
                 }
 
                 //when unselect all this able to clear all  selected item

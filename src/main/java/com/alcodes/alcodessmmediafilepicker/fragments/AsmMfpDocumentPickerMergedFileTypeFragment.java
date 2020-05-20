@@ -42,7 +42,9 @@ import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFi
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
@@ -72,7 +74,11 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
-    private String FileType = "";
+    private String FileType;
+
+    public AsmMfpDocumentPickerMergedFileTypeFragment(){
+
+    }
 
     public AsmMfpDocumentPickerMergedFileTypeFragment(String fileType) {
         FileType = fileType;
@@ -139,14 +145,41 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
 
-        String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
-        ArrayList<String> FilType = new ArrayList<>();
-        FilType.add(pdf);
-        mDocumentViewModel.getFileList(FilType, "PDF").observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+        if(FileType != null){
+            mDocumentViewModel.setFileType(FileType);
+        }else{
+            FileType = mDocumentViewModel.getCurrentFileType(mDocumentViewModel.getViewPagerPosition().getValue());
+        }
+
+        ArrayList<String> FileTypeList = new ArrayList<>();
+        if(FileType.equals("PDF")){
+            String pdf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf");
+            FileTypeList.add(pdf);
+        }else if(FileType.equals("doc")){
+            String doc = MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc");
+            String docx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx");
+            FileTypeList.addAll(Arrays.asList(doc, docx));
+        }else if(FileType.equals("PTT")){
+            String ptt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt");
+            String pttx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx");
+            FileTypeList.addAll(Arrays.asList(ptt, pttx));
+        }else if(FileType.equals("TXT")){
+            String txt = MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt");
+            String rtx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx");
+            String rtf = MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf");
+            String html = MimeTypeMap.getSingleton().getMimeTypeFromExtension("html");
+            FileTypeList.addAll(Arrays.asList(txt, rtx, rtf, html));
+        }else if(FileType.equals("XLS")){
+            String xls = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls");
+            String xlsx = MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx");
+            FileTypeList.addAll(Arrays.asList(xls, xlsx));
+        }
+
+        mDocumentViewModel.getFileList(FileTypeList, FileType).observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
             @Override
             public void onChanged(ArrayList<MyFile> myFiles) {
                 if (myFiles.size() != 0) {
-                    if (myFiles.get(0).getFileType() == "PDF") {
+                    if (myFiles.get(0).getFileType() == FileType) {
                         mFileList = myFiles;
                         initAdapter();
                     }
@@ -154,10 +187,29 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
         });
 
-        if (mDocumentViewModel.getMyPDFFileList().getValue() != null) {
+        if(FileType.equals("PDF") && mDocumentViewModel.getMyPDFFileList().getValue() != null){
             mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
-        } else {
-            mFileList = mDocumentViewModel.getFileList(FilType, "PDF").getValue();
+        }else if(FileType.equals("doc") && mDocumentViewModel.getMyFileList().getValue() != null){
+            mFileList = mDocumentViewModel.getMyFileList().getValue();
+        }else if(FileType.equals("PTT") && mDocumentViewModel.getMyPttFileList().getValue() != null){
+            mFileList = mDocumentViewModel.getMyPttFileList().getValue();
+        }else if(FileType.equals("TXT") && mDocumentViewModel.getMytxtFileList().getValue() != null){
+            mFileList = mDocumentViewModel.getMytxtFileList().getValue();
+        }else if(FileType.equals("XLS") && mDocumentViewModel.getMyxlsFileList().getValue() != null){
+            mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+        }else{
+            mFileList = mDocumentViewModel.getFileList(FileTypeList, FileType).getValue();
+            if(FileType.equals("PDF")){
+                mDocumentViewModel.saveMyPDFFileList(mFileList);
+            }else if(FileType.equals("doc")){
+                mDocumentViewModel.saveMyFileList(mFileList);
+            }else if(FileType.equals("PTT")){
+                mDocumentViewModel.saveMyPttFileList(mFileList);
+            }else if(FileType.equals("TXT")){
+                mDocumentViewModel.saveMytxtFileList(mFileList);
+            }else if(FileType.equals("XLS")){
+                mDocumentViewModel.saveMyxlsFileList(mFileList);
+            }
         }
 
         //get selection list from viewmodel
@@ -181,7 +233,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                     for (int i = 0; i < mFileList.size(); i++) {
                         if (mFileList.get(i).getIsSelected()) {
                             mFileList.get(i).setIsSelected(false);
-
                         }
                     }
                     initAdapter();
@@ -196,7 +247,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         mDocumentViewModel.getSelectionLimit().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-
                 mMaxFileSelection = integer;
                 mAdapter.setSelectLimitCounter(mMaxFileSelection);
                 mAdapter.notifyDataSetChanged();
@@ -232,6 +282,20 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             public void onChanged(Integer position) {
                 if (!mViewPagerPosition.equals(position)) {
                     mViewPagerPosition = position;
+                    FileType = mDocumentViewModel.getCurrentFileType(position);
+                    if(FileType.equals("PDF") && mDocumentViewModel.getMyPDFFileList().getValue() != null){
+                        mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+                    }else if(FileType.equals("doc") && mDocumentViewModel.getMyFileList().getValue() != null){
+                        mFileList = mDocumentViewModel.getMyFileList().getValue();
+                    }else if(FileType.equals("PTT") && mDocumentViewModel.getMyPttFileList().getValue() != null){
+                        mFileList = mDocumentViewModel.getMyPttFileList().getValue();
+                    }else if(FileType.equals("TXT") && mDocumentViewModel.getMytxtFileList().getValue() != null){
+                        mFileList = mDocumentViewModel.getMytxtFileList().getValue();
+                    }else if(FileType.equals("XLS") && mDocumentViewModel.getMyxlsFileList().getValue() != null){
+                        mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+                    }
+                    initAdapter();
+
                     if (mDocumentViewModel.getSearchingText().getValue() != null) {
                         if (searchView != null) {
                             searchView.setQuery(mDocumentViewModel.getSearchingText().getValue(), false);
@@ -250,26 +314,10 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                             ClearTextBtn.setVisibility(View.INVISIBLE);
                         }
                     }
-                    if (mDocumentViewModel.getMyPDFFileList().getValue() != null &&
-                            mDocumentViewModel.getMyPDFFileList().getValue().size() != 0) {
-                        mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
-                        initAdapter();
-                    }
                 }
             }
         });
 //        }
-
-        mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean != null) {
-                    isSearching = aBoolean;
-                    mAdapter.setIsSearching(isSearching);
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-        });
 
         //to active action mode when switch to another tab
         mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
@@ -283,7 +331,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             @Override
             public void onChanged(Integer integer) {
                 if (integer != null) {
-
                     oldRotation = integer;
                 } else {
                     Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -291,8 +338,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 }
             }
         });
-
-
     }
 
     private void showSelecteditem() {
@@ -404,7 +449,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-
             }
         });
 
@@ -421,8 +465,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         if (mActionMode == null)
             mActionMode = getActivity().startActionMode(mActionModeCallback);
         //select all remaining
-        //   if (!isSelectedAll)
-        //  mActionMode.invalidate();
         mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
@@ -558,17 +600,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
-            //old code
-       /*
-            CustomSearchBar.setVisibility(View.INVISIBLE);
-            ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
-
-            //for refresh + clear all list
-            // resetFileList();
-            initAdapter();
-            mActionMode = null;*/
             //if swipe
             if (isSwiped) {
                 initAdapter();
@@ -578,37 +609,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 //if clicked done button
                 mActionMode = null;
                 initAdapter();
-
             }
-        
-/* able to maintain data at first rotate, able to clear before rotate by using done button
-            Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            int CurrentRotation = display.getRotation();
-
-            //if swipe
-            if (isSwiped) {
-                initAdapter();
-                mActionMode = null;
-                mDocumentViewModel.setIsSwiped(false);
-            } else {
-                //if no swipe
-
-                if (CurrentRotation != oldRotation) {
-                    //screen rotate
-
-
-                 //mDocumentViewModel.setOriginalPosition(CurrentRotation);
-                 Toast.makeText(getContext(),"",Toast.LENGTH_SHORT).show();
-                }
-                //if no rotate =click on done button
-                else {
-                    mActionMode = null;
-                    resetFileList();
-                    initAdapter();
-
-                }
-
-            }*/
         }
     };
 
@@ -646,9 +647,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     @Override
     public void onResume() {
         super.onResume();
-        if (mDocumentViewModel.getMyPDFFileList().getValue() != null) {
-            mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
-        }
         if (mDocumentViewModel.getSelectionList().getValue() != null && mDocumentViewModel.getSelectionList().getValue().size() != 0) {
             TotalselectedList = mDocumentViewModel.getSelectionList().getValue();
             if (mActionMode == null)
@@ -684,15 +682,22 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         super.onPause();
         mDocumentViewModel.setSelectionList(TotalselectedList);
         mDocumentViewModel.setIsSearching(isSearching);
-        mDocumentViewModel.saveMyPDFFileList(mFileList);
+        if(FileType.equals("PDF")){
+            mDocumentViewModel.saveMyPDFFileList(mFileList);
+        }else if(FileType.equals("doc")){
+            mDocumentViewModel.saveMyFileList(mFileList);
+        }else if(FileType.equals("PTT")){
+            mDocumentViewModel.saveMyPttFileList(mFileList);
+        }else if(FileType.equals("TXT")){
+            mDocumentViewModel.saveMytxtFileList(mFileList);
+        }else if(FileType.equals("XLS")){
+            mDocumentViewModel.saveMyxlsFileList(mFileList);
+        }
     }
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
-
         Type = "*/*";
-
-
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
