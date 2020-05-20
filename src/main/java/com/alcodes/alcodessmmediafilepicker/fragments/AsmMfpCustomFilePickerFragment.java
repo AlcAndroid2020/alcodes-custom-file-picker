@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -322,6 +323,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                     mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
                     mAppCompatActivity.invalidateOptionsMenu();
                     mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
                 } else {
                     myFileList.clear();
                     mfpCustomFilePickerViewModel.clearMyFileList();
@@ -343,12 +345,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
                 IsGrid = false;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("Grid View Format");
+                item.setTitle("GridView Format");
             } else {
                 mDataBinding.CustomRecyclerView.setLayoutManager(mGridLayoutManager);
                 IsGrid = true;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("List View Format");
+                item.setTitle("ListView Format");
             }
             initAdapter();
         }
