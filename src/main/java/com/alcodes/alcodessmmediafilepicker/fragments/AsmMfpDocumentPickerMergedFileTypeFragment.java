@@ -272,9 +272,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 isSwiped = aBoolean;
             }
         });
-        mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
-                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
-                get(AsmMfpCustomFilePickerViewModel.class);
 
 
 
@@ -536,7 +533,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
             mDocumentViewModel.saveMyxlsFileList(mOtherFileList);
         }
-
         TotalselectedList.clear();
         //update viewmodel as adapter will update along
         mDocumentViewModel.setSelectionList(TotalselectedList);

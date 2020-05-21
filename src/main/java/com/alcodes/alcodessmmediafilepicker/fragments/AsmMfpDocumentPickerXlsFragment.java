@@ -71,8 +71,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ActionBar mActionBar;
     public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     public AsmMfpDocumentPickerXlsFragment() {
@@ -423,7 +421,7 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
         //   if (!isSelectedAll)
         //  mActionMode.invalidate();
         //    mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
-        mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+        mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         getActivity().invalidateOptionsMenu();
 
         mDocumentViewModel.setSelectionList(TotalselectedList);
@@ -568,17 +566,6 @@ public class AsmMfpDocumentPickerXlsFragment extends Fragment implements AsmMfpD
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
-            //old code
-       /*
-            CustomSearchBar.setVisibility(View.INVISIBLE);
-            ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
-
-            //for refresh + clear all list
-            // resetFileList();
-            initAdapter();
-            mActionMode = null;*/
             //if swipe
             if (isSwiped) {
                 initAdapter();

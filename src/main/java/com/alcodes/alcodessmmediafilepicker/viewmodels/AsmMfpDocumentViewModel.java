@@ -39,8 +39,8 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<MyFile>> mMytxtFileList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<MyFile>> mMyxlsFileList = new MutableLiveData<>();
     private final MutableLiveData<Integer> OriginalPosition = new MutableLiveData<>();
-    private final MutableLiveData<Integer> BackgroundColor=new MutableLiveData<>();
     private final MutableLiveData<List<String>> mFileType = new MutableLiveData<>();
+    private final MutableLiveData<Integer> BackgroundColor=new MutableLiveData<>();
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
         super(application);

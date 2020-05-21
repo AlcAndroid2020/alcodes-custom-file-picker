@@ -231,7 +231,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 }
             }
         });
-//        }
 
         mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -251,8 +250,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 isSwiped = aBoolean;
             }
         });
-
-
     }
 
 
@@ -452,8 +449,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         else
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         getActivity().invalidateOptionsMenu();
-
-
     }
 
     @Override
@@ -565,17 +560,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
-            //old code
-       /*
-            CustomSearchBar.setVisibility(View.INVISIBLE);
-            ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
-
-            //for refresh + clear all list
-            // resetFileList();
-            initAdapter();
-            mActionMode = null;*/
             //if swipe
             if (isSwiped) {
                 initAdapter();
@@ -587,35 +571,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 initAdapter();
 
             }
-
-/* able to maintain data at first rotate, able to clear before rotate by using done button
-            Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            int CurrentRotation = display.getRotation();
-
-            //if swipe
-            if (isSwiped) {
-                initAdapter();
-                mActionMode = null;
-                mDocumentViewModel.setIsSwiped(false);
-            } else {
-                //if no swipe
-
-                if (CurrentRotation != oldRotation) {
-                    //screen rotate
-
-
-                 //mDocumentViewModel.setOriginalPosition(CurrentRotation);
-                 Toast.makeText(getContext(),"",Toast.LENGTH_SHORT).show();
-                }
-                //if no rotate =click on done button
-                else {
-                    mActionMode = null;
-                    resetFileList();
-                    initAdapter();
-
-                }
-
-            }*/
         }
     };
 
@@ -638,16 +593,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         if (TotalselectedList.size() != 0)
             mAdapter.setSelectedCounter(TotalselectedList.size());
         mAdapter.setSelectLimitCounter(mMaxFileSelection);
-    }
-
-    @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
-        return true;
     }
 
     @Override
@@ -699,10 +644,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
-
         Type = "application/pdf";
-
-
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
@@ -721,4 +663,13 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         startActivity(intent);
     }
 
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem item) {
+        return false;
+    }
 }

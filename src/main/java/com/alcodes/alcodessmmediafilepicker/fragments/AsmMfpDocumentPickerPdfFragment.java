@@ -55,7 +55,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     private AsmMfpFragmentDocumentFilePickerBinding mDataBinding;
     private AsmMfpDocumentViewModel mDocumentViewModel;
 
-
     //for action mode custom search bar
     private EditText CustomSearchBar;
     private Button ClearTextBtn;
@@ -66,13 +65,9 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
-    int oldRotation;
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
-    private Parcelable savedRecyclerLayoutState;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ActionBar mActionBar;
     public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     public AsmMfpDocumentPickerPdfFragment() {
@@ -243,6 +238,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
         });
 
+
         //to active action mode when switch to another tab
         mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -250,13 +246,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 isSwiped = aBoolean;
             }
         });
-
-
-
-
     }
-
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -418,12 +408,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         TotalselectedList.add(uri.toString());
 
         mAdapter.setSelectedCounter(TotalselectedList.size());
-        //  if (mActionMode == null)
-        //    mActionMode = getActivity().startActionMode(mActionModeCallback);
-        //select all remaining
-        //   if (!isSelectedAll)
-        //  mActionMode.invalidate();
-        //    mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
         mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
         getActivity().invalidateOptionsMenu();
 
@@ -567,18 +551,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
-            //old code
-       /*
-            CustomSearchBar.setVisibility(View.INVISIBLE);
-            ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
-
-            //for refresh + clear all list
-            // resetFileList();
-            initAdapter();
-            mActionMode = null;*/
-            //if swipe
             if (isSwiped) {
                 initAdapter();
                 //       mActionMode = null;
@@ -589,35 +561,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 initAdapter();
 
             }
-
-/* able to maintain data at first rotate, able to clear before rotate by using done button
-            Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            int CurrentRotation = display.getRotation();
-
-            //if swipe
-            if (isSwiped) {
-                initAdapter();
-                mActionMode = null;
-                mDocumentViewModel.setIsSwiped(false);
-            } else {
-                //if no swipe
-
-                if (CurrentRotation != oldRotation) {
-                    //screen rotate
-
-
-                 //mDocumentViewModel.setOriginalPosition(CurrentRotation);
-                 Toast.makeText(getContext(),"",Toast.LENGTH_SHORT).show();
-                }
-                //if no rotate =click on done button
-                else {
-                    mActionMode = null;
-                    resetFileList();
-                    initAdapter();
-
-                }
-
-            }*/
         }
     };
 
@@ -701,9 +644,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
-
         Type = "application/pdf";
-
 
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
