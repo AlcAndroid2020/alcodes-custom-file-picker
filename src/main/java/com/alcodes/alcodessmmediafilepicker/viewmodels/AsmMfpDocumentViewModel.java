@@ -20,6 +20,7 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AsmMfpDocumentViewModel extends AndroidViewModel {
 
@@ -28,11 +29,9 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<MyFile>> mFileList = new MutableLiveData<>(); //to store file list
     private MutableLiveData<Boolean> mIsSearch = new MutableLiveData<>(false);  ///for custom search bar
 
-    private MutableLiveData<Boolean> isSwitched = new MutableLiveData<>(false);
     private final MutableLiveData<ArrayList<MyFile>> mMyFileList = new MutableLiveData<>();
     private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
-    private MutableLiveData<ActionMode> mActionModel = new MutableLiveData<>();
     private MutableLiveData<Boolean> isSwipe = new MutableLiveData<>(false);
 
     private MutableLiveData<ArrayList<MyFile>> mpdfFileList = new MutableLiveData<>(); //to store file list
@@ -41,6 +40,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<MyFile>> mMyxlsFileList = new MutableLiveData<>();
     private final MutableLiveData<Integer> OriginalPosition = new MutableLiveData<>();
     private final MutableLiveData<Integer> BackgroundColor=new MutableLiveData<>();
+    private final MutableLiveData<List<String>> mFileType = new MutableLiveData<>();
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
         super(application);
@@ -144,30 +144,6 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         mViewPagerPosition.setValue(position);
     }
 
-    //    public void saveMyFileList(ArrayList<MyFile> myFileList){
-//        mMyFileList.setValue(myFileList);
-//    }
-//    public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
-//        return mMyFileList;
-//    }
-//
-//
-//    public void saveMyPdfFileList(ArrayList<MyFile> myFileList){
-//        mMyFileList.setValue(myFileList);
-//    }
-//    public MutableLiveData<ArrayList<MyFile>> getMyPdfFileList() {
-//        return mMyFileList;
-//    }
-    public MutableLiveData<ActionMode> getActionMode() {
-
-        return mActionModel;
-    }
-
-    public void setActionMode(ActionMode ActionMode) {
-
-        mActionModel.setValue(ActionMode);
-    }
-
     public MutableLiveData<Boolean> getIsSwiped() {
 
         return isSwipe;
@@ -224,5 +200,34 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     }
     public void setBackgroundColor(int color){
         BackgroundColor.setValue(color);
+    }
+
+    public MutableLiveData<List<String>> getFileType() {
+        return mFileType;
+    }
+
+    public String getCurrentFileType(Integer position) {
+        if(mFileType.getValue() == null){
+            return "";
+        }else{
+            return mFileType.getValue().get(position);
+        }
+    }
+
+    public void setFileType(String fileType){
+        List<String> dataHolders = new ArrayList<>();
+
+        if(mFileType.getValue() == null){
+            dataHolders.add(fileType);
+        }else{
+            dataHolders = mFileType.getValue();
+            for(int i=0; i < dataHolders.size(); i++){
+                if(!dataHolders.get(i).equals(fileType)){
+                    dataHolders.add(fileType);
+                    break;
+                }
+            }
+        }
+        mFileType.setValue(dataHolders);
     }
 }

@@ -180,7 +180,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
             initAdapter();
         }
-        if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue()!=null){
+        if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue()!=0){
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(),mfpCustomFilePickerViewModel.getBackgroundColor().getValue()));
             Toast.makeText(getContext(),"value"+mfpCustomFilePickerViewModel.getBackgroundColor().getValue(),Toast.LENGTH_SHORT).show();
         }
