@@ -184,7 +184,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
     @Override
     public int getItemCount() {
-        return myFileList.size();
+        return myFileList==null?0:myFileList.size();
     }
 
     @Override
@@ -251,7 +251,6 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
             String searchvalue = constraint.toString().toLowerCase();
             for (int i = 0; i < FilterList.size(); i++) {
                 String title = FilterList.get(i).getFileName();
-
                 if (title.toLowerCase().contains(searchvalue)) {
                     resultlist.add(FilterList.get(i));
                 }
