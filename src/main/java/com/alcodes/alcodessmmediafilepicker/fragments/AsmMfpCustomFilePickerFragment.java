@@ -1,7 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.Manifest;
-import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,14 +11,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,7 +36,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentCustomFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -50,10 +46,6 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerVie
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-import java.util.List;
-
-import timber.log.Timber;
 
 public class AsmMfpCustomFilePickerFragment extends Fragment
         implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback, SortByDialogCallback {
@@ -450,8 +442,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
             if (mFileList != null) {
                 Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-
                 startActivity(intent);
             }
         }

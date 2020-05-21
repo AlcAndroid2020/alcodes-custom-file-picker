@@ -1,6 +1,5 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,18 +8,15 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
@@ -402,11 +397,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             for (int i = 0; i < TotalselectedList.size(); i++) {
                 mFileList.add(TotalselectedList.get(i));
             }
-            if (mFileList != null) {
-                Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-                startActivity(intent);
-            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -545,7 +535,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 }
                 if (mFileList != null) {
                     Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                     startActivity(intent);
                 }
             }

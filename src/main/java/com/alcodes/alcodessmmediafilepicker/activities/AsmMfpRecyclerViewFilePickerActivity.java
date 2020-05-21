@@ -229,13 +229,6 @@ public class AsmMfpRecyclerViewFilePickerActivity extends AppCompatActivity {
                     mFileList.add(myFileList.get(i).getFileUri());
 
             }
-            if (mFileList != null) {
-                Intent intent = new Intent(this, AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-
-                startActivity(intent);
-            }
-
         }
         if (item.getItemId() == R.id.ShareWith) {
             ArrayList<String> mFileList = new ArrayList<>();

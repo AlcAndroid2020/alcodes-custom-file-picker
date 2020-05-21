@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
@@ -396,11 +395,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             for (int i = 0; i < TotalselectedList.size(); i++) {
                 mFileList.add(TotalselectedList.get(i));
             }
-            if (mFileList != null) {
-                Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-                startActivity(intent);
-            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -539,7 +533,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 }
                 if (mFileList != null) {
                     Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                     startActivity(intent);
                 }
             }

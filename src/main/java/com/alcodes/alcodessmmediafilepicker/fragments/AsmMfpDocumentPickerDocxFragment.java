@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
@@ -41,8 +40,6 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import timber.log.Timber;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
@@ -402,7 +399,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             }
             if (mFileList != null) {
                 Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }
@@ -543,7 +539,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 }
                 if (mFileList != null) {
                     Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                     startActivity(intent);
                 }
             }
