@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
+
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentCustomFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -76,7 +77,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private AppCompatActivity mAppCompatActivity;
 
     private int mMaxFileSelection;
-
+    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -442,6 +443,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
             if (mFileList != null) {
                 Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
+                intent.putStringArrayListExtra(AsmMfpCustomFilePickerFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }

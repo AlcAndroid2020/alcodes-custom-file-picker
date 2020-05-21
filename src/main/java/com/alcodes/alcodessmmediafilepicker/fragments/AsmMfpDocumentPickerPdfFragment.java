@@ -74,7 +74,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     private static String LIST_STATE = "list_state";
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ActionBar mActionBar;
-
+    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     public AsmMfpDocumentPickerPdfFragment() {
 
     }
@@ -365,7 +365,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             //   if (mActionMode == null)
             //      mActionMode = getActivity().startActionMode(mActionModeCallback);
             //   mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
@@ -396,6 +396,11 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             ArrayList<String> mFileList = new ArrayList<>();
             for (int i = 0; i < TotalselectedList.size(); i++) {
                 mFileList.add(TotalselectedList.get(i));
+            }
+            if (mFileList != null) {
+                Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
+                intent.putStringArrayListExtra(AsmMfpDocumentPickerPdfFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+                startActivity(intent);
             }
         }
 

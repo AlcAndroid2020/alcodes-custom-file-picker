@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
+
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
@@ -73,7 +74,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
     private static String LIST_STATE = "list_state";
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ActionBar mActionBar;
-
+    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     public AsmMfpDocumentPickerDocxFragment() {
 
     }
@@ -365,7 +366,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
             //   if (mActionMode == null)
             //      mActionMode = getActivity().startActionMode(mActionModeCallback);
             //   mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
@@ -398,7 +399,8 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
                 mFileList.add(TotalselectedList.get(i));
             }
             if (mFileList != null) {
-                Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
+                Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
+                intent.putStringArrayListExtra(AsmMfpDocumentPickerDocxFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }
@@ -455,7 +457,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         //   if (!isSelectedAll)
         //  mActionMode.invalidate();
         //    mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
-        mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+        mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         getActivity().invalidateOptionsMenu();
 
         mDocumentViewModel.setSelectionList(TotalselectedList);
@@ -483,7 +485,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         if (TotalselectedList.size() == 0)
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         else
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         getActivity().invalidateOptionsMenu();
 
 

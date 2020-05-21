@@ -7,7 +7,6 @@
     <application>
         <activity android:name=".activities.AsmMfpDocumentFilePickerActivity"></activity>
         <activity android:name=".activities.AsmMfpMainActivity" />
-        <activity android:name=".activities.AsmMfpRecyclerViewFilePickerActivity"/>
 
         <provider
             android:name=".utils.AsmMfpFileProvider"
