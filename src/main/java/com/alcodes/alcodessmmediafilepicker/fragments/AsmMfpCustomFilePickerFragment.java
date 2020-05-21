@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,11 +69,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private Boolean IsGrid;
     public String sharefiletype = "";
     private int mColor;
-    private static final int PERMISSION_STORGE_CODE = 1000;
-    //private ActionMode mActionMode;
-    private ActionBar mActionBar;
+    private Boolean searching = false;
 
-    private Boolean searching;
+    private static final int PERMISSION_STORGE_CODE = 1000;
+
+    private ActionBar mActionBar;
 
     private AppCompatActivity mAppCompatActivity;
 
@@ -138,6 +139,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         } else {
             mfpCustomFilePickerViewModel.setSearching(false);
         }
+
         if (mfpCustomFilePickerViewModel.getIsGrid().getValue() != null) {
             IsGrid = mfpCustomFilePickerViewModel.getIsGrid().getValue();
         } else {
@@ -177,32 +179,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             if (mColor != 0)
                 mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mfpCustomFilePickerViewModel.getBackgroundColor().getValue()));
         }
-        //for action mode search bar
-        mDataBinding.customFilePickerEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                mAdapter.getFilter().filter(s.toString());
-            }
-        });
-
-        //the clear text btn inside custom search bar
-        mDataBinding.customFilePickerClearTextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDataBinding.customFilePickerEditText.setText(null);
-
-                //to reset adapter as refresh to prevent selected position duplicated after used search
-                initAdapter();
-            }
-        });
     }
 
     @Override
@@ -215,7 +193,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectionList = mfpCustomFilePickerViewModel.getSelectionList().getValue();
             if (mActionBar == null)
                 mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
+            mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
         }
         initAdapter();
         if (mfpCustomFilePickerViewModel.getIsGrid().getValue() != null) {
@@ -229,20 +207,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (mfpCustomFilePickerViewModel.getIsInsideAlbum().getValue() != null) {
             isInSideAlbum = mfpCustomFilePickerViewModel.getIsInsideAlbum().getValue();
         }
-        if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
-            searching = mfpCustomFilePickerViewModel.getSearching().getValue();
-            if (searching) {
-                mDataBinding.customFilePickerEditText.setVisibility(View.VISIBLE);
-                mDataBinding.customFilePickerClearTextBtn.setVisibility(View.VISIBLE);
-            }
-            //click search btn for second time to hide the custom search bar
-            else {
-                mDataBinding.customFilePickerEditText.setVisibility(View.INVISIBLE);
-                mDataBinding.customFilePickerClearTextBtn.setVisibility(View.INVISIBLE);
-            }
-        }
         if (mfpCustomFilePickerViewModel.getSortingStyle().getValue() != null) {
             sortingMyFileList(mfpCustomFilePickerViewModel.getSortingStyle().getValue());
+        }
+
+        if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
+            searching = mfpCustomFilePickerViewModel.getSearching().getValue();
         }
     }
 
@@ -252,8 +222,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         super.onPause();
         mfpCustomFilePickerViewModel.saveMyFileList(myFileList);
         mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
-        mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
         mfpCustomFilePickerViewModel.setSearching(searching);
+        mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
         mfpCustomFilePickerViewModel.setMaxSelection(mMaxFileSelection);
         mfpCustomFilePickerViewModel.setPickerFileType(PickerFileType);
     }
@@ -267,10 +237,14 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search");
         //resume search test when rotation or leave foreground event has occurred
-        if (!searching) {
+        if (searching) {
             if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null && !mfpCustomFilePickerViewModel.getSearchingText().getValue().equals("")) {
                 searchItem.expandActionView();
                 searchView.setQuery(mfpCustomFilePickerViewModel.getSearchingText().getValue() + "", true);
+                mAdapter.getFilter().filter(mfpCustomFilePickerViewModel.getSearchingText().getValue());
+            }
+            else {
+                searchItem.collapseActionView();
             }
         }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -286,6 +260,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 return false;
             }
         });
+
 
         //select all item
         MenuItem selectAllItem = menu.findItem(R.id.SelectAll);
@@ -340,6 +315,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             sortingItem.setVisible(true);
             changeViewFormatItem.setVisible(true);
         }
+
+        if (IsGrid) {
+            changeViewFormatItem.setTitle(R.string.ListViewFormat);
+        }else {
+            changeViewFormatItem.setTitle(R.string.GridViewFormat);
+        }
     }
 
     private void sortingMyFileList(String sortingStyle) {
@@ -381,6 +362,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } else {
                 mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             }
+            searching = false;
             getActivity().invalidateOptionsMenu();
         }
         //to change layout to grid or recycler view
@@ -390,12 +372,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mDataBinding.CustomRecyclerView.setLayoutManager(mLinearLayoutManager);
                 IsGrid = false;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("GridView Format");
+                item.setTitle(R.string.GridViewFormat);
             } else {
                 mDataBinding.CustomRecyclerView.setLayoutManager(mGridLayoutManager);
                 IsGrid = true;
                 mfpCustomFilePickerViewModel.setIsGrid(IsGrid);
-                item.setTitle("ListView Format");
+                item.setTitle(R.string.ListViewFormat);
             }
             initAdapter();
         }
@@ -464,6 +446,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
 
 
+        if (item.getItemId() == R.id.FilePicker_SearchFilter) {
+            searching = true;
+        }
+
+
         //unselect the user selection
         if (item.getItemId() == R.id.UnSelectAll) {
             selectionList.clear();
@@ -484,22 +471,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             mActionBar.setTitle(R.string.app_name);
 
             getActivity().invalidateOptionsMenu();
-        }
-
-        if (item.getItemId() == R.id.FilePicker_SearchFilter) {
-            if (!searching) {
-                mDataBinding.customFilePickerEditText.setVisibility(View.INVISIBLE);
-                mDataBinding.customFilePickerClearTextBtn.setVisibility(View.INVISIBLE);
-                searching = true;
-                mfpCustomFilePickerViewModel.setSearching(searching);
-            }
-            //click search btn for second time to hide the custom search bar
-            else {
-                mDataBinding.customFilePickerEditText.setVisibility(View.INVISIBLE);
-                mDataBinding.customFilePickerClearTextBtn.setVisibility(View.INVISIBLE);
-                searching = false;
-                mfpCustomFilePickerViewModel.setSearching(searching);
-            }
         }
 
         return super.onOptionsItemSelected(item);

@@ -8,24 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/custom_File_Picker_EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Searching"
-            android:lines="1"
-            android:visibility="invisible"
-            android:maxLines="1" />
-
-        <Button
-            android:layout_width="35dp"
-            android:visibility="invisible"
-            android:layout_height="35dp"
-            android:id="@+id/custom_File_Picker_ClearTextBtn"
-            android:layout_alignEnd="@id/custom_File_Picker_EditText"
-            android:layout_alignRight="@id/custom_File_Picker_EditText"
-            android:background="@drawable/ic_cross_black_48dp" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/Custom_Recycler_View"
             android:layout_width="match_parent"
