@@ -29,6 +29,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 //import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -179,11 +180,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
             initAdapter();
         }
-        if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue()!=null){
-
-            mDataBinding.getRoot().setBackgroundColor(mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
-            Toast.makeText(getContext(),"value"+mfpCustomFilePickerViewModel.getBackgroundColor().getValue(),Toast.LENGTH_SHORT).show();
-        }
+//        if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue()!=0){
+//            mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(),mfpCustomFilePickerViewModel.getBackgroundColor().getValue()));
+//            Toast.makeText(getContext(),"value"+mfpCustomFilePickerViewModel.getBackgroundColor().getValue(),Toast.LENGTH_SHORT).show();
+//        }
 
         //for action mode search bar
         mDataBinding.customFilePickerEditText.addTextChangedListener(new TextWatcher() {

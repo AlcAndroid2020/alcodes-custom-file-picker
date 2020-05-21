@@ -48,8 +48,8 @@ import java.util.ArrayList;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks {
-    private View view;
+public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
+    View view;
     private RecyclerView recyclerView;
     private NavController mNavController;
 
@@ -67,6 +67,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
     //for limit selection
     private int SelecLimitCount;
+    //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
     private Integer mViewPagerPosition;
@@ -102,39 +103,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //for custom search bar
-        CustomSearchBar = getActivity().findViewById(R.id.Doc_File_Picker_EditText);
-        CustomSearchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mAdapter.getFilter().filter(s.toString());
-                mDocumentViewModel.setSearchingText(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        ClearTextBtn = requireActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
-        ClearTextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CustomSearchBar.setText("");
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
-                if (searchView != null) {
-                    searchView.setQuery("", false);
-                }
-                isSearching = false;
-                mDocumentViewModel.setIsSearching(isSearching);
-            }
-        });
 
         mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
@@ -170,6 +139,10 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                     TotalselectedList = strings;
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
+                    //to active action mode as pervious tab already selected item
+                    // if (mActionMode == null)
+                    //   mActionMode = getActivity().startActionMode(mActionModeCallback);
+
                 }
 
                 //when unselect all this able to clear all  selected item
@@ -257,6 +230,19 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
                 }
             }
         });
+//        }
+
+        mDocumentViewModel.getIsSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean != null) {
+                    isSearching = aBoolean;
+                    mAdapter.setIsSearching(isSearching);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
 
         //to active action mode when switch to another tab
         mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
@@ -266,8 +252,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
             }
         });
     }
-
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -573,7 +557,6 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //if swipe
             if (isSwiped) {
                 initAdapter();
                 //       mActionMode = null;
@@ -606,6 +589,16 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
         if (TotalselectedList.size() != 0)
             mAdapter.setSelectedCounter(TotalselectedList.size());
         mAdapter.setSelectLimitCounter(mMaxFileSelection);
+    }
+
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem item) {
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem item) {
+        return true;
     }
 
     @Override
@@ -658,6 +651,7 @@ public class AsmMfpDocumentPickerPdfFragment extends Fragment implements AsmMfpD
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
         Type = "application/pdf";
+
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");

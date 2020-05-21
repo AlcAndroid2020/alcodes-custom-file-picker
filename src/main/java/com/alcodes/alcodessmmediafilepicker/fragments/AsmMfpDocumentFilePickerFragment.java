@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -81,8 +82,8 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         });
         if(requireActivity().getIntent().getExtras()!=null) {
             mColor = requireActivity().getIntent().getExtras().getInt("color");
-            mDataBinding.getRoot().setBackgroundColor(mColor);
-            Toast.makeText(getContext(),"got color",Toast.LENGTH_SHORT).show();
+            if(mColor!=0)
+            mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(),mColor));
         }
 
     }

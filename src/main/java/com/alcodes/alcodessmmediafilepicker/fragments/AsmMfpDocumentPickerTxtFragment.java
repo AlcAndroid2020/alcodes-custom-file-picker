@@ -44,8 +44,8 @@ import java.util.Arrays;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks{
-    private View view;
+public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
+    View view;
     private RecyclerView recyclerView;
     private NavController mNavController;
 
@@ -64,6 +64,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
 
     //for limit selection
     private int SelecLimitCount;
+    //private Boolean isSelectedAll = false;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
     int oldRotation;
@@ -103,38 +104,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         super.onActivityCreated(savedInstanceState);
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //for custom search bar
-        CustomSearchBar = getActivity().findViewById(R.id.Doc_File_Picker_EditText);
-        CustomSearchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mAdapter.getFilter().filter(s.toString());
-                mDocumentViewModel.setSearchingText(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        ClearTextBtn = requireActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
-        ClearTextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CustomSearchBar.setText("");
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
-                if (searchView != null) {
-                    searchView.setQuery("", false);
-                }
-                isSearching = false;
-                mDocumentViewModel.setIsSearching(isSearching);
-            }
-        });
 
         mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
@@ -260,7 +229,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 }
             }
         });
-
         //to active action mode when switch to another tab
         mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -594,40 +562,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 initAdapter();
 
             }
-
-/* able to maintain data at first rotate, able to clear before rotate by using done button
-            Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            int CurrentRotation = display.getRotation();
-
-            //if swipe
-            if (isSwiped) {
-                initAdapter();
-                mActionMode = null;
-                mDocumentViewModel.setIsSwiped(false);
-            } else {
-                //if no swipe
-<<<<<<< HEAD
-                mActionMode = null;
-                initAdapter();
-            }
-=======
-
-                if (CurrentRotation != oldRotation) {
-                    //screen rotate
-
-
-                 //mDocumentViewModel.setOriginalPosition(CurrentRotation);
-                 Toast.makeText(getContext(),"",Toast.LENGTH_SHORT).show();
-                }
-                //if no rotate =click on done button
-                else {
-                    mActionMode = null;
-                    resetFileList();
-                    initAdapter();
-
-                }
-
-            }*/
         }
     };
 
@@ -650,6 +584,16 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
         if (TotalselectedList.size() != 0)
             mAdapter.setSelectedCounter(TotalselectedList.size());
         mAdapter.setSelectLimitCounter(mMaxFileSelection);
+    }
+
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem item) {
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem item) {
+        return true;
     }
 
     @Override
@@ -701,7 +645,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
-        Type = "*/*";
+        Type = "application/pdf";
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
