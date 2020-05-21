@@ -1,6 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,12 +9,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -21,9 +22,12 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerViewPagerAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
+import com.alcodes.alcodessmmediafilepicker.utils.AsmMfpSharedViewModel;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
+import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 import com.google.android.material.tabs.TabLayout;
 
@@ -40,7 +44,9 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     AsmMfpDocumentPickerViewPagerAdapter mAdapter;
     private Integer mViewPagerPosition;
     private AsmMfpDocumentViewModel mDocumentViewModel;
-    private  int mColor;
+    private int mColor;
+    private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
+
     private static final int PERMISSION_STORGE_CODE = 1000;
 
     @Override
@@ -80,11 +86,32 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
             public void onPageScrollStateChanged(int state) {
             }
         });
-        if(requireActivity().getIntent().getExtras()!=null) {
-            mColor = requireActivity().getIntent().getExtras().getInt("color");
-            if(mColor!=0)
-            mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(),mColor));
+
+        mDocumentViewModel.getBackgroundColor().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                if (integer != 0)
+                    mColor = integer;
+            }
+        });
+
+        mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
+                get(AsmMfpCustomFilePickerViewModel.class);
+
+
+        if (requireActivity().getIntent().getExtras() != null) {
+            if (requireActivity().getIntent().getExtras().getInt("color") != 0) {
+                mColor = requireActivity().getIntent().getExtras().getInt("color");
+               mfpCustomFilePickerViewModel.setBackgroundColor(mColor);
+            }
+
+        } else {
+            mColor = mfpCustomFilePickerViewModel.getBackgroundColor().getValue();
+
         }
+        if (mColor != 0)
+            mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
 
     }
 
@@ -174,4 +201,5 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         viewPager.setAdapter(mAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
+
 }

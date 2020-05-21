@@ -93,8 +93,10 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         }
 
 
+
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
+        Toast.makeText(getContext(),"color "+mColor,Toast.LENGTH_SHORT).show();
 
         Timber.e("" + mfpMainSharedViewModel.getMaxSelection().getValue());
     }

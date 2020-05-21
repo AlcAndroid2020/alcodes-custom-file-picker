@@ -128,7 +128,11 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 //click on folder
                 if (myFileList.get(position).getIsFolder()) {
                     if (callback != null) {
+                        if(myFileList.get(position).getFileType().equals("Image"))
                         callback.onFolderClicked(myFileList.get(position).getFolderID());
+                      else
+                          callback.onVideoFolderClicked(myFileList.get(position).getFileName());
+
                     }
                 } else {
                     //click on file
@@ -174,7 +178,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
         void onFolderClicked(int folderid);
 
         void onAlbumItemUnSelected(Uri uri);
-
+        void onVideoFolderClicked(String foldername);
         void onAlbumItemSelected(Uri uri);
     }
 

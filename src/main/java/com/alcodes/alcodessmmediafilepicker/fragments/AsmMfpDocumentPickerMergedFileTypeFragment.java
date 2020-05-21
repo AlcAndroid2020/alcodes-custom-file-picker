@@ -34,6 +34,7 @@ import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePic
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
+import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     private Boolean isSwiped = false;
     private String FileType;
     private ActionBar mActionBar;
+    private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
 
     public AsmMfpDocumentPickerMergedFileTypeFragment() {
 
@@ -270,6 +272,11 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 isSwiped = aBoolean;
             }
         });
+        mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
+                get(AsmMfpCustomFilePickerViewModel.class);
+
+
 
 
     }
