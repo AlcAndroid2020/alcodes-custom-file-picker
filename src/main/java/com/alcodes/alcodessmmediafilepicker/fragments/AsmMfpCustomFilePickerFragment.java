@@ -1,6 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.DialogInterface;
@@ -19,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
+import com.alcodes.alcodessmgalleryviewer.fragments.AsmGvrMainFragment;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
@@ -60,6 +63,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback, SortByDialogCallback {
 
     private static final String DEFAULT_SORTING_STYLE = "SortingDateDescending";
+    private static final int OPEN_DOCUMENT_REQUEST_CODE = 42;
+    private boolean mDirectToGvr = false;
 
     private AsmMfpFragmentCustomFilePickerBinding mDataBinding;
     private NavController mNavController;
@@ -67,6 +72,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private GridLayoutManager mGridLayoutManager;
 
     private ArrayList<MyFile> myFileList = new ArrayList<>();
+    private ArrayList<String> mFileListForAndroid10 = new ArrayList<>();
     private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
 
     private AsmMfpCustomFilePickerRecyclerViewAdapter mAdapter;
@@ -216,6 +222,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+        //Check whether it returns from Gallery Viewer
+        if(mDirectToGvr){
+            mDirectToGvr = false;
+            promptSelection();
+            mDataBinding.simpleProgressBar.setVisibility(View.GONE);
+        }
+
         if (mfpCustomFilePickerViewModel.getMyFileList().getValue() != null) {
             myFileList = mfpCustomFilePickerViewModel.getMyFileList().getValue();
         }
@@ -595,10 +608,63 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (PickerFileType.equals("Document")) {
             mDataBinding.linearLayoutNoFilesFound.setVisibility(View.GONE);
             mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
-            Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
-            intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
-            intent.putExtra("color",mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
-            startActivity(intent);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                //Android 10 and above
+                mDirectToGvr = true;
+
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+                String[] mimeTypes = {
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("html"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx")};
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
+            }else{
+                //Android 7 to Android 9
+                Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
+                intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
+                intent.putExtra("color",mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
+                startActivity(intent);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mFileListForAndroid10 = new ArrayList<>();
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == OPEN_DOCUMENT_REQUEST_CODE) {
+                if (null != data) {
+                    if (null != data.getClipData()) {
+                        // Multiple document is selected
+                        for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                            mFileListForAndroid10.add(data.getClipData().getItemAt(i).getUri().toString());
+                        }
+                    } else {
+                        //Single document is selected
+                        mFileListForAndroid10.add(data.getData().toString());
+                    }
+
+
+                    Intent intent = new Intent(requireActivity(), AsmGvrMainActivity.class);
+                    intent.putStringArrayListExtra(AsmGvrMainFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
+                    intent.putExtra("color",mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
+                    startActivity(intent);
+                }
+            }
         }
     }
 
