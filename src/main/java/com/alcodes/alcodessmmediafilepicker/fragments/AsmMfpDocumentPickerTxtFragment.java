@@ -33,7 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
+
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
@@ -74,7 +74,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
     private static String LIST_STATE = "list_state";
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ActionBar mActionBar;
-
+    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     public AsmMfpDocumentPickerTxtFragment() {
 
     }
@@ -332,7 +332,7 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
             //   if (mActionMode == null)
             //      mActionMode = getActivity().startActionMode(mActionModeCallback);
             //   mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
@@ -365,8 +365,8 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 mFileList.add(TotalselectedList.get(i));
             }
             if (mFileList != null) {
-                Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+                Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
+                intent.putStringArrayListExtra(AsmMfpDocumentPickerTxtFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }
@@ -507,7 +507,6 @@ public class AsmMfpDocumentPickerTxtFragment extends Fragment implements AsmMfpD
                 }
                 if (mFileList != null) {
                     Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                     startActivity(intent);
                 }
             }

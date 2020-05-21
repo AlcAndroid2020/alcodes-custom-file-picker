@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
@@ -58,6 +57,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     //for action mode custom search bar
     private EditText CustomSearchBar;
     private Button ClearTextBtn;
+    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
 
     //for limit selection
     private int SelecLimitCount;
@@ -387,7 +387,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
             if (mFileList != null) {
                 Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+           intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }

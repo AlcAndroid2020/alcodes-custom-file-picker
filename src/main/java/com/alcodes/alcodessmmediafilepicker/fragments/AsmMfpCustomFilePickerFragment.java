@@ -36,7 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
+
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentCustomFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -47,8 +47,6 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerVie
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-//import androidx.appcompat.view.ActionMode;
 
 public class AsmMfpCustomFilePickerFragment extends Fragment
         implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback, SortByDialogCallback {
@@ -79,7 +77,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private AppCompatActivity mAppCompatActivity;
 
     private int mMaxFileSelection;
-
+    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -446,8 +444,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
             if (mFileList != null) {
                 Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-
+                intent.putStringArrayListExtra(AsmMfpCustomFilePickerFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }
@@ -880,13 +877,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
         mDataBinding.CustomRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-        int o = 0;
-        for (int i = 0; i < myFileList.size(); i++) {
-            if (myFileList.get(i).getIsSelected()) {
-                o++;
-                Toast.makeText(getContext(), myFileList.get(i).getFileName(), Toast.LENGTH_SHORT).show();
-            }
-        }
+
     }
 
     private void initDefaultSortingStyle() {
