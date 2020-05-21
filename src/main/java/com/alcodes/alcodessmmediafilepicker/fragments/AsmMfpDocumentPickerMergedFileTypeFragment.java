@@ -326,18 +326,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 isSwiped = aBoolean;
             }
         });
-
-        mDocumentViewModel.getOriginalPosition().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                if (integer != null) {
-                    oldRotation = integer;
-                } else {
-                    Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                    oldRotation = display.getRotation();
-                }
-            }
-        });
     }
 
     private void showSelecteditem() {
@@ -479,8 +467,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         mDocumentViewModel.setSelectionList(TotalselectedList);
         //to reactive selectall
         // isL= false;
-        if (mActionMode != null)
+        if (mActionMode != null) {
             mActionMode.invalidate();
+        }
 
         if (TotalselectedList.size() == 0 && mActionMode != null)
             mActionMode.finish();
@@ -619,6 +608,70 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             if (mFileList.get(i).getIsSelected())
                 mFileList.get(i).setIsSelected(false);
         }
+        if(FileType.equals("PDF")){
+            mDocumentViewModel.saveMyPDFFileList(mFileList);
+        }else if(FileType.equals("doc")){
+            mDocumentViewModel.saveMyFileList(mFileList);
+        }else if(FileType.equals("PTT")){
+            mDocumentViewModel.saveMyPttFileList(mFileList);
+        }else if(FileType.equals("TXT")){
+            mDocumentViewModel.saveMytxtFileList(mFileList);
+        }else if(FileType.equals("XLS")){
+            mDocumentViewModel.saveMyxlsFileList(mFileList);
+        }
+
+        ArrayList<MyFile> mOtherFileList;
+
+        //pdf
+        if (mDocumentViewModel.getMyPDFFileList().getValue() != null && !FileType.equals("PDF")){
+            mOtherFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+            for (int i = 0; i < mOtherFileList.size(); i++) {
+                if (mOtherFileList.get(i).getIsSelected())
+                    mOtherFileList.get(i).setIsSelected(false);
+            }
+            mDocumentViewModel.saveMyPDFFileList(mOtherFileList);
+        }
+        //docx
+        if (mDocumentViewModel.getMyFileList().getValue() != null && !FileType.equals("doc")) {
+            mOtherFileList = mDocumentViewModel.getMyFileList().getValue();
+
+            for (int i = 0; i < mOtherFileList.size(); i++) {
+                if (mOtherFileList.get(i).getIsSelected())
+                    mOtherFileList.get(i).setIsSelected(false);
+            }
+            mDocumentViewModel.saveMyFileList(mOtherFileList);
+        }
+        //  ptt
+        if (mDocumentViewModel.getMyPttFileList().getValue() != null && !FileType.equals("PTT")) {
+            mOtherFileList = mDocumentViewModel.getMyPttFileList().getValue();
+
+            for (int i = 0; i < mOtherFileList.size(); i++) {
+                if (mOtherFileList.get(i).getIsSelected())
+                    mOtherFileList.get(i).setIsSelected(false);
+            }
+            mDocumentViewModel.saveMyPttFileList(mOtherFileList);
+        }
+        //  txt
+        if (mDocumentViewModel.getMytxtFileList().getValue() != null && !FileType.equals("TXT")) {
+            mOtherFileList = mDocumentViewModel.getMytxtFileList().getValue();
+
+            for (int i = 0; i < mOtherFileList.size(); i++) {
+                if (mOtherFileList.get(i).getIsSelected())
+                    mOtherFileList.get(i).setIsSelected(false);
+            }
+            mDocumentViewModel.saveMytxtFileList(mOtherFileList);
+        }
+        //  Xls
+        if (mDocumentViewModel.getMyxlsFileList().getValue() != null && !FileType.equals("XLS")) {
+            mOtherFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+
+            for (int i = 0; i < mOtherFileList.size(); i++) {
+                if (mOtherFileList.get(i).getIsSelected())
+                    mOtherFileList.get(i).setIsSelected(false);
+            }
+            mDocumentViewModel.saveMyxlsFileList(mOtherFileList);
+        }
+
         TotalselectedList.clear();
         //update viewmodel as adapter will update along
         mDocumentViewModel.setSelectionList(TotalselectedList);

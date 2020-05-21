@@ -39,6 +39,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     AsmMfpDocumentPickerViewPagerAdapter mAdapter;
     private Integer mViewPagerPosition;
     private AsmMfpDocumentViewModel mDocumentViewModel;
+    private  int mColor;
     private static final int PERMISSION_STORGE_CODE = 1000;
 
     @Override
@@ -78,6 +79,12 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
             public void onPageScrollStateChanged(int state) {
             }
         });
+        if(requireActivity().getIntent().getExtras()!=null) {
+            mColor = requireActivity().getIntent().getExtras().getInt("color");
+            mDataBinding.getRoot().setBackgroundColor(mColor);
+            Toast.makeText(getContext(),"got color",Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Nullable

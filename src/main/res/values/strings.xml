@@ -38,5 +38,7 @@
     <string name="selectionnumber" tools:ignore="ResourceName">Enter selection number here</string>
     <string name="NoLimit" tools:ignore="ResourceName">0= No Limit</string>
 
-
+    <string name="NoGeneralFilesFound" tools:ignore="ResourceName">No %1$s Found</string>
+    <string name="NoVideosFound" tools:ignore="ResourceName">Videos</string>
+    <string name="NoImagesFound" tools:ignore="ResourceName">Images</string>
 </resources>
