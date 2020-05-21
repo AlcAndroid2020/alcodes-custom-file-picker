@@ -447,8 +447,6 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
         else
             mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
         getActivity().invalidateOptionsMenu();
-
-
     }
 
     @Override
@@ -645,10 +643,7 @@ public class AsmMfpDocumentPickerDocxFragment extends Fragment implements AsmMfp
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
-
         Type = "application/pdf";
-
-
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");

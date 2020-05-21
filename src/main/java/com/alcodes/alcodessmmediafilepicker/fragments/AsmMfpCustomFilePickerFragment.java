@@ -223,7 +223,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectionList = mfpCustomFilePickerViewModel.getSelectionList().getValue();
             if ( mActionBar == null)
                 mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
+            mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
         }
         initAdapter();
         if (mfpCustomFilePickerViewModel.getIsGrid().getValue() != null) {
@@ -436,12 +436,14 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             getActivity().invalidateOptionsMenu();
 
         }
-
-
         if (item.getItemId() == R.id.SelectFileType){
             promptSelection();
-        }
 
+            if (mActionBar == null)
+                mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+            mActionBar.setTitle(getActivity().getTitle());
+        }
         if (item.getItemId() == R.id.DoneSelection) {
             ArrayList<String> mFileList = new ArrayList<>();
             for (int i = 0; i < selectionList.size(); i++) {
@@ -469,8 +471,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 StartShare(mFileList);
             }
         }
-
-
 
         //unselect the user selection
         if (item.getItemId() == R.id.UnSelectAll) {
@@ -905,12 +905,23 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         isInSideAlbum = true;
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
         mAppCompatActivity.invalidateOptionsMenu();
+
+        if(selectionList.size() != 0){
+            int x =0;
+            do{
+                for(int i=0;i < selectionList.size();i++){
+                    if(myFileList.get(x).getFileUri().equals(selectionList.get(i).toString())){
+                        myFileList.get(x).setIsSelected(true);
+                    }
+                }
+                x++;
+            }while(x < myFileList.size());
+        }
         initAdapter();
     }
 
     @Override
     public void onAlbumItemUnSelected(Uri uri) {
-
         for (int i = (selectionList.size() - 1); i >= 0; i--) {
             if (selectionList.get(i).equals(uri)) {
                 selectionList.remove(i);
@@ -919,11 +930,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
         mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
 
-
-
         if (mActionBar != null)
             mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
-
 
         if (selectionList.size() == 0) {
             mActionBar.setTitle(getResources().getString(R.string.app_name));
@@ -938,7 +946,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     public void onAlbumItemSelected(Uri uri) {
         //get position
         isInSideAlbum = true;
-
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
         selectionList.add(uri);
 
