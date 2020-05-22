@@ -28,7 +28,8 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     private AsmMfpFragmentMainBinding mDataBinding;
     private NavController mNavController;
     private AsmMfpCustomFilePickerViewModel mfpMainSharedViewModel;
-    private int mColor;
+    private int mColor, mTheme;
+    String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +58,6 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         ).get(AsmMfpCustomFilePickerViewModel.class);
 
 
-
         if (requireActivity().getIntent().getExtras() != null) {
             //When it was directing to here from Main Module
             mfpMainSharedViewModel.setMaxSelection(requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
@@ -70,7 +70,15 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
             mColor = requireActivity().getIntent().getExtras().getInt("color");
 
             mfpMainSharedViewModel.setBackgroundColor(mColor);
-            Toast.makeText(getContext(),"value"+mColor,Toast.LENGTH_SHORT).show();
+
+
+            if(requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) !=0)
+                mTheme = requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
+
+
+            if(mTheme!=0)
+                mfpMainSharedViewModel.setTheme(mTheme);
+
 
         } else {
             //When it was directing to here within Sub Module
@@ -83,15 +91,16 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
             //for background color
 
             if (mfpMainSharedViewModel.getBackgroundColor().getValue() != null) {
-                mColor=mfpMainSharedViewModel.getBackgroundColor().getValue();
+                mColor = mfpMainSharedViewModel.getBackgroundColor().getValue();
 
             }
         }
 
 
-
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
+
+
 
         Timber.e("" + mfpMainSharedViewModel.getMaxSelection().getValue());
     }
