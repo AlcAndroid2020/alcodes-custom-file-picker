@@ -32,7 +32,7 @@
     <string name="SelectFileType" tools:ignore="ResourceName">Select File Type</string>
 
     <string name="ChangeSelectLimit" tools:ignore="ResourceName">Change Select Limit</string>
-    <string name="ItemSelect" tools:ignore="ResourceName">item(s) selected</string>
+    <string name="ItemSelect" tools:ignore="ResourceName"> item(s) selected</string>
     <string name="ListViewFormat" tools:ignore="ResourceName">List View Format</string>
     <string name="LimitFileSelection" tools:ignore="ResourceName">Limit File Selection</string>
     <string name="selectionnumber" tools:ignore="ResourceName">Enter selection number here</string>
