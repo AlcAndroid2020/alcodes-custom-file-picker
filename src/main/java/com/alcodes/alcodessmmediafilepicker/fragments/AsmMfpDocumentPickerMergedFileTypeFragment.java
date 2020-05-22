@@ -563,7 +563,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         super.onResume();
         if (FileType.equals("PDF")) {
             mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
-
         } else if (FileType.equals("doc")) {
             mFileList = mDocumentViewModel.getMyFileList().getValue();
         } else if (FileType.equals("PTT")) {

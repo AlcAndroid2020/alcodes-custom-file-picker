@@ -54,10 +54,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
 
     @Override
     public long getItemId(int position) {
-
         //for solving search view onitem select problem
-
-
         return position;
     }
 
@@ -70,28 +67,20 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.tv_FileName.setText(mFileList.get(position).getFileName());
-
         //refresh view everytime
         holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
-
 
         if (!isSearching) {
             if (mFileList.get(position).getIsSelected()) {
                 holder.iv_CheckIcon.setVisibility(View.VISIBLE);
             } else {
-
                 holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
-
-
             }
         } else {
-
             if (mFileList.get(position).getIsSelected()) {
                 holder.iv_CheckIcon.setVisibility(View.VISIBLE);
             }
-
         }
-
         //detect which file type then set suitable file icon
         if (mFileList.get(position).getFileType() != null) {
             switch (mFileList.get(position).getFileType()) {
@@ -135,31 +124,17 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
 
                     if (SelectLimitCounter != 0) {
                         if (SelectedCounter < SelectLimitCounter) {
-
                             //prevent when searching check double item
-
                             mFileList.get(position).setIsSelected(true);
                             callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
-
-
                         }
-
-
                     } else {
-
-
                         mFileList.get(position).setIsSelected(true);
                         callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
-
-
                     }
-
-
                 }
             }
         });
-
-
     }
 
     public static String readableFileSize(long size) {
@@ -224,14 +199,11 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
             iv_CheckIcon = (ImageView) itemView.findViewById(R.id._Image_view_item_Document_check);
             checkBox = itemView.findViewById(R.id.Doc_Picker_checkbox);
         }
-
-
     }
 
 
     @Override
     public Filter getFilter() {
-
         return filter;
     }
 

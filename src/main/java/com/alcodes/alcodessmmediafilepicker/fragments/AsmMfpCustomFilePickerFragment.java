@@ -71,6 +71,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     public String sharefiletype = "";
     private int mColor;
     private Boolean searching = false;
+    private SearchView searchView;
 
     private static final int PERMISSION_STORGE_CODE = 1000;
 
@@ -243,7 +244,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //for search filter
         MenuItem searchItem = menu.findItem(R.id.FilePicker_SearchFilter);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search");
         //resume search test when rotation or leave foreground event has occurred
         if (searching) {
@@ -389,12 +390,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
             initAdapter();
         }
-
         if (item.getItemId() == R.id.sorting) {
             //Pass Callback and CurrentSortingStyle
             AsmMfpSortByDialog.newInstance(this, mfpCustomFilePickerViewModel.getSortingStyle().getValue()).show(getParentFragmentManager(), AsmMfpSortByDialog.TAG);
         }
-
         if (item.getItemId() == R.id.SelectAll) {
             //Clear it to avoid duplicate data in the same array list
             selectionList.clear();
@@ -420,8 +419,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             getActivity().invalidateOptionsMenu();
 
         }
-
-
         if (item.getItemId() == R.id.SelectFileType) {
             promptSelection();
 
@@ -442,7 +439,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 startActivity(intent);
             }
         }
-
         if (item.getItemId() == R.id.ShareWith) {
             ArrayList<String> mFileList = new ArrayList<>();
             for (int i = 0; i < myFileList.size(); i++) {
@@ -456,13 +452,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 StartShare(mFileList);
             }
         }
-
-
         if (item.getItemId() == R.id.FilePicker_SearchFilter) {
             searching = true;
         }
-
-
         //unselect the user selection
         if (item.getItemId() == R.id.UnSelectAll) {
             selectionList.clear();
@@ -973,12 +965,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
-        getActivity().invalidateOptionsMenu();
     }
 
     @Override
     public void onVideoFolderClicked(String foldername) {
-
         openVideoMediaStoreFile(foldername);
 
         mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
@@ -986,6 +976,18 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         isInSideAlbum = true;
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
         mAppCompatActivity.invalidateOptionsMenu();
+
+        if (selectionList.size() != 0) {
+            int x = 0;
+            do {
+                for (int i = 0; i < selectionList.size(); i++) {
+                    if (myFileList.get(x).getFileUri().equals(selectionList.get(i).toString())) {
+                        myFileList.get(x).setIsSelected(true);
+                    }
+                }
+                x++;
+            } while (x < myFileList.size());
+        }
         initAdapter();
     }
 
@@ -1005,8 +1007,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
-
-        getActivity().invalidateOptionsMenu();
     }
 
     @Override

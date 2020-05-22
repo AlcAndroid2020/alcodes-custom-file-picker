@@ -75,6 +75,10 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
             currentViewTextView = holder.mAlbumItemFileNameInGridView;
         }
 
+        //to refresh the view prevent duplicate bug when searching
+        currentViewCheckBox.setVisibility(View.INVISIBLE);
+        currentViewCheckBox.setChecked(false);
+
         //to show selected when go back to album
         if (myFileList.get(position).getIsSelected()) {
             currentViewCheckBox.setVisibility(View.VISIBLE);
@@ -130,10 +134,9 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                     if (callback != null) {
                         if(myFileList.get(position).getFileType().equals("Image"))
                         callback.onFolderClicked(myFileList.get(position).getFolderID());
-                      else
-                          callback.onVideoFolderClicked(myFileList.get(position).getFileName());
-
-                    }
+                    else
+                      callback.onVideoFolderClicked(myFileList.get(position).getFileName());
+                }
                 } else {
                     //click on file
 
