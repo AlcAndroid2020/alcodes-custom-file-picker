@@ -72,24 +72,22 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         holder.tv_FileName.setText(mFileList.get(position).getFileName());
 
         //refresh view everytime
-        holder.checkBox.setVisibility(View.INVISIBLE);
-        holder.checkBox.setChecked(false);
+        holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
 
 
         if (!isSearching) {
             if (mFileList.get(position).getIsSelected()) {
-                holder.checkBox.setVisibility(View.VISIBLE);
-                holder.checkBox.setChecked(true);
+                holder.iv_CheckIcon.setVisibility(View.VISIBLE);
             } else {
-                holder.checkBox.setVisibility(View.INVISIBLE);
-                holder.checkBox.setChecked(false);
+
+                holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
+
 
             }
         } else {
 
             if (mFileList.get(position).getIsSelected()) {
-                holder.checkBox.setVisibility(View.VISIBLE);
-                holder.checkBox.setChecked(true);
+                holder.iv_CheckIcon.setVisibility(View.VISIBLE);
             }
 
         }
@@ -129,8 +127,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
             public void onClick(View v) {
 
                 if (mFileList.get(position).getIsSelected()) {
-                    holder.checkBox.setVisibility(View.INVISIBLE);
-                    holder.checkBox.setChecked(false);
+                    holder.iv_CheckIcon.setVisibility(View.INVISIBLE);
                     mFileList.get(position).setIsSelected(false);
                     callback.onDocumentUnSelected(Uri.parse(mFileList.get(position).getFileUri()));
                 } else {
@@ -143,11 +140,7 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
 
                             mFileList.get(position).setIsSelected(true);
                             callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
-                       /*     if (!isSearching) {
-                                holder.checkBox.setVisibility(View.VISIBLE);
-                                holder.checkBox.setChecked(true);
 
-                            }*/
 
                         }
 
@@ -159,11 +152,6 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
                         callback.onDocumentSelected(Uri.parse(mFileList.get(position).getFileUri()));
 
 
-                      /*  if (!isSearching) {
-                            holder.checkBox.setVisibility(View.VISIBLE);
-                            holder.checkBox.setChecked(true);
-
-                        }*/
                     }
 
 

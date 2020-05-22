@@ -18,22 +18,7 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/Doc_File_Picker_EditText"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:hint="Searching"
-                android:lines="1"
-                android:maxLines="1"
-                android:visibility="invisible" />
 
-            <Button
-                android:id="@+id/Doc_File_Picker_ClearTextBtn"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/ic_cross_black_48dp"
-                android:visibility="invisible" />
         </LinearLayout>
 
         <com.google.android.material.tabs.TabLayout

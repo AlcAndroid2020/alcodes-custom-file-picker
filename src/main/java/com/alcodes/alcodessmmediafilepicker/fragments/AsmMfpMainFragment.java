@@ -1,6 +1,5 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +15,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpRecyclerViewFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.MainBindingCallback;
 import com.alcodes.alcodessmmediafilepicker.utils.AsmMfpSharedPreferenceHelper;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
-import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
 import timber.log.Timber;
 
@@ -93,6 +89,7 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         }
 
 
+
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
 
@@ -108,13 +105,6 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         mNavController = Navigation.findNavController(view);
     }
 
-    @Override
-    public void onImageFilePickerButtonClicked() {
-
-        Intent intent = new Intent(getContext(), AsmMfpGithubSampleFilePickerActivity.class);
-        startActivity(intent);
-
-    }
 
     @Override
     public void onCustomPickerButtonClicked() {
@@ -125,17 +115,5 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
 
         mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
 
-    }
-
-    @Override
-    public void onListViewFilePickerButtonClicked() {
-        Intent intent = new Intent(getContext(), AsmMfpListViewFilePicker.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onRecyclerViewFilePickerButtonClicked() {
-        Intent intent = new Intent(getContext(), AsmMfpRecyclerViewFilePickerActivity.class);
-        startActivity(intent);
     }
 }

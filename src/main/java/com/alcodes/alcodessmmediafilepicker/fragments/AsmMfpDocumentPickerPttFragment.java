@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpGithubSampleFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
@@ -73,10 +70,8 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
-    private static String LIST_STATE = "list_state";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
     private ActionBar mActionBar;
-
+    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
     public AsmMfpDocumentPickerPttFragment() {
 
     }
@@ -106,38 +101,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         super.onActivityCreated(savedInstanceState);
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //for custom search bar
-        CustomSearchBar = getActivity().findViewById(R.id.Doc_File_Picker_EditText);
-        CustomSearchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mAdapter.getFilter().filter(s.toString());
-                mDocumentViewModel.setSearchingText(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        ClearTextBtn = requireActivity().findViewById(R.id.Doc_File_Picker_ClearTextBtn);
-        ClearTextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CustomSearchBar.setText("");
-                CustomSearchBar.setVisibility(View.INVISIBLE);
-                ClearTextBtn.setVisibility(View.INVISIBLE);
-                if (searchView != null) {
-                    searchView.setQuery("", false);
-                }
-                isSearching = false;
-                mDocumentViewModel.setIsSearching(isSearching);
-            }
-        });
 
         mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
@@ -369,7 +333,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
             //   if (mActionMode == null)
             //      mActionMode = getActivity().startActionMode(mActionModeCallback);
             //   mActionMode.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
@@ -402,8 +366,8 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 mFileList.add(TotalselectedList.get(i));
             }
             if (mFileList != null) {
-                Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+                Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
+                intent.putStringArrayListExtra(AsmMfpDocumentPickerPttFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }
@@ -460,7 +424,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         //   if (!isSelectedAll)
         //  mActionMode.invalidate();
         //    mActionMode.setTitle(TotalselectedList.size() + "item(s) selected");
-        mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
         getActivity().invalidateOptionsMenu();
 
         mDocumentViewModel.setSelectionList(TotalselectedList);
@@ -490,8 +453,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
         else
             mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
         getActivity().invalidateOptionsMenu();
-
-
     }
 
     @Override
@@ -544,7 +505,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 }
                 if (mFileList != null) {
                     Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-                    intent.putStringArrayListExtra(AsmMfpGithubSampleFilePickerActivity.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                     startActivity(intent);
                 }
             }
@@ -604,17 +564,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
-            //old code
-       /*
-            CustomSearchBar.setVisibility(View.INVISIBLE);
-            ClearTextBtn.setVisibility(View.INVISIBLE);
-            mDocumentViewModel.setIsSearching(false);
-
-            //for refresh + clear all list
-            // resetFileList();
-            initAdapter();
-            mActionMode = null;*/
             //if swipe
             if (isSwiped) {
                 initAdapter();
@@ -626,35 +575,6 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
                 initAdapter();
 
             }
-
-/* able to maintain data at first rotate, able to clear before rotate by using done button
-            Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            int CurrentRotation = display.getRotation();
-
-            //if swipe
-            if (isSwiped) {
-                initAdapter();
-                mActionMode = null;
-                mDocumentViewModel.setIsSwiped(false);
-            } else {
-                //if no swipe
-
-                if (CurrentRotation != oldRotation) {
-                    //screen rotate
-
-
-                 //mDocumentViewModel.setOriginalPosition(CurrentRotation);
-                 Toast.makeText(getContext(),"",Toast.LENGTH_SHORT).show();
-                }
-                //if no rotate =click on done button
-                else {
-                    mActionMode = null;
-                    resetFileList();
-                    initAdapter();
-
-                }
-
-            }*/
         }
     };
 
@@ -738,10 +658,7 @@ public class AsmMfpDocumentPickerPttFragment extends Fragment implements AsmMfpD
 
     public void StartShare(ArrayList<String> mFileList) {
         String Type = "";
-
         Type = "application/pdf";
-
-
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");

@@ -25,26 +25,7 @@
             android:onClick="@{() -> bindingCallback.onCustomPickerButtonClicked()}"
 
             android:text="@string/btn_customFilePicker"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
 
-            android:onClick="@{() -> bindingCallback.onImageFilePickerButtonClicked()}"
-            android:text="Github Sample file picker" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:onClick="@{() -> bindingCallback.onListViewFilePickerButtonClicked()}"
-            android:text="List View File Picker" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:onClick="@{() -> bindingCallback.onRecyclerViewFilePickerButtonClicked()}"
-            android:text="Recycler View File Picker" />
 
     </LinearLayout>
 
