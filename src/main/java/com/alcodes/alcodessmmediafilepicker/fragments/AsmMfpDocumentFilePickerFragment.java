@@ -145,6 +145,7 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         if (mDocumentViewModel.getViewPagerPosition().getValue() != null) {
             mViewPagerPosition = mDocumentViewModel.getViewPagerPosition().getValue();
         }
+
     }
 
     @Override

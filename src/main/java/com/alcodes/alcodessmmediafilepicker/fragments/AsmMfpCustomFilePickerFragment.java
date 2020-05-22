@@ -68,8 +68,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private String PickerFileType = "";
     private Boolean isInSideAlbum;
     private Boolean IsGrid;
-    public String sharefiletype = "";
-    private int mColor;
+    private String sharefiletype = "";
+    private int mColor, mTheme;
     private Boolean searching = false;
     private SearchView searchView;
 
@@ -183,6 +183,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mfpCustomFilePickerViewModel.getBackgroundColor().getValue()));
         }
 
+        if (mfpCustomFilePickerViewModel.getTheme().getValue() != null) {
+            mTheme = mfpCustomFilePickerViewModel.getTheme().getValue();
+
+        }
+
 
     }
 
@@ -203,6 +208,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             selectionList = mfpCustomFilePickerViewModel.getSelectionList().getValue();
             if (mActionBar == null)
                 mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+
             mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
         }
         initAdapter();
@@ -224,6 +231,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
             searching = mfpCustomFilePickerViewModel.getSearching().getValue();
         }
+  /*     if(mDataBinding.simpleProgressBar.getVisibility()==View.VISIBLE){
+           mDataBinding.simpleProgressBar.setVisibility(View.INVISIBLE);
+           promptSelection();
+       }*/
     }
 
 
@@ -294,6 +305,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //changeViewFormat
         MenuItem changeViewFormatItem = menu.findItem(R.id.Custom_ChangeLayout);
+        //back button
+
 
         if (isInSideAlbum) {
             selectFileTpyeItem.setVisible(false);
@@ -323,6 +336,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             unSelectItem.setVisible(false);
             sortingItem.setVisible(true);
             changeViewFormatItem.setVisible(true);
+
+            //TESTING
+            mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         if (IsGrid) {
@@ -358,6 +374,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                     mAppCompatActivity.invalidateOptionsMenu();
                     mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
+
                 } else {
                     myFileList.clear();
                     mfpCustomFilePickerViewModel.clearMyFileList();
@@ -367,12 +384,16 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                     mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
                     mAppCompatActivity.invalidateOptionsMenu();
                     mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
                 }
             } else {
-                mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                mAppCompatActivity.getSupportActionBar().setTitle(getActivity().getTitle());
+
             }
             searching = false;
             getActivity().invalidateOptionsMenu();
+
         }
         //to change layout to grid or recycler view
         if (item.getItemId() == R.id.Custom_ChangeLayout) {
@@ -821,6 +842,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
             MyFile myFile = new MyFile(fileName, String.valueOf(contentUri), lastModify, false);
             myFile.setFileType("Image");
+
             //to put back seleceted status to pervious selected item
             for (int i = 0; i < selectionList.size(); i++) {
                 if (myFile.getFileUri().equals(selectionList.get(i))) {
@@ -943,6 +965,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } while (x < myFileList.size());
         }
         initAdapter();
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -989,6 +1012,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } while (x < myFileList.size());
         }
         initAdapter();
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override

@@ -29,6 +29,7 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
     public AsmMfpCustomFilePickerViewModel(@NonNull Application application) {
         super(application);
     }
+    private final MutableLiveData<Integer> mTheme=new MutableLiveData<>();
 
     public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
         return mMyFileList;
@@ -126,4 +127,11 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
     public void setBackgroundColor(int color){
         BackgroundColor.setValue(color);
     }
+    public MutableLiveData<Integer> getTheme(){
+        return mTheme;
+    }
+    public void setTheme(int theme){
+        mTheme.setValue(theme);
+    }
+
 }
