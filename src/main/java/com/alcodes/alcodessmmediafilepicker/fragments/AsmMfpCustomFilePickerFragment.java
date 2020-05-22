@@ -52,7 +52,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
     private static final String DEFAULT_SORTING_STYLE = "SortingDateDescending";
     private static final int OPEN_DOCUMENT_REQUEST_CODE = 42;
-    private boolean mDirectToGvr = false;
+    private boolean mBeenDirectedToDocumentPicker = false;
 
     private AsmMfpFragmentCustomFilePickerBinding mDataBinding;
     private NavController mNavController;
@@ -116,6 +116,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //Init AppCompatActivity
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
+        mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
 
         //Init Two Layout Manager - Grid + Linear
         mLinearLayoutManager = new LinearLayoutManager(requireContext());
@@ -194,8 +195,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     public void onResume() {
         super.onResume();
         //Check whether it returns from Gallery Viewer
-        if (mDirectToGvr) {
-            mDirectToGvr = false;
+        if (mBeenDirectedToDocumentPicker) {
+            mBeenDirectedToDocumentPicker = false;
             promptSelection();
             mDataBinding.simpleProgressBar.setVisibility(View.GONE);
         }
@@ -337,7 +338,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             sortingItem.setVisible(true);
             changeViewFormatItem.setVisible(true);
 
-            //TESTING
             mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -383,8 +383,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                     mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
                     mAppCompatActivity.invalidateOptionsMenu();
                     mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-
                 } else {
                     myFileList.clear();
                     mfpCustomFilePickerViewModel.clearMyFileList();
@@ -402,8 +400,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
             }
             searching = false;
-            getActivity().invalidateOptionsMenu();
-
+            mAppCompatActivity.invalidateOptionsMenu();
         }
         //to change layout to grid or recycler view
         if (item.getItemId() == R.id.Custom_ChangeLayout) {
@@ -553,7 +550,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 PickerFileType = "Video";
                 mfpCustomFilePickerViewModel.setPickerFileType(PickerFileType);
                 init();
-
             }
         });
         builder.setNeutralButton(getResources().getString(R.string.document), new DialogInterface.OnClickListener() {
@@ -586,15 +582,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (PickerFileType.equals("Document")) {
             mDataBinding.linearLayoutNoFilesFound.setVisibility(View.GONE);
             mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
-            /*Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
-            intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
-            intent.putExtra("color", mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
-            startActivity(intent);
-*/
+            mBeenDirectedToDocumentPicker = true;
+            
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                 //Android 10 and above
-                mDirectToGvr = true;
-
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("*/*");
