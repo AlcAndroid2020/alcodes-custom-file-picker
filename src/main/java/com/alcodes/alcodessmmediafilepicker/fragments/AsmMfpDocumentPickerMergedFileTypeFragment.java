@@ -272,12 +272,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 isSwiped = aBoolean;
             }
         });
-
-
-
-
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
