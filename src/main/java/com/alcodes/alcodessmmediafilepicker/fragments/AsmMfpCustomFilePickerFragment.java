@@ -117,6 +117,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //Init AppCompatActivity
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
         mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
+        
 
         //Init Two Layout Manager - Grid + Linear
         mLinearLayoutManager = new LinearLayoutManager(requireContext());
