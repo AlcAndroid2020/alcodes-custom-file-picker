@@ -278,7 +278,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         });
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -365,6 +364,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             initAdapter();
+            requireActivity().invalidateOptionsMenu();
         }
 
         if (item.getItemId() == R.id.Doc_FilePicker_UnselectAll) {
@@ -403,7 +403,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         TotalselectedList.add(uri.toString());
         mAdapter.setSelectedCounter(TotalselectedList.size());
         mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-        getActivity().invalidateOptionsMenu();
+        requireActivity().invalidateOptionsMenu();
 
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
@@ -423,7 +423,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         else
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-        getActivity().invalidateOptionsMenu();
+        requireActivity().invalidateOptionsMenu();
 
     }
 

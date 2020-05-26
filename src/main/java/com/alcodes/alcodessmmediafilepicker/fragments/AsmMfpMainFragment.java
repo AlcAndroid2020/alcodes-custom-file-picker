@@ -59,6 +59,9 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
         mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
+        mAppCompatActivity = ((AppCompatActivity) requireActivity());
+        mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         // Init binding callback.
         mDataBinding.setBindingCallback(this);
         mfpMainSharedViewModel = new ViewModelProvider(

@@ -40,5 +40,12 @@
         android:visible="false"
         android:title="@string/Share"/>
 
+    <item
+        android:id="@+id/SelectFileType"
+        app:showAsAction="never"
+        android:title="@string/SelectFileType"
+        android:visible="true"
+        />
+
 
 </menu>
