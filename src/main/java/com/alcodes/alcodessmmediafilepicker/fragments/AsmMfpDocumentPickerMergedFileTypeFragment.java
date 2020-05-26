@@ -350,7 +350,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 TotalselectedList.add(mFileList.get(i).getFileUri());
             }
 
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
@@ -433,7 +433,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         //update with viewmodel
         TotalselectedList.add(uri.toString());
         mAdapter.setSelectedCounter(TotalselectedList.size());
-        mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+        mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         getActivity().invalidateOptionsMenu();
 
         mDocumentViewModel.setSelectionList(TotalselectedList);
@@ -453,7 +453,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         if (TotalselectedList.size() == 0)
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         else
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         getActivity().invalidateOptionsMenu();
 
     }
