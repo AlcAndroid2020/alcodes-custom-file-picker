@@ -1,6 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.activities;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +22,7 @@ public class AsmMfpDocumentFilePickerActivity extends AppCompatActivity {
 
     private AsmMfpActivityDocumentFilePickerBinding mDataBinding;
     private Integer mColor;
+
     private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
 
     @Override

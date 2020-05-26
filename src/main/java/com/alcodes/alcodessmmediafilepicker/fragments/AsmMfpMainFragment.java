@@ -2,9 +2,10 @@ package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,8 +31,9 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     private NavController mNavController;
     private AsmMfpCustomFilePickerViewModel mfpMainSharedViewModel;
     private int mColor, mTheme;
-    String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
     private AppCompatActivity mAppCompatActivity;
+
+    String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +52,10 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mAppCompatActivity = ((AppCompatActivity) requireActivity());
+        mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        //to hide home button when back from media picker
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
         mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
@@ -74,8 +80,11 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
 
             mfpMainSharedViewModel.setBackgroundColor(mColor);
 
-            if(requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) !=0)
+
+            if (requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) != 0)
                 mTheme = requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
+
+
 
             if(mTheme!=0)
                 mfpMainSharedViewModel.setTheme(mTheme);
@@ -120,4 +129,11 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
 
     }
+
+
+    public int getTheme(){
+
+        return mTheme;
+    }
+
 }
