@@ -40,7 +40,6 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         super.onCreate(savedInstanceState);
     }
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,6 +52,8 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mAppCompatActivity = ((AppCompatActivity) requireActivity());
+        mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         //to hide home button when back from media picker
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
@@ -84,9 +85,9 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
                 mTheme = requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
 
 
-            if (mTheme != 0)
-                mfpMainSharedViewModel.setTheme(mTheme);
 
+            if(mTheme!=0)
+                mfpMainSharedViewModel.setTheme(mTheme);
 
         } else {
             //When it was directing to here within Sub Module
@@ -100,18 +101,14 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
 
             if (mfpMainSharedViewModel.getBackgroundColor().getValue() != null) {
                 mColor = mfpMainSharedViewModel.getBackgroundColor().getValue();
-
             }
         }
-
-
+        
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
 
-
         Timber.e("" + mfpMainSharedViewModel.getMaxSelection().getValue());
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -131,6 +128,12 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
 
         mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
 
+    }
+
+
+    public int getTheme(){
+
+        return mTheme;
     }
 
 }

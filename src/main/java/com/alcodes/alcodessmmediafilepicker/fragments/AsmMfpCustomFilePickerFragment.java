@@ -82,6 +82,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
     private int mMaxFileSelection;
     public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
+    public static final String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -187,7 +188,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         if (mfpCustomFilePickerViewModel.getTheme().getValue() != null) {
             mTheme = mfpCustomFilePickerViewModel.getTheme().getValue();
-
         }
     }
 
@@ -603,11 +603,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                         MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx")};
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
                 startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
             } else {
                 //Android 7 to Android 9
                 Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
                 intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
+                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
                 intent.putExtra("color", mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
                 startActivity(intent);
             }
