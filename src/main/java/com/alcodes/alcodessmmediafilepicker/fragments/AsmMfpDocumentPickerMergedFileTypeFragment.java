@@ -201,6 +201,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
         });
         mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
+        mDocumentViewModel.setSelectionLimit(mMaxFileSelection);
         if (mMaxFileSelection != 0)
             isLimited = true;
         //get user selection limit ,by default is 10item
@@ -355,9 +356,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
         }
-        if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
-            PromptLimitDialog();
-        }
+
         if (item.getItemId() == R.id.Doc_FilePicker_UnselectAll) {
             resetFileList();
             initAdapter();
@@ -374,9 +373,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
 
         }
-        if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
-            PromptLimitDialog();
-        }
         if (item.getItemId() == R.id.Doc_FilePicker_DoneSelection) {
             ArrayList<String> mFileList = new ArrayList<>();
             for (int i = 0; i < TotalselectedList.size(); i++) {
@@ -389,42 +385,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void PromptLimitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(getResources().getString(R.string.LimitFileSelection));
-        final EditText input = new EditText(getContext());
-        input.setHint(getResources().getString(R.string.selectionnumber));
-
-        builder.setView(input);
-        builder.setMessage(getResources().getString(R.string.NoLimit));
-
-        builder.setPositiveButton(getResources().getString(R.string.Okay), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mDocumentViewModel.setSelectionLimit(Integer.valueOf(input.getText().toString()));
-                mMaxFileSelection = Integer.valueOf(input.getText().toString());
-                mAdapter.setSelectLimitCounter(mMaxFileSelection);
-
-                //if limited again then hide select all option
-                if (mMaxFileSelection != 0)
-                    isLimited = true;
-                else
-                    isLimited = false;
-                getActivity().invalidateOptionsMenu();
-
-                mDocumentViewModel.setSelectionLimit(mMaxFileSelection);
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        builder.show();
     }
 
     @Override

@@ -14,7 +14,7 @@
         android:id="@+id/list_view_album_relative_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/album_item_thumbnail_in_list_view"
@@ -34,8 +34,9 @@
             android:textColor="@color/design_default_color_on_secondary"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/album_item_thumbnail_in_list_view"
-            android:layout_toStartOf="@id/album_item_checkbox_in_list_view"/>
+            android:layout_toStartOf="@id/album_item_checked_in_list_view"/>
 
+        <!--
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/album_item_checkbox_in_list_view"
             android:layout_height="30dp"
@@ -45,6 +46,18 @@
             android:layout_centerVertical="true"
             android:enabled="false"
             android:visibility="invisible"/>
+            -->
+
+        <ImageView
+            android:id="@+id/album_item_checked_in_list_view"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:visibility="visible"
+            android:src="@drawable/album_item_check"/>
 
     </RelativeLayout>
 
@@ -54,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/album_item_thumbnail_in_grid_view"
@@ -76,11 +89,13 @@
                 android:text="FileName"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                android:layout_centerInParent="true"
                 android:textSize="18sp"
                 android:textColor="@color/design_default_color_on_secondary"
-                android:layout_toStartOf="@id/album_item_checkbox_in_grid_view"
+                android:layout_toStartOf="@+id/album_item_checked_in_grid_view"
                 android:layout_centerHorizontal="true"/>
 
+            <!--
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/album_item_checkbox_in_grid_view"
                 android:layout_height="30dp"
@@ -91,6 +106,18 @@
                 android:enabled="false"
                 android:visibility="gone"
                 android:checked="true"/>
+                -->
+
+            <ImageView
+                android:id="@+id/album_item_checked_in_grid_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
+                android:visibility="visible"
+                android:src="@drawable/album_item_check"/>
 
         </RelativeLayout>
 

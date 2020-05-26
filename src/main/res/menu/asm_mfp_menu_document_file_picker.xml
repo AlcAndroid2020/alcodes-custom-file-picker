@@ -27,10 +27,6 @@
         android:visible="false"
 
         />
-    <item
-        android:id="@+id/Doc_FilePicker_SetSelectLimit"
-        android:title="@string/ChangeSelectLimit"
-        />
 
     <item
         android:id="@+id/Doc_FilePicker_SelectAll"
