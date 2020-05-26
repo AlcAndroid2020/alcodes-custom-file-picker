@@ -285,7 +285,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         mNavController = Navigation.findNavController(view);
     }
 
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         //for search filter
@@ -341,15 +340,27 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
-            mDocumentViewModel.setSelectionLimit(0);
             for (int i = 0; i < mFileList.size(); i++) {
-                mFileList.get(i).setIsSelected(true);
-                TotalselectedList.add(mFileList.get(i).getFileUri());
+                if(!mFileList.get(i).getIsSelected()){
+                    mFileList.get(i).setIsSelected(true);
+                    TotalselectedList.add(mFileList.get(i).getFileUri());
+                }
+            }
+
+            mDocumentViewModel.setSelectionList(TotalselectedList);
+            if (FileType.equals("PDF")) {
+                mDocumentViewModel.saveMyPDFFileList(mFileList);
+            } else if (FileType.equals("doc")) {
+                mDocumentViewModel.saveMyFileList(mFileList);
+            } else if (FileType.equals("PTT")) {
+                mDocumentViewModel.saveMyPttFileList(mFileList);
+            } else if (FileType.equals("TXT")) {
+                mDocumentViewModel.saveMytxtFileList(mFileList);
+            } else if (FileType.equals("XLS")) {
+                mDocumentViewModel.saveMyxlsFileList(mFileList);
             }
 
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-
-            mDocumentViewModel.setSelectionList(TotalselectedList);
             initAdapter();
         }
         if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
@@ -380,7 +391,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
             if (mFileList != null) {
                 Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-           intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+                intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }
@@ -532,7 +543,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         TotalselectedList.clear();
         //update viewmodel as adapter will update along
         mDocumentViewModel.setSelectionList(TotalselectedList);
-        mDocumentViewModel.setSelectionLimit(SelecLimitCount);
     }
 
 
@@ -579,7 +589,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     @Override
     public void onPause() {
         super.onPause();
-        mDocumentViewModel.setSelectionList(TotalselectedList);
         if (FileType.equals("PDF")) {
             mDocumentViewModel.saveMyPDFFileList(mFileList);
         } else if (FileType.equals("doc")) {
