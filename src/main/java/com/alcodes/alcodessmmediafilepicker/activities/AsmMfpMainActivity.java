@@ -19,22 +19,18 @@ public class AsmMfpMainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         //set theme
-
         if (getIntent().getExtras() != null) {
             if (getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) == 1) {
                 setTheme(R.style.asm_mfp_apps_theme_semi_transparent);
-
             } else if (getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) == 2) {
                 setTheme(R.style.asm_mfp_apps_theme_transparent);
             } else {
-
                 setTheme(R.style.asm_mfp_apps_default);
-
             }
-
         }
+
+        super.onCreate(savedInstanceState);
         // Init data binding.
         mDataBinding = AsmMfpActivityMainBinding.inflate(getLayoutInflater());
 
@@ -44,8 +40,6 @@ public class AsmMfpMainActivity extends AppCompatActivity {
         mNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
         NavigationUI.setupActionBarWithNavController(this, mNavController);
-
-
     }
 
     @Override

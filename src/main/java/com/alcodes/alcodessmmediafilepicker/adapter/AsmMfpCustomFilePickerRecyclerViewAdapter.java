@@ -96,10 +96,6 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                             .load(Uri.parse(myFileList.get(position).getFileUri()))
                             // Uri of the picture
                             .into(currentViewImageView);
-
-
-
-
                } else {
                    Glide.with(mContext)
                             .load(R.drawable.image_folder)

@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,12 +31,12 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     private AsmMfpCustomFilePickerViewModel mfpMainSharedViewModel;
     private int mColor, mTheme;
     String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
+    private AppCompatActivity mAppCompatActivity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     @Nullable
     @Override
@@ -49,6 +50,8 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mAppCompatActivity = ((AppCompatActivity) requireActivity());
+        mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         // Init binding callback.
         mDataBinding.setBindingCallback(this);
@@ -71,14 +74,11 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
 
             mfpMainSharedViewModel.setBackgroundColor(mColor);
 
-
             if(requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) !=0)
                 mTheme = requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
 
-
             if(mTheme!=0)
                 mfpMainSharedViewModel.setTheme(mTheme);
-
 
         } else {
             //When it was directing to here within Sub Module
@@ -92,19 +92,14 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
 
             if (mfpMainSharedViewModel.getBackgroundColor().getValue() != null) {
                 mColor = mfpMainSharedViewModel.getBackgroundColor().getValue();
-
             }
         }
-
-
+        
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
 
-
-
         Timber.e("" + mfpMainSharedViewModel.getMaxSelection().getValue());
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
