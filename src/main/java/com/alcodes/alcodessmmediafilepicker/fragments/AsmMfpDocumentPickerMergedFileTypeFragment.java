@@ -36,6 +36,7 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -345,15 +346,27 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
-            mDocumentViewModel.setSelectionLimit(0);
             for (int i = 0; i < mFileList.size(); i++) {
-                mFileList.get(i).setIsSelected(true);
-                TotalselectedList.add(mFileList.get(i).getFileUri());
+                if(!mFileList.get(i).getIsSelected()){
+                    mFileList.get(i).setIsSelected(true);
+                    TotalselectedList.add(mFileList.get(i).getFileUri());
+                }
             }
 
-            mActionBar.setTitle(TotalselectedList.size() + "item(s) selected");
-
             mDocumentViewModel.setSelectionList(TotalselectedList);
+            if (FileType.equals("PDF")) {
+                mDocumentViewModel.saveMyPDFFileList(mFileList);
+            } else if (FileType.equals("doc")) {
+                mDocumentViewModel.saveMyFileList(mFileList);
+            } else if (FileType.equals("PTT")) {
+                mDocumentViewModel.saveMyPttFileList(mFileList);
+            } else if (FileType.equals("TXT")) {
+                mDocumentViewModel.saveMytxtFileList(mFileList);
+            } else if (FileType.equals("XLS")) {
+                mDocumentViewModel.saveMyxlsFileList(mFileList);
+            }
+
+            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             initAdapter();
         }
 
