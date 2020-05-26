@@ -303,7 +303,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //back button
 
         if (isInSideAlbum) {
-
             if (selectionList.size() != 0) {
                 if (selectionList.size() == mMaxFileSelection || checkIsSelectedAll())
                     selectAllItem.setVisible(false);
@@ -632,7 +631,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                         //Single document is selected
                         mFileListForAndroid10.add(data.getData().toString());
                     }
-
 
                     Intent intent = new Intent(requireActivity(), AsmGvrMainActivity.class);
                     intent.putStringArrayListExtra(AsmGvrMainFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
@@ -966,6 +964,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (selectionList.size() == 0) {
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         }
+        getActivity().invalidateOptionsMenu();
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
@@ -1011,6 +1010,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
         //update the selection count for limit user selection
+        getActivity().invalidateOptionsMenu();
+
         mAdapter.setSelectionCount(selectionList.size());
     }
 

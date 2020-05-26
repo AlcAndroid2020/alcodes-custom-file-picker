@@ -187,8 +187,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                     TotalselectedList = strings;
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
-
-
                 }
 
                 //when unselect all this able to clear all  selected item
@@ -325,7 +323,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         if (isLimited)
             SelectAll.setVisible(false);
 
-
         MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
         MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
 
@@ -372,7 +369,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             if (mDocumentViewModel.getSelectionList().getValue() != null) {
                 StartShare(FileList);
             }
-
         }
         if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
             PromptLimitDialog();
