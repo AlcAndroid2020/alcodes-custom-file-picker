@@ -188,8 +188,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                     TotalselectedList = strings;
                     mAdapter.setSelectedCounter(TotalselectedList.size());
                     mAdapter.notifyDataSetChanged();
-
-
                 }
 
                 //when unselect all this able to clear all  selected item
@@ -289,7 +287,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         mNavController = Navigation.findNavController(view);
     }
 
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         //for search filter
@@ -326,7 +323,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
         if (isLimited)
             SelectAll.setVisible(false);
-
 
         MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
         MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
@@ -385,7 +381,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             if (mDocumentViewModel.getSelectionList().getValue() != null) {
                 StartShare(FileList);
             }
-
         }
         if (item.getItemId() == R.id.Doc_FilePicker_DoneSelection) {
             ArrayList<String> mFileList = new ArrayList<>();
@@ -394,7 +389,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
             if (mFileList != null) {
                 Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-           intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+                intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
                 startActivity(intent);
             }
         }
@@ -510,7 +505,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         TotalselectedList.clear();
         //update viewmodel as adapter will update along
         mDocumentViewModel.setSelectionList(TotalselectedList);
-        mDocumentViewModel.setSelectionLimit(SelecLimitCount);
     }
 
 
@@ -557,7 +551,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     @Override
     public void onPause() {
         super.onPause();
-        mDocumentViewModel.setSelectionList(TotalselectedList);
         if (FileType.equals("PDF")) {
             mDocumentViewModel.saveMyPDFFileList(mFileList);
         } else if (FileType.equals("doc")) {

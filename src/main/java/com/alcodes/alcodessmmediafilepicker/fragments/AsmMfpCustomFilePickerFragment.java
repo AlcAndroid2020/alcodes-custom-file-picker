@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -258,17 +259,20 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         searchView.setQueryHint("Search");
         //resume search test when rotation or leave foreground event has occurred
         if (searching) {
-            if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null && !mfpCustomFilePickerViewModel.getSearchingText().getValue().equals("")) {
+            if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null) {
                 searchItem.expandActionView();
-                searchView.setQuery(mfpCustomFilePickerViewModel.getSearchingText().getValue() + "", true);
+                searchView.setQuery(mfpCustomFilePickerViewModel.getSearchingText().getValue(), true);
                 mAdapter.getFilter().filter(mfpCustomFilePickerViewModel.getSearchingText().getValue());
             } else {
                 searchItem.collapseActionView();
             }
         }
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                mAdapter.getFilter().filter(query);
+                mfpCustomFilePickerViewModel.setSearchingText(query);
                 return false;
             }
 
@@ -303,7 +307,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //back button
 
         if (isInSideAlbum) {
-
             if (selectionList.size() != 0) {
                 if (selectionList.size() == mMaxFileSelection || checkIsSelectedAll())
                     selectAllItem.setVisible(false);
@@ -633,7 +636,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                         mFileListForAndroid10.add(data.getData().toString());
                     }
 
-
                     Intent intent = new Intent(requireActivity(), AsmGvrMainActivity.class);
                     intent.putStringArrayListExtra(AsmGvrMainFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
                     intent.putExtra("color", mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
@@ -947,7 +949,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } while (x < myFileList.size());
         }
         initAdapter();
-        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -966,6 +967,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (selectionList.size() == 0) {
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         }
+
+        mAppCompatActivity.invalidateOptionsMenu();
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
@@ -993,7 +996,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } while (x < myFileList.size());
         }
         initAdapter();
-        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -1011,6 +1013,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
         //update the selection count for limit user selection
+        mAppCompatActivity.invalidateOptionsMenu();
+
         mAdapter.setSelectionCount(selectionList.size());
     }
 
