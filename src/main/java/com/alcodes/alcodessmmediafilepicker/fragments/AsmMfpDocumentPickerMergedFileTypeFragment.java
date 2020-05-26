@@ -39,7 +39,9 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
+import static com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity.EXTRA_INTEGER_SELECTED_THEME;
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
 public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
@@ -53,7 +55,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     private AsmMfpDocumentPickerRecyclerViewAdapter mAdapter;
     private AsmMfpFragmentDocumentFilePickerBinding mDataBinding;
     private AsmMfpDocumentViewModel mDocumentViewModel;
-
 
     //for action mode custom search bar
     private EditText CustomSearchBar;
@@ -72,8 +73,8 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     private ActionBar mActionBar;
     private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
 
-    public AsmMfpDocumentPickerMergedFileTypeFragment() {
 
+    public AsmMfpDocumentPickerMergedFileTypeFragment() {
     }
 
     public AsmMfpDocumentPickerMergedFileTypeFragment(String fileType) {
@@ -104,10 +105,13 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         super.onActivityCreated(savedInstanceState);
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
-
         mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
+
+        mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
+                get(AsmMfpCustomFilePickerViewModel.class);
 
         if (FileType != null) {
             mDocumentViewModel.setFileType(FileType);
@@ -274,10 +278,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 isSwiped = aBoolean;
             }
         });
-
-
-
-
     }
 
 
@@ -552,7 +552,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         }
         initAdapter();
-
     }
 
     @Override
@@ -591,5 +590,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
         startActivity(intent);
+    }
+
+    public interface SetThemeCallback{
+        void setTheme();
     }
 }
