@@ -362,9 +362,8 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             initAdapter();
-        }
-        if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
-            PromptLimitDialog();
+
+            requireActivity().invalidateOptionsMenu();
         }
         if (item.getItemId() == R.id.Doc_FilePicker_UnselectAll) {
             resetFileList();
@@ -380,9 +379,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             if (mDocumentViewModel.getSelectionList().getValue() != null) {
                 StartShare(FileList);
             }
-        }
-        if (item.getItemId() == R.id.Doc_FilePicker_SetSelectLimit) {
-            PromptLimitDialog();
         }
         if (item.getItemId() == R.id.Doc_FilePicker_DoneSelection) {
             ArrayList<String> mFileList = new ArrayList<>();
@@ -441,7 +437,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         TotalselectedList.add(uri.toString());
         mAdapter.setSelectedCounter(TotalselectedList.size());
         mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-        getActivity().invalidateOptionsMenu();
+        requireActivity().invalidateOptionsMenu();
 
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
@@ -461,7 +457,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         else
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
-        getActivity().invalidateOptionsMenu();
+        requireActivity().invalidateOptionsMenu();
 
     }
 
