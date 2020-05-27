@@ -8,7 +8,7 @@
     <string name="btn_customFilePicker" tools:ignore="ResourceName">Custom File Picker</string>
     <string name="video" tools:ignore="ResourceName">Video File</string>
     <string name="image" tools:ignore="ResourceName">Image File</string>
-    <string name="document" tools:ignore="ResourceName">Docuemnt File</string>
+    <string name="document" tools:ignore="ResourceName">Document File</string>
     <string name="SelectMessage1" tools:ignore="ResourceName">Which file type you prefer ?</string>
     <string name="SelectMessage2" tools:ignore="ResourceName">select one of these</string>
     <string name="Word" tools:ignore="ResourceName">DOCX</string>
