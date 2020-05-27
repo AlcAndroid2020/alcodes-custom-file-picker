@@ -1,11 +1,13 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +19,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alcodes.alcodessmmediafilepicker.R;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentMainBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.MainBindingCallback;
 import com.alcodes.alcodessmmediafilepicker.utils.AsmMfpSharedPreferenceHelper;
@@ -26,6 +29,7 @@ import timber.log.Timber;
 
 public class AsmMfpMainFragment extends Fragment implements MainBindingCallback {
     public static final String EXTRA_INT_MAX_FILE_SELECTION = "EXTRA_INT_MAX_FILE_SELECTION";
+    private static final int OPEN_DOCUMENT_REQUEST_CODE = 42;
 
     private AsmMfpFragmentMainBinding mDataBinding;
     private NavController mNavController;
@@ -87,8 +91,6 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
             if (requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) != 0)
                 mTheme = requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
 
-
-
             if(mTheme!=0)
                 mfpMainSharedViewModel.setTheme(mTheme);
 
@@ -106,11 +108,9 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
                 mColor = mfpMainSharedViewModel.getBackgroundColor().getValue();
             }
         }
-        
+
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
-
-        Timber.e("" + mfpMainSharedViewModel.getMaxSelection().getValue());
     }
 
     @Override
@@ -121,22 +121,46 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         mNavController = Navigation.findNavController(view);
     }
 
-
-    @Override
-    public void onCustomPickerButtonClicked() {
-        /*
-        Intent intent=new Intent(getContext(), AsmMfpCustomFilePicker.class);
-        startActivity(intent);
-        */
-
-        mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
-
-    }
-
-
     public int getTheme(){
 
         return mTheme;
     }
 
+    @Override
+    public void onMediaFilePickerButtonClicked() {
+        mNavController.navigate(R.id.asm_mfp_action_asm_mfp_mainfragment_to_asm_mfp_customfilepickerfragment);
+    }
+
+    @Override
+    public void onDocumentFilePickerButtonClicked() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            //Android 10 and above
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("*/*");
+            String[] mimeTypes = {
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("html"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx")};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
+            startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
+        } else {
+            //Android 7 to Android 9
+            Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
+            intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, AsmMfpSharedPreferenceHelper.getInstance(requireContext()).getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
+            intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
+            intent.putExtra("color", mColor);
+            startActivity(intent);
+        }
+    }
 }

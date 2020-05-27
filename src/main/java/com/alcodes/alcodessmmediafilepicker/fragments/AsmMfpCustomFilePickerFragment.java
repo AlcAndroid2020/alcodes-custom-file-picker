@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -72,6 +71,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private String sharefiletype = "";
     private int mColor, mTheme;
     private Boolean IsSelectAll = false;
+    private Boolean searching = false;
     private SearchView searchView;
 
     private static final int PERMISSION_STORGE_CODE = 1000;
@@ -140,6 +140,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //Set Default Sorting in View Model
         mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
+        if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
+            searching = mfpCustomFilePickerViewModel.getSearching().getValue();
+        } else {
+            mfpCustomFilePickerViewModel.setSearching(false);
+        }
 
         if (mfpCustomFilePickerViewModel.getIsGrid().getValue() != null) {
             IsGrid = mfpCustomFilePickerViewModel.getIsGrid().getValue();
@@ -204,7 +209,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             if (mActionBar == null)
                 mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
-
             mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
         }
         initAdapter();
@@ -223,6 +227,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             sortingMyFileList(mfpCustomFilePickerViewModel.getSortingStyle().getValue());
         }
 
+        if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
+            searching = mfpCustomFilePickerViewModel.getSearching().getValue();
+        }
   /*     if(mDataBinding.simpleProgressBar.getVisibility()==View.VISIBLE){
            mDataBinding.simpleProgressBar.setVisibility(View.INVISIBLE);
            promptSelection();
@@ -234,6 +241,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         super.onPause();
         mfpCustomFilePickerViewModel.saveMyFileList(myFileList);
         mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
+        mfpCustomFilePickerViewModel.setSearching(searching);
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
         mfpCustomFilePickerViewModel.setMaxSelection(mMaxFileSelection);
         mfpCustomFilePickerViewModel.setPickerFileType(PickerFileType);
@@ -248,23 +256,18 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search");
         //resume search test when rotation or leave foreground event has occurred
-
-        if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null && !mfpCustomFilePickerViewModel.getSearchingText().getValue().equals("")) {
-            searchView.setIconified(false);
-        } else {
-            searchView.setIconified(true);
+        if (searching) {
+            if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null) {
+                searchItem.expandActionView();
+                searchView.setQuery(mfpCustomFilePickerViewModel.getSearchingText().getValue(), true);
+                mAdapter.getFilter().filter(mfpCustomFilePickerViewModel.getSearchingText().getValue());
+            } else {
+                searchItem.collapseActionView();
+            }
         }
-
-        if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null) {
-            searchView.setQuery(mfpCustomFilePickerViewModel.getSearchingText().getValue(), false);
-            mAdapter.getFilter().filter(mfpCustomFilePickerViewModel.getSearchingText().getValue());
-        }
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mAdapter.getFilter().filter(query);
-                mfpCustomFilePickerViewModel.setSearchingText(query);
                 return false;
             }
 
@@ -299,6 +302,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //back button
 
         if (isInSideAlbum) {
+
             if (selectionList.size() != 0) {
                 if (selectionList.size() == mMaxFileSelection || checkIsSelectedAll())
                     selectAllItem.setVisible(false);
@@ -376,7 +380,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                     openImageMediaStoreFolder();
                     isInSideAlbum = false;
                     mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
-                    getActivity().invalidateOptionsMenu();
+                    mAppCompatActivity.invalidateOptionsMenu();
                     mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 } else {
                     myFileList.clear();
@@ -385,7 +389,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                     openVideoMediaStoreFolder();
                     isInSideAlbum = false;
                     mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
-                    getActivity().invalidateOptionsMenu();
+                    mAppCompatActivity.invalidateOptionsMenu();
                     mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
                 }
@@ -394,7 +398,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mAppCompatActivity.getSupportActionBar().setTitle(getActivity().getTitle());
 
             }
-            getActivity().invalidateOptionsMenu();
+            searching = false;
+            mAppCompatActivity.invalidateOptionsMenu();
         }
         //to change layout to grid or recycler view
         if (item.getItemId() == R.id.Custom_ChangeLayout) {
@@ -424,8 +429,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 if (i >= myFileList.size()) {
                     break;
                 }
-                myFileList.get(i).setIsSelected(true);
-                selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+                if(!myFileList.get(i).getIsSelected()){
+                    myFileList.get(i).setIsSelected(true);
+                    selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+                }
             }
 
             mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
@@ -466,6 +473,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             if (mFileList != null) {
                 StartShare(mFileList);
             }
+        }
+        if (item.getItemId() == R.id.FilePicker_SearchFilter) {
+            searching = true;
         }
         //unselect the user selection
         if (item.getItemId() == R.id.UnSelectAll) {
@@ -543,13 +553,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 init();
             }
         });
-        builder.setNeutralButton(getResources().getString(R.string.document), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                PickerFileType = "Document";
-                init();
-            }
-        });
+//        builder.setNeutralButton(getResources().getString(R.string.document), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                PickerFileType = "Document";
+//                init();
+//            }
+//        });
         builder.show();
     }
 
@@ -570,41 +580,41 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             mDataBinding.linearLayoutNoFilesFound.setVisibility(View.VISIBLE);
         }
 
-        if (PickerFileType.equals("Document")) {
-            mDataBinding.linearLayoutNoFilesFound.setVisibility(View.GONE);
-            mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
-            mBeenDirectedToDocumentPicker = true;
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                //Android 10 and above
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
-                String[] mimeTypes = {
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("html"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx")};
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
-                startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
-            } else {
-                //Android 7 to Android 9
-                Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
-                intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
-                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
-                intent.putExtra("color", mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
-                startActivity(intent);
-            }
-        }
+//        if (PickerFileType.equals("Document")) {
+//            mDataBinding.linearLayoutNoFilesFound.setVisibility(View.GONE);
+//            mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
+//            mBeenDirectedToDocumentPicker = true;
+//
+//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+//                //Android 10 and above
+//                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//                intent.addCategory(Intent.CATEGORY_OPENABLE);
+//                intent.setType("*/*");
+//                String[] mimeTypes = {
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("html"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
+//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx")};
+//                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
+//                startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
+//            } else {
+//                //Android 7 to Android 9
+//                Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
+//                intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
+//                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
+//                intent.putExtra("color", mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
+//                startActivity(intent);
+//            }
+//        }
     }
 
     @Override
@@ -623,6 +633,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                         //Single document is selected
                         mFileListForAndroid10.add(data.getData().toString());
                     }
+
 
                     Intent intent = new Intent(requireActivity(), AsmGvrMainActivity.class);
                     intent.putStringArrayListExtra(AsmGvrMainFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
@@ -923,7 +934,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         isInSideAlbum = true;
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
-        getActivity().invalidateOptionsMenu();
 
         if (selectionList.size() != 0) {
             int x = 0;
@@ -937,6 +947,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } while (x < myFileList.size());
         }
         initAdapter();
+        mAppCompatActivity.invalidateOptionsMenu();
     }
 
     @Override
@@ -956,11 +967,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         }
 
-        mAppCompatActivity.invalidateOptionsMenu();
-
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
-        getActivity().invalidateOptionsMenu();
+
+        mAppCompatActivity.invalidateOptionsMenu();
     }
 
     @Override
@@ -971,7 +981,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         isInSideAlbum = true;
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
-        getActivity().invalidateOptionsMenu();
 
         if (selectionList.size() != 0) {
             int x = 0;
@@ -985,6 +994,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             } while (x < myFileList.size());
         }
         initAdapter();
+        mAppCompatActivity.invalidateOptionsMenu();
     }
 
     @Override
@@ -1002,10 +1012,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
         //update the selection count for limit user selection
-        mAppCompatActivity.invalidateOptionsMenu();
-
         mAdapter.setSelectionCount(selectionList.size());
-        getActivity().invalidateOptionsMenu();
+        mAppCompatActivity.invalidateOptionsMenu();
     }
 
     @Override
