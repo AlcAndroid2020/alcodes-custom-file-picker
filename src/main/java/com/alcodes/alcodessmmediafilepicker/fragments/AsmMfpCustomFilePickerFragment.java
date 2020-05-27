@@ -26,6 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -72,6 +73,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private String sharefiletype = "";
     private int mColor, mTheme;
     private Boolean IsSelectAll = false;
+    private Boolean searching = false;
     private SearchView searchView;
 
     private static final int PERMISSION_STORGE_CODE = 1000;
@@ -140,7 +142,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         //Set Default Sorting in View Model
         mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
-
+        if(mfpCustomFilePickerViewModel.getSearching().getValue() != null){
+            searching = mfpCustomFilePickerViewModel.getSearching().getValue();
+        } else {
+            mfpCustomFilePickerViewModel.setSearching(false);
+        }
         if (mfpCustomFilePickerViewModel.getIsGrid().getValue() != null) {
             IsGrid = mfpCustomFilePickerViewModel.getIsGrid().getValue();
         } else {
@@ -222,11 +228,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (mfpCustomFilePickerViewModel.getSortingStyle().getValue() != null) {
             sortingMyFileList(mfpCustomFilePickerViewModel.getSortingStyle().getValue());
         }
-
-  /*     if(mDataBinding.simpleProgressBar.getVisibility()==View.VISIBLE){
-           mDataBinding.simpleProgressBar.setVisibility(View.INVISIBLE);
-           promptSelection();
-       }*/
+        if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
+            searching = mfpCustomFilePickerViewModel.getSearching().getValue();
+        }
     }
 
     @Override
@@ -235,6 +239,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         mfpCustomFilePickerViewModel.saveMyFileList(myFileList);
         mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
+        mfpCustomFilePickerViewModel.setSearching(searching);
         mfpCustomFilePickerViewModel.setMaxSelection(mMaxFileSelection);
         mfpCustomFilePickerViewModel.setPickerFileType(PickerFileType);
     }
@@ -247,18 +252,27 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         MenuItem searchItem = menu.findItem(R.id.FilePicker_SearchFilter);
         searchView = (SearchView) searchItem.getActionView();
         searchView.setQueryHint("Search");
+
         //resume search test when rotation or leave foreground event has occurred
-
-        if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null && !mfpCustomFilePickerViewModel.getSearchingText().getValue().equals("")) {
-            searchView.setIconified(false);
-        } else {
-            searchView.setIconified(true);
-        }
-
-        if (mfpCustomFilePickerViewModel.getSearchingText().getValue() != null) {
+        if (searching) {
+            searchItem.expandActionView();
             searchView.setQuery(mfpCustomFilePickerViewModel.getSearchingText().getValue(), false);
             mAdapter.getFilter().filter(mfpCustomFilePickerViewModel.getSearchingText().getValue());
         }
+
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                searching = true;
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                searching = false;
+                return true;
+            }
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -357,8 +371,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
     public boolean checkIsSelectedAll(){
         for (int i= 0; i < myFileList.size(); i++){
-            if(!myFileList.get(i).getIsSelected())
+            if(!myFileList.get(i).getIsSelected()) {
                 IsSelectAll = false;
+                break;
+            }
             else
                 IsSelectAll = true;
         }
@@ -424,8 +440,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 if (i >= myFileList.size()) {
                     break;
                 }
-                myFileList.get(i).setIsSelected(true);
-                selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+                if (!myFileList.get(i).getIsSelected()){
+                    myFileList.get(i).setIsSelected(true);
+                    selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+                }
             }
 
             mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
@@ -955,8 +973,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (selectionList.size() == 0) {
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         }
-
-        mAppCompatActivity.invalidateOptionsMenu();
 
         //update the selection count for limit user selection
         mAdapter.setSelectionCount(selectionList.size());
