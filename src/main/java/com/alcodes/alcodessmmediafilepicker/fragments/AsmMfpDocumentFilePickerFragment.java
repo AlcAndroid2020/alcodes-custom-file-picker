@@ -30,8 +30,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-import static com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity.EXTRA_INTEGER_SELECTED_THEME;
-
 public class AsmMfpDocumentFilePickerFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -104,7 +102,9 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
                mfpCustomFilePickerViewModel.setBackgroundColor(mColor);
             }
         } else {
-            mColor = mfpCustomFilePickerViewModel.getBackgroundColor().getValue();
+            if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue() != null){
+                mColor = mfpCustomFilePickerViewModel.getBackgroundColor().getValue();
+            }
         }
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
@@ -115,7 +115,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //   return super.onCreateView(inflater, container, savedInstanceState);
-
         mDataBinding = AsmMfpFragmentDocumentFilePickerBinding.inflate(inflater, container, false);
 
         tabLayout = mDataBinding.DocFilePickerTabLayout;

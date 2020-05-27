@@ -30,18 +30,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
 import com.alcodes.alcodessmmediafilepicker.R;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
+import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Set;
 
-import static com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity.EXTRA_INTEGER_SELECTED_THEME;
+import static com.alcodes.alcodessmgalleryviewer.fragments.AsmGvrMainFragment.EXTRA_INTEGER_SELECTED_THEME;
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
 public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
@@ -65,10 +65,10 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     private int SelecLimitCount;
     private Boolean isLimited = false;
     private int mMaxFileSelection;
-    int oldRotation;
     private Integer mViewPagerPosition;
     private SearchView searchView;
     private Boolean isSwiped = false;
+    private String PickerFileType = "";
     private String FileType;
     private ActionBar mActionBar;
     private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
@@ -330,7 +330,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             checkItem.setVisible(true);
             unSelectItem.setVisible(true);
         } else {
-
             checkItem.setVisible(false);
             unSelectItem.setVisible(false);
         }
@@ -372,7 +371,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             initAdapter();
             mActionBar.setTitle(getResources().getString(R.string.app_name));
         }
-        if (item.getItemId() == R.id.ShareWith) {
+        if (item.getItemId() == R.id.Doc_FilePicker_ShareWith) {
             ArrayList<String> FileList = new ArrayList<>();
             for (int i = 0; i < mDocumentViewModel.getSelectionList().getValue().size(); i++) {
                 FileList.add(mDocumentViewModel.getSelectionList().getValue().get(i));
@@ -431,7 +430,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     public int onNullSelectionLimit() {
         return mMaxFileSelection;
     }
-
 
     //make all selected item to unselect
     public void resetFileList() {
@@ -506,7 +504,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         //update viewmodel as adapter will update along
         mDocumentViewModel.setSelectionList(TotalselectedList);
     }
-
 
     private void initAdapter() {
         mAdapter = new AsmMfpDocumentPickerRecyclerViewAdapter(getContext(), mFileList, AsmMfpDocumentPickerMergedFileTypeFragment.this);

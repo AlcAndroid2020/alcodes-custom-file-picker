@@ -22,9 +22,16 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> bindingCallback.onCustomPickerButtonClicked()}"
+            android:onClick="@{() -> bindingCallback.onMediaFilePickerButtonClicked()}"
 
-            android:text="@string/btn_customFilePicker"/>
+            android:text="Media File Picker"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> bindingCallback.onDocumentFilePickerButtonClicked()}"
+
+            android:text="Document File Picker"/>
 
 
     </LinearLayout>
