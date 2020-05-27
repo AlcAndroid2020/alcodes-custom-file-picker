@@ -364,15 +364,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             initAdapter();
-<<<<<<< HEAD
-
-            requireActivity().invalidateOptionsMenu();
-        }
-=======
             requireActivity().invalidateOptionsMenu();
         }
 
->>>>>>> origin/winson/dev
         if (item.getItemId() == R.id.Doc_FilePicker_UnselectAll) {
             resetFileList();
             initAdapter();
