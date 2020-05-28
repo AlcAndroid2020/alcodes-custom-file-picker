@@ -649,34 +649,53 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         startActivity(intent);
     }
 
-    private void sortingMyFileList(String sortingStyle) {
+private void sortingMyFileList(String sortingStyle) {
         if (sortingStyle.equals("SortingNameAscending")) {
-            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByName());
-            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByName());
-            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByName());
-            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByName());
-            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByName());
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByName());
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByName());
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByName());
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByName());
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByName());
         } else if (sortingStyle.equals("SortingNameDescending")) {
-            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByName()));
         } else if (sortingStyle.equals("SortingDateAscending")) {
-            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByDate());
-            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByDate());
-            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByDate());
-            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByDate());
-            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByDate());
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByDate());
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByDate());
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByDate());
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByDate());
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByDate());
         } else if (sortingStyle.equals("SortingDateDescending")) {
-            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
+                Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByDate()));
         }
     }
-
     @Override
     public void onSortByDialogPositiveButtonClicked(String sortingStyle) {
         sortingMyFileList(sortingStyle);
