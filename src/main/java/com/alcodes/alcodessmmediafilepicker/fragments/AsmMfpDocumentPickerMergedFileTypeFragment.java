@@ -41,10 +41,13 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+
+import timber.log.Timber;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
@@ -68,7 +71,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
     //for limit selection
     private int SelecLimitCount;
-    private Boolean isLimited = false;
     private int mMaxFileSelection;
     private Integer mViewPagerPosition;
     private SearchView searchView;
@@ -237,8 +239,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         });
         mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
         mDocumentViewModel.setSelectionLimit(mMaxFileSelection);
-        if (mMaxFileSelection != 0)
-            isLimited = true;
         //get user selection limit ,by default is 10item
 
         mDocumentViewModel.getSelectionLimit().observe(getViewLifecycleOwner(), new Observer<Integer>() {
@@ -247,10 +247,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 mMaxFileSelection = integer;
                 mAdapter.setSelectLimitCounter(mMaxFileSelection);
                 mAdapter.notifyDataSetChanged();
-                if (mMaxFileSelection == 0)
-                    isLimited = false;
-                else
-                    isLimited = true;
                 getActivity().invalidateOptionsMenu();
             }
         });
@@ -299,7 +295,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 }
             }
         });
-
 
         //to active action mode when switch to another tab
         mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
@@ -368,8 +363,20 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         MenuItem sortingItem = menu.findItem(R.id.sorting);
 
         MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
-        if (isLimited)
+        //Check whether all file is selected in this tab, then hide or show select all menu item
+        if(isAllFileSelectedInThisTab()){
             SelectAll.setVisible(false);
+        }else{
+            if(mMaxFileSelection != 0){
+                if(TotalselectedList.size() == mMaxFileSelection){
+                    SelectAll.setVisible(false);
+                }else{
+                    SelectAll.setVisible(true);
+                }
+            }else{
+                SelectAll.setVisible(true);
+            }
+        }
 
         MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
         MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
@@ -387,39 +394,131 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private boolean isAllFileSelectedInThisTab(){
+        //A temporary mFileList
+        ArrayList<MyFile> tempFileList = new ArrayList<>();
+
+        if(mViewPagerPosition == 0){
+            //PDF TAB
+            tempFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+        }else if (mViewPagerPosition == 1){
+            //DOC TAB
+            tempFileList = mDocumentViewModel.getMyFileList().getValue();
+        }else if (mViewPagerPosition == 2){
+            //PTT TAB
+            tempFileList = mDocumentViewModel.getMyPttFileList().getValue();
+        }else if (mViewPagerPosition == 3){
+            //TXT TAB
+            tempFileList = mDocumentViewModel.getMytxtFileList().getValue();
+        }else if (mViewPagerPosition == 4){
+            //XLS TAB
+            tempFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+        }
+
+        for(int i=0 ; i < tempFileList.size() ; i ++){
+            if(! tempFileList.get(i).getIsSelected()){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
-            for (int i = 0; i < mFileList.size(); i++) {
+            //*************** COMMENT THIS PART USE WINSON"S SELECT ALL AT BELOW, COMMENT THIS PART JUST IN CASE SELECT ALL FOR ALL TABS OF DIFFERENT FILE TYPE NEED TO USED AGAIN ******************************
+//            ArrayList<MyFile> tempPageFileList = mFileList;
+//            String currentFileType = "";
+//            Boolean skipPDFFlag = false, skipDocFlag = false, skipPttFlag = false, skipTxtFlag = false, skipXlsFlag = false;
+//            for(int x=0; x<5; x++){
+//                if (x > 0) {
+//                    if(!skipPDFFlag && !FileType.equals("PDF")){
+//                        if(mDocumentViewModel.getMyPDFFileList().getValue() != null){
+//                            mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+//                            skipPDFFlag = true;
+//                            currentFileType = "PDF";
+//                        }
+//                    }else if(!skipDocFlag && !FileType.equals("doc")){
+//                        if(mDocumentViewModel.getMyFileList().getValue() != null){
+//                            mFileList = mDocumentViewModel.getMyFileList().getValue();
+//                            skipDocFlag = true;
+//                            currentFileType = "doc";
+//                        }
+//                    } else if(!skipPttFlag && !FileType.equals("PTT")){
+//                        if(mDocumentViewModel.getMyPttFileList().getValue() != null){
+//                            mFileList = mDocumentViewModel.getMyPttFileList().getValue();
+//                            skipPttFlag = true;
+//                            currentFileType = "PTT";
+//                        }
+//                    } else if(!skipTxtFlag && !FileType.equals("TXT")){
+//                        if(mDocumentViewModel.getMytxtFileList().getValue() != null){
+//                            mFileList = mDocumentViewModel.getMytxtFileList().getValue();
+//                            skipTxtFlag = true;
+//                            currentFileType = "TXT";
+//                        }
+//                    } else if(!skipXlsFlag && !FileType.equals("XLS")){
+//                        if(mDocumentViewModel.getMyxlsFileList().getValue() != null){
+//                            mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+//                            skipXlsFlag = true;
+//                            currentFileType = "XLS";
+//                        }
+//                    }
+//                }
+//
+//                for (int i = 0; i < mFileList.size(); i++) {
+//                    if(!mFileList.get(i).getIsSelected()){
+//                        mFileList.get(i).setIsSelected(true);
+//                        TotalselectedList.add(mFileList.get(i).getFileUri());
+//                    }
+//                }
+//
+//                if ((FileType.equals("PDF") && x == 0) || currentFileType.equals("PDF")) {
+//                    mDocumentViewModel.saveMyPDFFileList(mFileList);
+//                } else if ((FileType.equals("doc") && x == 0) || currentFileType.equals("doc")) {
+//                    mDocumentViewModel.saveMyFileList(mFileList);
+//                } else if ((FileType.equals("PTT") && x == 0) || currentFileType.equals("PTT")) {
+//                    mDocumentViewModel.saveMyPttFileList(mFileList);
+//                } else if ((FileType.equals("TXT") && x == 0) || currentFileType.equals("TXT")) {
+//                    mDocumentViewModel.saveMytxtFileList(mFileList);
+//                } else if ((FileType.equals("XLS") && x == 0) || currentFileType.equals("XLS")) {
+//                    mDocumentViewModel.saveMyxlsFileList(mFileList);
+//                }
+//            mFileList = tempPageFileList;
+            //*************** COMMENT THIS PART USE WINSON"S SELECT ALL AT BELOW, COMMENT THIS PART JUST IN CASE SELECT ALL FOR ALL TABS OF DIFFERENT FILE TYPE NEED TO USED AGAIN ******************************
+
+            for (int i = 0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : mFileList.size()); i++) {
+                if(mMaxFileSelection != 0){
+                    if(TotalselectedList.size() == mMaxFileSelection){
+                        break;
+                    }
+                }
+
+                if(i >= mFileList.size()){
+                    break;
+                }
+
                 if(!mFileList.get(i).getIsSelected()){
                     mFileList.get(i).setIsSelected(true);
                     TotalselectedList.add(mFileList.get(i).getFileUri());
                 }
             }
+
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
             mDocumentViewModel.setSelectionList(TotalselectedList);
-            if (FileType.equals("PDF")) {
-                mDocumentViewModel.saveMyPDFFileList(mFileList);
-            } else if (FileType.equals("doc")) {
-                mDocumentViewModel.saveMyFileList(mFileList);
-            } else if (FileType.equals("PTT")) {
-                mDocumentViewModel.saveMyPttFileList(mFileList);
-            } else if (FileType.equals("TXT")) {
-                mDocumentViewModel.saveMytxtFileList(mFileList);
-            } else if (FileType.equals("XLS")) {
-                mDocumentViewModel.saveMyxlsFileList(mFileList);
-            }
 
-            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             initAdapter();
+
             requireActivity().invalidateOptionsMenu();
         }
 
         if (item.getItemId() == R.id.Doc_FilePicker_UnselectAll) {
             resetFileList();
             initAdapter();
+
             mActionBar.setTitle(getResources().getString(R.string.asm_mfp_app_name));
+            requireActivity().invalidateOptionsMenu();
         }
         if (item.getItemId() == R.id.Doc_FilePicker_ShareWith) {
             ArrayList<String> FileList = new ArrayList<>();
@@ -487,7 +586,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         else
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         requireActivity().invalidateOptionsMenu();
-
     }
 
     @Override
