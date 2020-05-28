@@ -33,6 +33,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
     private MutableLiveData<Boolean> isSwipe = new MutableLiveData<>(false);
+    private final MutableLiveData<String> mSortingStyle = new MutableLiveData<>();
 
     private MutableLiveData<ArrayList<MyFile>> mpdfFileList = new MutableLiveData<>(); //to store file list
     private final MutableLiveData<ArrayList<MyFile>> mMypttFileList = new MutableLiveData<>();
@@ -229,5 +230,13 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
             }
         }
         mFileType.setValue(dataHolders);
+    }
+
+    public MutableLiveData<String> getSortingStyle() {
+        return mSortingStyle;
+    }
+
+    public void setSortingStyle(String sortingStyle){
+        mSortingStyle.setValue(sortingStyle);
     }
 }
