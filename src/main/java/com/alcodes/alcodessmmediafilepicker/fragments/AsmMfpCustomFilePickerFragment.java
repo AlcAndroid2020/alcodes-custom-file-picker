@@ -27,6 +27,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -134,6 +135,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         if (mfpCustomFilePickerViewModel.getMaxSelection().getValue() != null) {
             mMaxFileSelection = mfpCustomFilePickerViewModel.getMaxSelection().getValue();
+            mfpCustomFilePickerViewModel.getMaxSelection().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+                @Override
+                public void onChanged(Integer integer) {
+                    mMaxFileSelection = integer;
+                }
+            });
         } else {
             mfpCustomFilePickerViewModel.setMaxSelection(mMaxFileSelection);
         }
@@ -143,33 +150,57 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
             searching = mfpCustomFilePickerViewModel.getSearching().getValue();
+            mfpCustomFilePickerViewModel.getSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean aBoolean) {
+                    searching = aBoolean;
+                }
+            });
         } else {
             mfpCustomFilePickerViewModel.setSearching(false);
         }
+
         if (mfpCustomFilePickerViewModel.getIsGrid().getValue() != null) {
             IsGrid = mfpCustomFilePickerViewModel.getIsGrid().getValue();
+            mfpCustomFilePickerViewModel.getIsGrid().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean aBoolean) {
+                    IsGrid = aBoolean;
+                }
+            });
         } else {
             mfpCustomFilePickerViewModel.setIsGrid(false);
         }
         if (mfpCustomFilePickerViewModel.getIsInsideAlbum().getValue() != null) {
             isInSideAlbum = mfpCustomFilePickerViewModel.getIsInsideAlbum().getValue();
+            mfpCustomFilePickerViewModel.getIsInsideAlbum().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean aBoolean) {
+                    isInSideAlbum = aBoolean;
+                }
+            });
         } else {
             mfpCustomFilePickerViewModel.setIsInsideAlbum(false);
-        }
-
-        //Init Max File Selection
-        if (mfpCustomFilePickerViewModel.getMaxSelection().getValue() != null) {
-            mMaxFileSelection = mfpCustomFilePickerViewModel.getMaxSelection().getValue();
-        } else {
-            mMaxFileSelection = 0;
         }
 
         if (mfpCustomFilePickerViewModel.getMyFileList().getValue() != null &&
                 mfpCustomFilePickerViewModel.getMyFileList().getValue().size() != 0 &&
                 mfpCustomFilePickerViewModel.getPickerFileType().getValue() != null) {
             myFileList = mfpCustomFilePickerViewModel.getMyFileList().getValue();
+            mfpCustomFilePickerViewModel.getMyFileList().observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
+                @Override
+                public void onChanged(ArrayList<MyFile> myFiles) {
+                    myFileList = myFiles;
+                }
+            });
             initAdapter();
             PickerFileType = mfpCustomFilePickerViewModel.getPickerFileType().getValue();
+            mfpCustomFilePickerViewModel.getPickerFileType().observe(getViewLifecycleOwner(), new Observer<String>() {
+                @Override
+                public void onChanged(String s) {
+                    PickerFileType = s;
+                }
+            });
         } else {
             if (requireActivity().getIntent().getStringExtra("FileType") != null) {
                 PickerFileType = requireActivity().getIntent().getStringExtra("FileType");
@@ -182,12 +213,24 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
         if (mfpCustomFilePickerViewModel.getBackgroundColor().getValue() != null) {
             mColor = mfpCustomFilePickerViewModel.getBackgroundColor().getValue();
+            mfpCustomFilePickerViewModel.getBackgroundColor().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+                @Override
+                public void onChanged(Integer integer) {
+                    mColor = integer;
+                }
+            });
             if (mColor != 0)
                 mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mfpCustomFilePickerViewModel.getBackgroundColor().getValue()));
         }
 
         if (mfpCustomFilePickerViewModel.getTheme().getValue() != null) {
             mTheme = mfpCustomFilePickerViewModel.getTheme().getValue();
+            mfpCustomFilePickerViewModel.getTheme().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+                @Override
+                public void onChanged(Integer integer) {
+                    mTheme = integer;
+                }
+            });
         }
     }
 
@@ -552,7 +595,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 PickerFileType = "Image";
                 mfpCustomFilePickerViewModel.setPickerFileType(PickerFileType);
                 init();
-
             }
         });
         builder.setNegativeButton(getResources().getString(R.string.video), new DialogInterface.OnClickListener() {

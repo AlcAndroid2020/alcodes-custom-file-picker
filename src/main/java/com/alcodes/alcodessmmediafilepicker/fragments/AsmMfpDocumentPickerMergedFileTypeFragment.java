@@ -38,6 +38,7 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -268,7 +269,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
         });
 
-
         //to active action mode when switch to another tab
         mDocumentViewModel.getIsSwiped().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -340,28 +340,72 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
-            for (int i = 0; i < mFileList.size(); i++) {
-                if(!mFileList.get(i).getIsSelected()){
-                    mFileList.get(i).setIsSelected(true);
-                    TotalselectedList.add(mFileList.get(i).getFileUri());
+
+            //*************** COMMENT THIS PART USE WINSON"S SELECT ALL, COMMENT THIS PART JUST IN CASE SELECT ALL FOR ALL TABS OF DIFFERENT FILE TYPE NEED TO USED AGAIN ******************************
+            ArrayList<MyFile> tempPageFileList = mFileList;
+            String currentFileType = "";
+            Boolean skipPDFFlag = false, skipDocFlag = false, skipPttFlag = false, skipTxtFlag = false, skipXlsFlag = false;
+            for(int x=0; x<5; x++){
+                if (x > 0) {
+                    if(!skipPDFFlag && !FileType.equals("PDF")){
+                        if(mDocumentViewModel.getMyPDFFileList().getValue() != null){
+                            mFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+                            skipPDFFlag = true;
+                            currentFileType = "PDF";
+                        }
+                    }else if(!skipDocFlag && !FileType.equals("doc")){
+                        if(mDocumentViewModel.getMyFileList().getValue() != null){
+                            mFileList = mDocumentViewModel.getMyFileList().getValue();
+                            skipDocFlag = true;
+                            currentFileType = "doc";
+                        }
+                    } else if(!skipPttFlag && !FileType.equals("PTT")){
+                        if(mDocumentViewModel.getMyPttFileList().getValue() != null){
+                            mFileList = mDocumentViewModel.getMyPttFileList().getValue();
+                            skipPttFlag = true;
+                            currentFileType = "PTT";
+                        }
+                    } else if(!skipTxtFlag && !FileType.equals("TXT")){
+                        if(mDocumentViewModel.getMytxtFileList().getValue() != null){
+                            mFileList = mDocumentViewModel.getMytxtFileList().getValue();
+                            skipTxtFlag = true;
+                            currentFileType = "TXT";
+                        }
+                    } else if(!skipXlsFlag && !FileType.equals("XLS")){
+                        if(mDocumentViewModel.getMyxlsFileList().getValue() != null){
+                            mFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+                            skipXlsFlag = true;
+                            currentFileType = "XLS";
+                        }
+                    }
+                }
+
+                for (int i = 0; i < mFileList.size(); i++) {
+                    if(!mFileList.get(i).getIsSelected()){
+                        mFileList.get(i).setIsSelected(true);
+                        TotalselectedList.add(mFileList.get(i).getFileUri());
+                    }
+                }
+
+                if ((FileType.equals("PDF") && x == 0) || currentFileType.equals("PDF")) {
+                    mDocumentViewModel.saveMyPDFFileList(mFileList);
+                } else if ((FileType.equals("doc") && x == 0) || currentFileType.equals("doc")) {
+                    mDocumentViewModel.saveMyFileList(mFileList);
+                } else if ((FileType.equals("PTT") && x == 0) || currentFileType.equals("PTT")) {
+                    mDocumentViewModel.saveMyPttFileList(mFileList);
+                } else if ((FileType.equals("TXT") && x == 0) || currentFileType.equals("TXT")) {
+                    mDocumentViewModel.saveMytxtFileList(mFileList);
+                } else if ((FileType.equals("XLS") && x == 0) || currentFileType.equals("XLS")) {
+                    mDocumentViewModel.saveMyxlsFileList(mFileList);
                 }
             }
+            mFileList = tempPageFileList;
+            //*************** COMMENT THIS PART USE WINSON"S SELECT ALL, COMMENT THIS PART JUST IN CASE SELECT ALL FOR ALL TABS OF DIFFERENT FILE TYPE NEED TO USED AGAIN ******************************
+
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
 
             mDocumentViewModel.setSelectionList(TotalselectedList);
-            if (FileType.equals("PDF")) {
-                mDocumentViewModel.saveMyPDFFileList(mFileList);
-            } else if (FileType.equals("doc")) {
-                mDocumentViewModel.saveMyFileList(mFileList);
-            } else if (FileType.equals("PTT")) {
-                mDocumentViewModel.saveMyPttFileList(mFileList);
-            } else if (FileType.equals("TXT")) {
-                mDocumentViewModel.saveMytxtFileList(mFileList);
-            } else if (FileType.equals("XLS")) {
-                mDocumentViewModel.saveMyxlsFileList(mFileList);
-            }
 
-            mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             initAdapter();
             requireActivity().invalidateOptionsMenu();
         }
