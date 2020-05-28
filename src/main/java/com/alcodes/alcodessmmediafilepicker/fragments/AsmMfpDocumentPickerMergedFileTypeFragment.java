@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,8 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import timber.log.Timber;
+
 import static com.alcodes.alcodessmgalleryviewer.fragments.AsmGvrMainFragment.EXTRA_INTEGER_SELECTED_THEME;
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
@@ -63,7 +66,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
     //for limit selection
     private int SelecLimitCount;
-    private Boolean isLimited = false;
     private int mMaxFileSelection;
     private Integer mViewPagerPosition;
     private SearchView searchView;
@@ -205,8 +207,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         });
         mMaxFileSelection = requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0);
         mDocumentViewModel.setSelectionLimit(mMaxFileSelection);
-        if (mMaxFileSelection != 0)
-            isLimited = true;
         //get user selection limit ,by default is 10item
 
         mDocumentViewModel.getSelectionLimit().observe(getViewLifecycleOwner(), new Observer<Integer>() {
@@ -215,10 +215,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 mMaxFileSelection = integer;
                 mAdapter.setSelectLimitCounter(mMaxFileSelection);
                 mAdapter.notifyDataSetChanged();
-                if (mMaxFileSelection == 0)
-                    isLimited = false;
-                else
-                    isLimited = true;
                 getActivity().invalidateOptionsMenu();
             }
         });
@@ -320,8 +316,20 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         });
 
         MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
-        if (isLimited)
+        //Check whether all file is selected in this tab, then hide or show select all menu item
+        if(isAllFileSelectedInThisTab()){
             SelectAll.setVisible(false);
+        }else{
+            if(mMaxFileSelection != 0){
+                if(TotalselectedList.size() == mMaxFileSelection){
+                    SelectAll.setVisible(false);
+                }else{
+                    SelectAll.setVisible(true);
+                }
+            }else{
+                SelectAll.setVisible(true);
+            }
+        }
 
         MenuItem checkItem = menu.findItem(R.id.Doc_FilePicker_DoneSelection);
         MenuItem unSelectItem = menu.findItem(R.id.Doc_FilePicker_UnselectAll);
@@ -337,10 +345,50 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private boolean isAllFileSelectedInThisTab(){
+        //A temporary mFileList
+        ArrayList<MyFile> tempFileList = new ArrayList<>();
+
+        if(mViewPagerPosition == 0){
+            //PDF TAB
+            tempFileList = mDocumentViewModel.getMyPDFFileList().getValue();
+        }else if (mViewPagerPosition == 1){
+            //DOC TAB
+            tempFileList = mDocumentViewModel.getMyFileList().getValue();
+        }else if (mViewPagerPosition == 2){
+            //PTT TAB
+            tempFileList = mDocumentViewModel.getMyPttFileList().getValue();
+        }else if (mViewPagerPosition == 3){
+            //TXT TAB
+            tempFileList = mDocumentViewModel.getMytxtFileList().getValue();
+        }else if (mViewPagerPosition == 4){
+            //XLS TAB
+            tempFileList = mDocumentViewModel.getMyxlsFileList().getValue();
+        }
+
+        for(int i=0 ; i < tempFileList.size() ; i ++){
+            if(! tempFileList.get(i).getIsSelected()){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Doc_FilePicker_SelectAll) {
-            for (int i = 0; i < mFileList.size(); i++) {
+            for (int i = 0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : mFileList.size()); i++) {
+                if(mMaxFileSelection != 0){
+                    if(TotalselectedList.size() == mMaxFileSelection){
+                        break;
+                    }
+                }
+
+                if(i >= mFileList.size()){
+                    break;
+                }
+
                 if(!mFileList.get(i).getIsSelected()){
                     mFileList.get(i).setIsSelected(true);
                     TotalselectedList.add(mFileList.get(i).getFileUri());
@@ -363,6 +411,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
             initAdapter();
+
             requireActivity().invalidateOptionsMenu();
         }
 
@@ -370,6 +419,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             resetFileList();
             initAdapter();
             mActionBar.setTitle(getResources().getString(R.string.app_name));
+            requireActivity().invalidateOptionsMenu();
         }
         if (item.getItemId() == R.id.Doc_FilePicker_ShareWith) {
             ArrayList<String> FileList = new ArrayList<>();
@@ -423,7 +473,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         else
             mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         requireActivity().invalidateOptionsMenu();
-
     }
 
     @Override
