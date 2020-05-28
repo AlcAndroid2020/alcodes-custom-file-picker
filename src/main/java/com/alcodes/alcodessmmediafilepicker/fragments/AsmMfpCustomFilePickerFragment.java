@@ -2,6 +2,7 @@ package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,8 +34,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.alcodes.alcodessmgalleryviewer.activities.AsmGvrMainActivity;
-import com.alcodes.alcodessmgalleryviewer.fragments.AsmGvrMainFragment;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
@@ -466,9 +465,17 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
 
             if (mFileList != null) {
-                Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
-                intent.putStringArrayListExtra(AsmMfpCustomFilePickerFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+               // Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
+             //   intent.putStringArrayListExtra(AsmMfpCustomFilePickerFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+             //   startActivity(intent);
+
+                Intent intent = new Intent("android.intent.action.MAIN");
+                intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
+                intent.putExtra("color", mColor);
+                intent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileList);
+                intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
                 startActivity(intent);
+
             }
         }
         if (item.getItemId() == R.id.ShareWith) {
@@ -504,7 +511,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             if (mActionBar == null)
                 mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
-            mActionBar.setTitle(R.string.app_name);
+            mActionBar.setTitle(R.string.asm_mfp_app_name);
 
             getActivity().invalidateOptionsMenu();
         }
@@ -643,12 +650,18 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                         //Single document is selected
                         mFileListForAndroid10.add(data.getData().toString());
                     }
+                    Intent intent = new Intent("android.intent.action.MAIN");
+                    intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
+                    intent.putExtra("color", mColor);
+                    intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
 
-
+                    intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
+                    startActivity(intent);
+/*
                     Intent intent = new Intent(requireActivity(), AsmGvrMainActivity.class);
                     intent.putStringArrayListExtra(AsmGvrMainFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
                     intent.putExtra("color", mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
-                    startActivity(intent);
+                    startActivity(intent);*/
                 }
             }
         }
@@ -974,7 +987,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             mActionBar.setTitle(selectionList.size() + getResources().getString(R.string.ItemSelect));
 
         if (selectionList.size() == 0) {
-            mActionBar.setTitle(getResources().getString(R.string.app_name));
+            mActionBar.setTitle(R.string.asm_mfp_app_name);
+
         }
 
         //update the selection count for limit user selection
