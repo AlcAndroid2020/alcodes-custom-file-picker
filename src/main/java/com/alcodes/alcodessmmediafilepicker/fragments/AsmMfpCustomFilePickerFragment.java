@@ -439,9 +439,16 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                     break;
                 }
                 if (!myFileList.get(i).getIsSelected()){
+                    if(mMaxFileSelection !=0){
+                        if(selectionList.size()==mMaxFileSelection){
+                            break;
+                        }
+                    }
                     myFileList.get(i).setIsSelected(true);
                     selectionList.add(Uri.parse(myFileList.get(i).getFileUri()));
+
                 }
+
             }
 
             mfpCustomFilePickerViewModel.saveSelectionList(selectionList);
@@ -570,13 +577,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 init();
             }
         });
-//        builder.setNeutralButton(getResources().getString(R.string.document), new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                PickerFileType = "Document";
-//                init();
-//            }
-//        });
         builder.show();
     }
 
@@ -596,42 +596,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         } else {
             mDataBinding.linearLayoutNoFilesFound.setVisibility(View.VISIBLE);
         }
-
-//        if (PickerFileType.equals("Document")) {
-//            mDataBinding.linearLayoutNoFilesFound.setVisibility(View.GONE);
-//            mDataBinding.simpleProgressBar.setVisibility(View.VISIBLE);
-//            mBeenDirectedToDocumentPicker = true;
-//
-//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-//                //Android 10 and above
-//                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-//                intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                intent.setType("*/*");
-//                String[] mimeTypes = {
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtx"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("rtf"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("html"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
-//                        MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx")};
-//                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
-//                startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
-//            } else {
-//                //Android 7 to Android 9
-//                Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
-//                intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, mMaxFileSelection);
-//                intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
-//                intent.putExtra("color", mfpCustomFilePickerViewModel.getBackgroundColor().getValue());
-//                startActivity(intent);
-//            }
-//        }
     }
 
     @Override

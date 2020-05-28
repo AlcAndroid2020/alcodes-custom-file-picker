@@ -35,19 +35,24 @@ import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerA
 import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
+import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
+import com.alcodes.alcodessmmediafilepicker.dialogs.AsmMfpSortByDialog;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener {
+public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment implements AsmMfpDocumentPickerRecyclerViewAdapter.DocumentFilePickerCallbacks, MenuItem.OnActionExpandListener, SortByDialogCallback {
     private View view;
     private RecyclerView recyclerView;
     private NavController mNavController;
+    private static final String DEFAULT_SORTING_STYLE = "SortingDateDescending";
 
     //  private ActionMode mActionMode;
     private ArrayList<MyFile> mFileList = new ArrayList<>();
@@ -111,6 +116,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         mDocumentViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
                 get(AsmMfpDocumentViewModel.class);
+
+        //Set Default Sorting in View Model
+        mDocumentViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
         mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
@@ -187,14 +195,19 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         } else {
             mFileList = mDocumentViewModel.getFileList(FileTypeList, FileType).getValue();
             if (FileType.equals("PDF")) {
+                initDefaultSortingStyle();
                 mDocumentViewModel.saveMyPDFFileList(mFileList);
             } else if (FileType.equals("doc")) {
+                initDefaultSortingStyle();
                 mDocumentViewModel.saveMyFileList(mFileList);
             } else if (FileType.equals("PTT")) {
+                initDefaultSortingStyle();
                 mDocumentViewModel.saveMyPttFileList(mFileList);
             } else if (FileType.equals("TXT")) {
+                initDefaultSortingStyle();
                 mDocumentViewModel.saveMytxtFileList(mFileList);
             } else if (FileType.equals("XLS")) {
+                initDefaultSortingStyle();
                 mDocumentViewModel.saveMyxlsFileList(mFileList);
             }
         }
@@ -311,6 +324,13 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         mNavController = Navigation.findNavController(view);
     }
 
+    private void initDefaultSortingStyle() {
+        //Once every file is loaded, the files will be sorted to newest to oldest.
+        if (mDocumentViewModel.getSortingStyle().getValue() != null) {
+            sortingMyFileList(mDocumentViewModel.getSortingStyle().getValue());
+        }
+    }
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         //for search filter
@@ -344,6 +364,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
         });
 
+        //Sorting
+        MenuItem sortingItem = menu.findItem(R.id.sorting);
+
         MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
         if (isLimited)
             SelectAll.setVisible(false);
@@ -354,9 +377,11 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         if (TotalselectedList.size() > 0) {
             checkItem.setVisible(true);
             unSelectItem.setVisible(true);
+            sortingItem.setVisible(true);
         } else {
             checkItem.setVisible(false);
             unSelectItem.setVisible(false);
+            sortingItem.setVisible(true);
         }
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -425,6 +450,11 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
                 startActivity(intent);
             }
+        }
+
+        if (item.getItemId() == R.id.sorting) {
+            //Pass Callback and CurrentSortingStyle
+            AsmMfpSortByDialog.newInstance(this, mDocumentViewModel.getSortingStyle().getValue()).show(getParentFragmentManager(), AsmMfpSortByDialog.TAG);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -576,6 +606,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             if (TotalselectedList.size() > 0)
                 mActionBar.setTitle(TotalselectedList.size() + getResources().getString(R.string.ItemSelect));
         }
+        if (mfpCustomFilePickerViewModel.getSortingStyle().getValue() != null) {
+            sortingMyFileList(mfpCustomFilePickerViewModel.getSortingStyle().getValue());
+        }
         initAdapter();
     }
 
@@ -616,7 +649,52 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         startActivity(intent);
     }
 
-    public interface SetThemeCallback{
-        void setTheme();
+    private void sortingMyFileList(String sortingStyle) {
+        if (sortingStyle.equals("SortingNameAscending")) {
+            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByName());
+            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByName());
+            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByName());
+            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByName());
+            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByName());
+        } else if (sortingStyle.equals("SortingNameDescending")) {
+            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByName()));
+            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByName()));
+        } else if (sortingStyle.equals("SortingDateAscending")) {
+            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByDate());
+            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByDate());
+            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByDate());
+            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByDate());
+            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByDate());
+        } else if (sortingStyle.equals("SortingDateDescending")) {
+            Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+            Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByDate()));
+        }
+    }
+
+    @Override
+    public void onSortByDialogPositiveButtonClicked(String sortingStyle) {
+        sortingMyFileList(sortingStyle);
+        mDocumentViewModel.setSortingStyle(sortingStyle);
+        initAdapter();
+    }
+
+    public class SortByName implements Comparator<MyFile> {
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            return a.getFileName().compareTo(b.getFileName());
+        }
+    }
+
+    public class SortByDate implements Comparator<MyFile> {
+        @Override
+        public int compare(MyFile a, MyFile b) {
+            return a.getLastModifyDate().compareTo(b.getLastModifyDate());
+        }
     }
 }

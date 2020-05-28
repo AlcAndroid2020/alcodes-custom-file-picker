@@ -40,5 +40,9 @@
         android:visible="false"
         android:title="@string/Share"/>
 
+    <item
+        android:id="@+id/sorting"
+        app:showAsAction="never"
+        android:title="@string/Sort" />
 
 </menu>
