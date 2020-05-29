@@ -81,7 +81,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         //Table
         Uri table = MediaStore.Files.getContentUri("external");
         //Column
-        String[] column = {MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.SIZE};
+        String[] column = {MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.SIZE, MediaStore.Files.FileColumns.DATE_MODIFIED};
 
         //Where
         String where = MediaStore.Files.FileColumns.MIME_TYPE + "=?";
@@ -99,10 +99,12 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
             //your code
             int dataColumn = fileCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
             int sizeColumn = fileCursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE);
+            int dateColumn = fileCursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED);
 
             String filePath = fileCursor.getString(dataColumn);
             String size = fileCursor.getString(sizeColumn);
             Uri uri = Uri.fromFile(new File(filePath));
+            Long date = fileCursor.getLong(dateColumn);
             //grant permision for app with package "packegeName", eg. before starting other app via intent
 
             getApplication().grantUriPermission(getApplication().getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -111,7 +113,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
             DocumentFile df = DocumentFile.fromSingleUri(getApplication().getApplicationContext(), newuri);
             //revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), false);
+            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), date,false);
             myFile.setFileType(type);
             myFile.setFileSize(size);
             FileList.add(myFile);

@@ -145,7 +145,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
 
         //Set Default Sorting in View Model
-        mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
+        if(mfpCustomFilePickerViewModel.getSortingStyle().getValue() == null)
+            mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
         if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
             searching = mfpCustomFilePickerViewModel.getSearching().getValue();
@@ -186,12 +187,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mfpCustomFilePickerViewModel.getMyFileList().getValue().size() != 0 &&
                 mfpCustomFilePickerViewModel.getPickerFileType().getValue() != null) {
             myFileList = mfpCustomFilePickerViewModel.getMyFileList().getValue();
-            mfpCustomFilePickerViewModel.getMyFileList().observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-                @Override
-                public void onChanged(ArrayList<MyFile> myFiles) {
-                    myFileList = myFiles;
-                }
-            });
             initAdapter();
             PickerFileType = mfpCustomFilePickerViewModel.getPickerFileType().getValue();
             mfpCustomFilePickerViewModel.getPickerFileType().observe(getViewLifecycleOwner(), new Observer<String>() {
