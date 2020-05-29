@@ -120,7 +120,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 get(AsmMfpDocumentViewModel.class);
 
         //Set Default Sorting in View Model
-        mDocumentViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
+        if(mDocumentViewModel.getSortingStyle().getValue() == null){
+            mDocumentViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
+        }
 
         mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
