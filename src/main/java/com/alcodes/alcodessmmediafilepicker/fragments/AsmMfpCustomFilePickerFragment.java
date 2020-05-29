@@ -152,6 +152,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
         }
 
+
         if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
             searching = mfpCustomFilePickerViewModel.getSearching().getValue();
             mfpCustomFilePickerViewModel.getSearching().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
