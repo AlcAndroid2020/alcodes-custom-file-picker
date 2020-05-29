@@ -37,5 +37,7 @@
     <string name="NoGeneralFilesFound" tools:ignore="ResourceName">无%1$s</string>
     <string name="NoVideosFound" tools:ignore="ResourceName">影片</string>
     <string name="NoImagesFound" tools:ignore="ResourceName">照片</string>
+    <string name="Okay" tools:ignore="ResourceName">确认</string>
+    <string name="Cancel" tools:ignore="ResourceName">取消</string>
 
 </resources>

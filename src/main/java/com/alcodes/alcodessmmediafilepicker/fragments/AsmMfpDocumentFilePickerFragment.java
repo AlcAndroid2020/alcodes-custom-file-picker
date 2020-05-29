@@ -101,13 +101,19 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
                 mColor = requireActivity().getIntent().getExtras().getInt("color");
                mfpCustomFilePickerViewModel.setBackgroundColor(mColor);
             }
+
+
+
         } else {
             if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue() != null){
                 mColor = mfpCustomFilePickerViewModel.getBackgroundColor().getValue();
             }
+
         }
         if (mColor != 0)
             mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
+
+
 
     }
 

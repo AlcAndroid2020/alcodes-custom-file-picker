@@ -41,4 +41,7 @@
     <string name="NoGeneralFilesFound" tools:ignore="ResourceName">No %1$s Found</string>
     <string name="NoVideosFound" tools:ignore="ResourceName">Videos</string>
     <string name="NoImagesFound" tools:ignore="ResourceName">Images</string>
+    <string name="Okay" tools:ignore="ResourceName">Okay</string>
+    <string name="Cancel" tools:ignore="ResourceName">Cancel</string>
+
 </resources>
