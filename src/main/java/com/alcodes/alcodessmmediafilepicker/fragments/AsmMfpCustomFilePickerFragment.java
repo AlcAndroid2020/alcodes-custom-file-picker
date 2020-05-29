@@ -186,12 +186,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mfpCustomFilePickerViewModel.getMyFileList().getValue().size() != 0 &&
                 mfpCustomFilePickerViewModel.getPickerFileType().getValue() != null) {
             myFileList = mfpCustomFilePickerViewModel.getMyFileList().getValue();
-            mfpCustomFilePickerViewModel.getMyFileList().observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-                @Override
-                public void onChanged(ArrayList<MyFile> myFiles) {
-                    myFileList = myFiles;
-                }
-            });
             initAdapter();
             PickerFileType = mfpCustomFilePickerViewModel.getPickerFileType().getValue();
             mfpCustomFilePickerViewModel.getPickerFileType().observe(getViewLifecycleOwner(), new Observer<String>() {
