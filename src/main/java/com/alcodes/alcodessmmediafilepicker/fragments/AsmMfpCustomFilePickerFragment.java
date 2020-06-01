@@ -48,6 +48,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import timber.log.Timber;
+
+
 public class AsmMfpCustomFilePickerFragment extends Fragment
         implements AsmMfpCustomFilePickerRecyclerViewAdapter.CustomFilePickerCallback, SortByDialogCallback {
 
@@ -145,7 +148,10 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
 
         //Set Default Sorting in View Model
-        mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
+        if(mfpCustomFilePickerViewModel.getSortingStyle().getValue() == null){
+            mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
+        }
+
 
         if (mfpCustomFilePickerViewModel.getSearching().getValue() != null) {
             searching = mfpCustomFilePickerViewModel.getSearching().getValue();
@@ -186,12 +192,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 mfpCustomFilePickerViewModel.getMyFileList().getValue().size() != 0 &&
                 mfpCustomFilePickerViewModel.getPickerFileType().getValue() != null) {
             myFileList = mfpCustomFilePickerViewModel.getMyFileList().getValue();
-            mfpCustomFilePickerViewModel.getMyFileList().observe(getViewLifecycleOwner(), new Observer<ArrayList<MyFile>>() {
-                @Override
-                public void onChanged(ArrayList<MyFile> myFiles) {
-                    myFileList = myFiles;
-                }
-            });
             initAdapter();
             PickerFileType = mfpCustomFilePickerViewModel.getPickerFileType().getValue();
             mfpCustomFilePickerViewModel.getPickerFileType().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -676,7 +676,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     // for folder
     private void openImageMediaStoreFolder() {
         //list to get file in same folder
-        myFileList.clear();
+        myFileList = new ArrayList<>();
         mfpCustomFilePickerViewModel.clearMyFileList();
         ArrayList<String> filelist = new ArrayList<>();
 

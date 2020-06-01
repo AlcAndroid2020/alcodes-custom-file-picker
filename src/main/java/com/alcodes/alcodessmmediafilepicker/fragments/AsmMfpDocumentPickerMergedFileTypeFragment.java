@@ -31,8 +31,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -120,7 +118,8 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 get(AsmMfpDocumentViewModel.class);
 
         //Set Default Sorting in View Model
-        mDocumentViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
+        if(mDocumentViewModel.getSortingStyle().getValue() == null)
+            mDocumentViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
         mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
@@ -539,7 +538,6 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
               //  Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
             //    intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
               //  startActivity(intent);
-
 
                 Intent intent = new Intent("android.intent.action.MAIN");
                 intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
