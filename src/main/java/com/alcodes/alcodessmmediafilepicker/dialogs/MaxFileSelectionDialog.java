@@ -116,6 +116,7 @@ public class MaxFileSelectionDialog extends DialogFragment {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        getActivity().finish();
                         dialog.dismiss();
                     }
                 });
