@@ -22,7 +22,7 @@
             android:layout_height="80dp"
             android:adjustViewBounds="true"
             android:layout_margin="10dp"
-            android:src="@drawable/tasklist"/>
+           />
 
         <TextView
             android:id="@+id/album_item_file_name_in_list_view"
@@ -75,7 +75,7 @@
             android:layout_height="160dp"
             android:adjustViewBounds="true"
             android:layout_margin="10dp"
-            android:src="@drawable/tasklist"/>
+           />
 
         <RelativeLayout
             android:layout_width="match_parent"
