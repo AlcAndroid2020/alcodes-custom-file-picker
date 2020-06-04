@@ -1,12 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.activities;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -15,19 +10,12 @@ import androidx.navigation.ui.NavigationUI;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpActivityMainBinding;
 
-import java.util.ArrayList;
-
-import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpCustomFilePickerFragment.EXTRA_STRING_ARRAY_FILE_URI;
-
 public class AsmMfpMainActivity extends AppCompatActivity {
 
     private AsmMfpActivityMainBinding mDataBinding;
     private NavController mNavController;
     private String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
-    private ActionBar mActionBar;
-    private ArrayList<String> mFileList;
-    private int mColor, mTheme;
-    public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +46,5 @@ public class AsmMfpMainActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         return mNavController.navigateUp() || super.onSupportNavigateUp();
     }
-
-
-
 }
 

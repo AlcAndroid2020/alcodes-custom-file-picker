@@ -1,6 +1,7 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
-import android.app.Activity;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,10 +14,12 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
@@ -28,7 +31,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -37,10 +39,13 @@ import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+
+import timber.log.Timber;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
@@ -70,9 +75,8 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
     private Boolean isSwiped = false;
     private String PickerFileType = "";
     private String FileType;
-    private int mColor = 0, mTheme = 0;
+    private int mColor=0,mTheme=0;
     private ActionBar mActionBar;
-    private AsmMfpMainActivity mfpMainActivity;
 
     public static final String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
     private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
@@ -114,7 +118,7 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 get(AsmMfpDocumentViewModel.class);
 
         //Set Default Sorting in View Model
-        if (mDocumentViewModel.getSortingStyle().getValue() == null)
+        if(mDocumentViewModel.getSortingStyle().getValue() == null)
             mDocumentViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
 
         mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
@@ -123,16 +127,16 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         mfpCustomFilePickerViewModel.getTheme().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                if (integer != 0)
-                    mTheme = integer;
+                if(integer!=0)
+                mTheme=integer;
 
             }
         });
         mfpCustomFilePickerViewModel.getBackgroundColor().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                if (integer != 0)
-                    mColor = integer;
+                if(integer!=0)
+                mColor=integer;
 
             }
         });
@@ -299,9 +303,9 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             }
         });
         if (getActivity().getIntent().getExtras() != null) {
-            if (getActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) != 0) {
+            if (getActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) != 0){
                 mTheme = getActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
-                mfpCustomFilePickerViewModel.setTheme(mTheme);
+            mfpCustomFilePickerViewModel.setTheme(mTheme);
             }
         }
     }
@@ -359,16 +363,16 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
 
         MenuItem SelectAll = menu.findItem(R.id.Doc_FilePicker_SelectAll);
         //Check whether all file is selected in this tab, then hide or show select all menu item
-        if (isAllFileSelectedInThisTab()) {
+        if(isAllFileSelectedInThisTab()){
             SelectAll.setVisible(false);
-        } else {
-            if (mMaxFileSelection != 0) {
-                if (TotalselectedList.size() == mMaxFileSelection) {
+        }else{
+            if(mMaxFileSelection != 0){
+                if(TotalselectedList.size() == mMaxFileSelection){
                     SelectAll.setVisible(false);
-                } else {
+                }else{
                     SelectAll.setVisible(true);
                 }
-            } else {
+            }else{
                 SelectAll.setVisible(true);
             }
         }
@@ -389,29 +393,29 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private boolean isAllFileSelectedInThisTab() {
+    private boolean isAllFileSelectedInThisTab(){
         //A temporary mFileList
         ArrayList<MyFile> tempFileList = new ArrayList<>();
 
-        if (mViewPagerPosition == 0) {
+        if(mViewPagerPosition == 0){
             //PDF TAB
             tempFileList = mDocumentViewModel.getMyPDFFileList().getValue();
-        } else if (mViewPagerPosition == 1) {
+        }else if (mViewPagerPosition == 1){
             //DOC TAB
             tempFileList = mDocumentViewModel.getMyFileList().getValue();
-        } else if (mViewPagerPosition == 2) {
+        }else if (mViewPagerPosition == 2){
             //PTT TAB
             tempFileList = mDocumentViewModel.getMyPttFileList().getValue();
-        } else if (mViewPagerPosition == 3) {
+        }else if (mViewPagerPosition == 3){
             //TXT TAB
             tempFileList = mDocumentViewModel.getMytxtFileList().getValue();
-        } else if (mViewPagerPosition == 4) {
+        }else if (mViewPagerPosition == 4){
             //XLS TAB
             tempFileList = mDocumentViewModel.getMyxlsFileList().getValue();
         }
 
-        for (int i = 0; i < tempFileList.size(); i++) {
-            if (!tempFileList.get(i).getIsSelected()) {
+        for(int i=0 ; i < tempFileList.size() ; i ++){
+            if(! tempFileList.get(i).getIsSelected()){
                 return false;
             }
         }
@@ -483,17 +487,17 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             //*************** COMMENT THIS PART USE WINSON"S SELECT ALL AT BELOW, COMMENT THIS PART JUST IN CASE SELECT ALL FOR ALL TABS OF DIFFERENT FILE TYPE NEED TO USED AGAIN ******************************
 
             for (int i = 0; i < (mMaxFileSelection != 0 ? mMaxFileSelection : mFileList.size()); i++) {
-                if (mMaxFileSelection != 0) {
-                    if (TotalselectedList.size() == mMaxFileSelection) {
+                if(mMaxFileSelection != 0){
+                    if(TotalselectedList.size() == mMaxFileSelection){
                         break;
                     }
                 }
 
-                if (i >= mFileList.size()) {
+                if(i >= mFileList.size()){
                     break;
                 }
 
-                if (!mFileList.get(i).getIsSelected()) {
+                if(!mFileList.get(i).getIsSelected()){
                     mFileList.get(i).setIsSelected(true);
                     TotalselectedList.add(mFileList.get(i).getFileUri());
                 }
@@ -531,15 +535,17 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 mFileList.add(TotalselectedList.get(i));
             }
             if (mFileList != null) {
+              //  Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
+            //    intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+              //  startActivity(intent);
 
+                Intent intent = new Intent("android.intent.action.MAIN");
+                intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
+                intent.putExtra("color", mColor);
+                intent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileList);
 
-                Intent ResultIntent = new Intent();
-                ResultIntent.putExtra("color", mColor);
-                ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-                ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
-                requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
-                requireActivity().finish();
-
+                intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
+                startActivity(intent);
             }
         }
 
@@ -591,22 +597,22 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
             if (mFileList.get(i).getIsSelected())
                 mFileList.get(i).setIsSelected(false);
         }
-        if (FileType.equals("PDF")) {
+        if(FileType.equals("PDF")){
             mDocumentViewModel.saveMyPDFFileList(mFileList);
-        } else if (FileType.equals("doc")) {
+        }else if(FileType.equals("doc")){
             mDocumentViewModel.saveMyFileList(mFileList);
-        } else if (FileType.equals("PTT")) {
+        }else if(FileType.equals("PTT")){
             mDocumentViewModel.saveMyPttFileList(mFileList);
-        } else if (FileType.equals("TXT")) {
+        }else if(FileType.equals("TXT")){
             mDocumentViewModel.saveMytxtFileList(mFileList);
-        } else if (FileType.equals("XLS")) {
+        }else if(FileType.equals("XLS")){
             mDocumentViewModel.saveMyxlsFileList(mFileList);
         }
 
         ArrayList<MyFile> mOtherFileList;
 
         //pdf
-        if (mDocumentViewModel.getMyPDFFileList().getValue() != null && !FileType.equals("PDF")) {
+        if (mDocumentViewModel.getMyPDFFileList().getValue() != null && !FileType.equals("PDF")){
             mOtherFileList = mDocumentViewModel.getMyPDFFileList().getValue();
             for (int i = 0; i < mOtherFileList.size(); i++) {
                 if (mOtherFileList.get(i).getIsSelected())
@@ -739,54 +745,53 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
         startActivity(intent);
     }
 
-    private void sortingMyFileList(String sortingStyle) {
+private void sortingMyFileList(String sortingStyle) {
         if (sortingStyle.equals("SortingNameAscending")) {
-            if (mDocumentViewModel.getMyFileList().getValue() != null)
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByName());
-            if (mDocumentViewModel.getMyPDFFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByName());
-            if (mDocumentViewModel.getMytxtFileList().getValue() != null)
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByName());
-            if (mDocumentViewModel.getMyPttFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByName());
-            if (mDocumentViewModel.getMyxlsFileList().getValue() != null)
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByName());
         } else if (sortingStyle.equals("SortingNameDescending")) {
-            if (mDocumentViewModel.getMyFileList().getValue() != null)
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            if (mDocumentViewModel.getMyPDFFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            if (mDocumentViewModel.getMytxtFileList().getValue() != null)
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            if (mDocumentViewModel.getMyPttFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByName()));
-            if (mDocumentViewModel.getMyxlsFileList().getValue() != null)
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByName()));
         } else if (sortingStyle.equals("SortingDateAscending")) {
-            if (mDocumentViewModel.getMyFileList().getValue() != null)
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyFileList().getValue(), new SortByDate());
-            if (mDocumentViewModel.getMyPDFFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), new SortByDate());
-            if (mDocumentViewModel.getMytxtFileList().getValue() != null)
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), new SortByDate());
-            if (mDocumentViewModel.getMyPttFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), new SortByDate());
-            if (mDocumentViewModel.getMyxlsFileList().getValue() != null)
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), new SortByDate());
         } else if (sortingStyle.equals("SortingDateDescending")) {
-            if (mDocumentViewModel.getMyFileList().getValue() != null)
+            if(mDocumentViewModel.getMyFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            if (mDocumentViewModel.getMyPDFFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPDFFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPDFFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            if (mDocumentViewModel.getMytxtFileList().getValue() != null)
+            if(mDocumentViewModel.getMytxtFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMytxtFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            if (mDocumentViewModel.getMyPttFileList().getValue() != null)
+            if(mDocumentViewModel.getMyPttFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyPttFileList().getValue(), Collections.reverseOrder(new SortByDate()));
-            if (mDocumentViewModel.getMyxlsFileList().getValue() != null)
+            if(mDocumentViewModel.getMyxlsFileList().getValue()!=null)
                 Collections.sort(mDocumentViewModel.getMyxlsFileList().getValue(), Collections.reverseOrder(new SortByDate()));
         }
     }
-
     @Override
     public void onSortByDialogPositiveButtonClicked(String sortingStyle) {
         sortingMyFileList(sortingStyle);

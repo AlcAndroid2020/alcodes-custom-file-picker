@@ -143,7 +143,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
 
         //Set Default Sorting in View Model
-        if (mfpCustomFilePickerViewModel.getSortingStyle().getValue() == null) {
+        if(mfpCustomFilePickerViewModel.getSortingStyle().getValue() == null){
             mfpCustomFilePickerViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
         }
 
@@ -368,11 +368,11 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 changeViewFormatItem.setVisible(true);
             }
         } else {
-            if (selectionList.size() != 0) {
+            if(selectionList.size() != 0){
                 unSelectItem.setVisible(true);
                 checkItem.setVisible(true);
                 shareItem.setVisible(true);
-            } else {
+            }else {
                 unSelectItem.setVisible(false);
                 checkItem.setVisible(false);
                 shareItem.setVisible(false);
@@ -404,12 +404,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         }
     }
 
-    public boolean checkIsSelectedAll() {
-        for (int i = 0; i < myFileList.size(); i++) {
-            if (!myFileList.get(i).getIsSelected()) {
+    public boolean checkIsSelectedAll(){
+        for (int i= 0; i < myFileList.size(); i++){
+            if(!myFileList.get(i).getIsSelected()) {
                 IsSelectAll = false;
                 break;
-            } else
+            }
+            else
                 IsSelectAll = true;
         }
         return IsSelectAll;
@@ -475,9 +476,9 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                 if (i >= myFileList.size()) {
                     break;
                 }
-                if (!myFileList.get(i).getIsSelected()) {
-                    if (mMaxFileSelection != 0) {
-                        if (selectionList.size() == mMaxFileSelection) {
+                if (!myFileList.get(i).getIsSelected()){
+                    if(mMaxFileSelection !=0){
+                        if(selectionList.size()==mMaxFileSelection){
                             break;
                         }
                     }
@@ -499,7 +500,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             getActivity().invalidateOptionsMenu();
 
         }
-        if (item.getItemId() == R.id.SelectFileType) {
+        if (item.getItemId() == R.id.SelectFileType){
             promptSelection();
         }
         if (item.getItemId() == R.id.DoneSelection) {
@@ -509,16 +510,16 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
 
             if (mFileList != null) {
+               // Intent intent = new Intent(requireContext(), AsmGvrMainActivity.class);
+             //   intent.putStringArrayListExtra(AsmMfpCustomFilePickerFragment.EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+             //   startActivity(intent);
 
-
-                Intent ResultIntent = new Intent();
-                ResultIntent.putExtra("color", mColor);
-                ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-                ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
-
-                requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
-                requireActivity().finish();
-
+                Intent intent = new Intent("android.intent.action.MAIN");
+                intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
+                intent.putExtra("color", mColor);
+                intent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileList);
+                intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
+                startActivity(intent);
 
             }
         }
@@ -651,7 +652,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                         mFileListForAndroid10.add(data.getData().toString());
                     }
                     Intent intent = new Intent("android.intent.action.MAIN");
-                    intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo", "com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
+                    intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
                     intent.putExtra("color", mColor);
                     intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
 
