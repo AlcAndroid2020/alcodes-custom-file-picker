@@ -15,7 +15,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider" />
+                android:resource="@xml/asm_mfp_provider" />
         </provider>
     </application>
 

@@ -1,7 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.adapter;
 
 import android.content.Context;
-import android.media.Image;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 import com.bumptech.glide.Glide;
-import com.google.android.material.checkbox.MaterialCheckBox;
 
-import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 
 public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adapter<AsmMfpCustomFilePickerRecyclerViewAdapter.MyViewHolder> implements Filterable {
@@ -97,7 +93,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                             .into(currentViewImageView);
                } else {
                    Glide.with(mContext)
-                            .load(R.drawable.image_folder)
+                            .load(R.drawable.asm_mfp_image_folder)
                             .into(currentViewImageView);
                 }
             } else if (myFileList.get(position).getFileType().equals("Video")) {
@@ -111,7 +107,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
                 } else {
                     Glide.with(mContext)
-                            .load(R.drawable.video_folder)
+                            .load(R.drawable.asm_mfp_video_folder)
                             .into(currentViewImageView);
                 }
             }

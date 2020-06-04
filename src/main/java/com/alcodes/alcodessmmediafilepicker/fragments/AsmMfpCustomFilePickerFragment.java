@@ -17,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +25,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -36,7 +34,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpCustomFilePickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentCustomFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -47,8 +44,6 @@ import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerVie
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-import timber.log.Timber;
 
 
 public class AsmMfpCustomFilePickerFragment extends Fragment
@@ -121,7 +116,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
         //Init AppCompatActivity
         mAppCompatActivity = ((AppCompatActivity) requireActivity());
-        mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
+        mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.asm_mfp_ic_back_black_24dp);// set drawable icon
 
         //Init Two Layout Manager - Grid + Linear
         mLinearLayoutManager = new LinearLayoutManager(requireContext());
@@ -959,7 +954,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
         if (PickerFileType.equals("Image"))
             openImageMediaStoreFile(folderid);
 
-        mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
+        mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.asm_mfp_ic_back_black_24dp);// set drawable icon
         mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         isInSideAlbum = true;
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
@@ -1007,7 +1002,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     public void onVideoFolderClicked(String foldername) {
         openVideoMediaStoreFile(foldername);
 
-        mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);// set drawable icon
+        mAppCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.asm_mfp_ic_back_black_24dp);// set drawable icon
         mAppCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         isInSideAlbum = true;
         mfpCustomFilePickerViewModel.setIsInsideAlbum(isInSideAlbum);
