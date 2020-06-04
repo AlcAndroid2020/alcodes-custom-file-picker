@@ -80,8 +80,8 @@ publish {
     userOrg = 'alcodes'
     groupId = 'com.alcodes'
     artifactId = 'alcodes-custom-file-picker'
-    publishVersion = '1.0.0'
-    desc = 'First Release'
+    publishVersion = '1.0.2'
+    desc = '1.Change Filetype asm_mfp_tasklist to JPEG.'
     website = 'https://github.com/AlcAndroid2020/alcodes-custom-file-picker'
 }
 
