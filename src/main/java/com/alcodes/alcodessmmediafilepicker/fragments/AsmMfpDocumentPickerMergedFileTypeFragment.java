@@ -1,5 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -535,17 +536,14 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 mFileList.add(TotalselectedList.get(i));
             }
             if (mFileList != null) {
-              //  Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-            //    intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-              //  startActivity(intent);
 
-                Intent intent = new Intent("android.intent.action.MAIN");
-                intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
-                intent.putExtra("color", mColor);
-                intent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileList);
+                Intent ResultIntent = new Intent();
+                ResultIntent.putExtra("color", mColor);
+                ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+                ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
+                requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
+                requireActivity().finish();
 
-                intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
-                startActivity(intent);
             }
         }
 

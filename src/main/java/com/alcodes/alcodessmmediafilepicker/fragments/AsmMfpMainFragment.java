@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -208,7 +209,6 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
         requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
         requireActivity().finish();
-
     }
 
 
