@@ -1,3 +1,4 @@
+apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -73,3 +74,14 @@ dependencies {
     implementation "com.google.android.material:material:${rootLibraries.androidMaterialVersion}"
 
 }
+
+publish {
+    repoName = 'alcodes-custom-file-picker'
+    userOrg = 'alcodes'
+    groupId = 'com.alcodes'
+    artifactId = 'alcodes-custom-file-picker'
+    publishVersion = '1.0.0'
+    desc = 'First Release'
+    website = 'https://github.com/AlcAndroid2020/alcodes-custom-file-picker'
+}
+
