@@ -8,9 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.alcodes.alcodessmmediafilepicker.R;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpDialogFileSortingBinding;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
 
 public class AsmMfpSortByDialog extends DialogFragment {
@@ -22,9 +22,10 @@ public class AsmMfpSortByDialog extends DialogFragment {
 
     private String mCurrentSortingStyle;
 
-    public AsmMfpSortByDialog() {}
+    public AsmMfpSortByDialog() {
+    }
 
-    public static AsmMfpSortByDialog newInstance(SortByDialogCallback sortByDialogCallback, String currentSortingStyle){
+    public static AsmMfpSortByDialog newInstance(SortByDialogCallback sortByDialogCallback, String currentSortingStyle) {
 
         AsmMfpSortByDialog asmMfpSortByDialog = new AsmMfpSortByDialog();
 
@@ -34,11 +35,11 @@ public class AsmMfpSortByDialog extends DialogFragment {
         return asmMfpSortByDialog;
     }
 
-    private void setCallback(SortByDialogCallback sortByDialogCallback){
+    private void setCallback(SortByDialogCallback sortByDialogCallback) {
         this.mCallback = sortByDialogCallback;
     }
 
-    private void setCurrentSortingStyle (String currentSortingStyle){
+    private void setCurrentSortingStyle(String currentSortingStyle) {
         this.mCurrentSortingStyle = currentSortingStyle;
     }
 
@@ -74,43 +75,43 @@ public class AsmMfpSortByDialog extends DialogFragment {
         return builder.build();
     }
 
-    private String getSortingStyle(){
-        if(mDatabinding.sortByNameRadioButton.isChecked()){
+    private String getSortingStyle() {
+        if (mDatabinding.sortByNameRadioButton.isChecked()) {
             //Name is Checked
             return "SortingName" + getOrder();
-        }else{
+        } else {
             //Date is Checked
             return "SortingDate" + getOrder();
         }
     }
 
-    private String getOrder(){
-        if(mDatabinding.ascendingOrderRadioButton.isChecked()){
+    private String getOrder() {
+        if (mDatabinding.ascendingOrderRadioButton.isChecked()) {
             //Ascending is Checked
             return "Ascending";
-        }else{
+        } else {
             //Descending is Checked
             return "Descending";
         }
     }
 
-    private void initSortRadioGroup(){
+    private void initSortRadioGroup() {
         //Sorting{Name}Ascending
-        if(mCurrentSortingStyle.substring(7, 11).toLowerCase().equals("name")){
+        if (mCurrentSortingStyle.substring(7, 11).toLowerCase().equals("name")) {
             mDatabinding.sortByNameRadioButton.setChecked(true);
             mDatabinding.sortByDateRadioButton.setChecked(false);
-        }else{
+        } else {
             mDatabinding.sortByNameRadioButton.setChecked(false);
             mDatabinding.sortByDateRadioButton.setChecked(true);
         }
     }
 
-    private void initOrderRadioGroup(){
+    private void initOrderRadioGroup() {
         //SortingName{Ascending}
-        if(mCurrentSortingStyle.substring(11).toLowerCase().equals("ascending")){
+        if (mCurrentSortingStyle.substring(11).toLowerCase().equals("ascending")) {
             mDatabinding.ascendingOrderRadioButton.setChecked(true);
             mDatabinding.descendingOrderRadioButton.setChecked(false);
-        }else{
+        } else {
             mDatabinding.ascendingOrderRadioButton.setChecked(false);
             mDatabinding.descendingOrderRadioButton.setChecked(true);
         }

@@ -87,12 +87,12 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
 
             if (myFileList.get(position).getFileType().equals("Image")) {
                 if (!myFileList.get(position).getIsFolder()) {
-                Glide.with(mContext)
+                    Glide.with(mContext)
                             .load(Uri.parse(myFileList.get(position).getFileUri()))
                             // Uri of the picture
                             .into(currentViewImageView);
-               } else {
-                   Glide.with(mContext)
+                } else {
+                    Glide.with(mContext)
                             .load(R.drawable.asm_mfp_image_folder)
                             .into(currentViewImageView);
                 }
@@ -100,7 +100,7 @@ public class AsmMfpCustomFilePickerRecyclerViewAdapter extends RecyclerView.Adap
                 if (!myFileList.get(position).getIsFolder()) {
                     //to generate video thumbnial from uri
                     //
-                  Glide.with(mContext)
+                    Glide.with(mContext)
                             .load(Uri.parse(myFileList.get(position).getFileUri()))
                             // Uri of the picture
                             .into(currentViewImageView);

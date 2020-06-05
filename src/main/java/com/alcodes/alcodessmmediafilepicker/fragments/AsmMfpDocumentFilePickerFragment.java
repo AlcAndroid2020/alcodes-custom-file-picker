@@ -11,38 +11,26 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.viewpager.widget.ViewPager;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerViewPagerAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
-import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
-import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpCustomFilePickerViewModel;
 import com.alcodes.alcodessmmediafilepicker.viewmodels.AsmMfpDocumentViewModel;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
 
 public class AsmMfpDocumentFilePickerFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private AsmMfpFragmentDocumentFilePickerBinding mDataBinding;
     private NavController mNavController;
-    private AsmMfpDocumentFilePickerActivity mActivity;
-    private Boolean isSelected;
-    private ArrayList<MyFile> myfilelist = new ArrayList<>();
     AsmMfpDocumentPickerViewPagerAdapter mAdapter;
     private Integer mViewPagerPosition;
     private AsmMfpDocumentViewModel mDocumentViewModel;
-    private int mColor, mTheme;
-    private AsmMfpCustomFilePickerViewModel mfpCustomFilePickerViewModel;
 
     private static final int PERMISSION_STORGE_CODE = 1000;
 
@@ -75,44 +63,13 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
                     mDocumentViewModel.setViewPagerPosition(position);
                 }
 
-                //maintain action mode
-                mDocumentViewModel.setIsSwiped(true);
+
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
             }
         });
-
-        mDocumentViewModel.getBackgroundColor().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                if (integer != 0)
-                    mColor = integer;
-            }
-        });
-
-        mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
-                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
-                get(AsmMfpCustomFilePickerViewModel.class);
-
-        if (requireActivity().getIntent().getExtras() != null) {
-            if (requireActivity().getIntent().getExtras().getInt("color") != 0) {
-                mColor = requireActivity().getIntent().getExtras().getInt("color");
-               mfpCustomFilePickerViewModel.setBackgroundColor(mColor);
-            }
-
-
-
-        } else {
-            if(mfpCustomFilePickerViewModel.getBackgroundColor().getValue() != null){
-                mColor = mfpCustomFilePickerViewModel.getBackgroundColor().getValue();
-            }
-
-        }
-        if (mColor != 0)
-            mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
-
 
 
     }
@@ -126,7 +83,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         tabLayout = mDataBinding.DocFilePickerTabLayout;
 
         viewPager = mDataBinding.DocFilePickerViewPager;
-        isSelected = false;
         //adapter to add fragment
         mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
         if (requireActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
@@ -188,7 +144,6 @@ public class AsmMfpDocumentFilePickerFragment extends Fragment {
         tabLayout = mDataBinding.DocFilePickerTabLayout;
 
         viewPager = mDataBinding.DocFilePickerViewPager;
-        isSelected = false;
         //adapter to add fragment
         mAdapter = new AsmMfpDocumentPickerViewPagerAdapter(getActivity().getSupportFragmentManager());
 

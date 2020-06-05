@@ -2,7 +2,6 @@ package com.alcodes.alcodessmmediafilepicker.viewmodels;
 
 import android.app.Application;
 import android.net.Uri;
-import android.view.ActionMode;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,9 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.alcodes.alcodessmmediafilepicker.utils.MyFile;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
 
@@ -22,30 +19,29 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> mIsInsideAlbum = new MutableLiveData<>();
     private final MutableLiveData<String> mPickerFileType = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mSearching = new MutableLiveData<>();
-    private final MutableLiveData<String>  mSearchingText = new MutableLiveData<>();
+    private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<String> mSortingStyle = new MutableLiveData<>();
     private final MutableLiveData<Integer> mMaxSelection = new MutableLiveData<>();
-    private final MutableLiveData<Integer> BackgroundColor = new MutableLiveData<>();
+
     public AsmMfpCustomFilePickerViewModel(@NonNull Application application) {
         super(application);
     }
-    private final MutableLiveData<Integer> mTheme=new MutableLiveData<>();
 
     public MutableLiveData<ArrayList<MyFile>> getMyFileList() {
         return mMyFileList;
     }
 
-    public void saveMyFileList(ArrayList<MyFile> myFileList){
+    public void saveMyFileList(ArrayList<MyFile> myFileList) {
         mMyFileList.setValue(myFileList);
     }
 
-    public void clearMyFileList(){
+    public void clearMyFileList() {
         mMyFileList.setValue(null);
     }
 
-    public void addFileToMyFileList(MyFile myFile){
+    public void addFileToMyFileList(MyFile myFile) {
         ArrayList<MyFile> tempMyFileList = new ArrayList<>();
-        if(mMyFileList.getValue() != null){
+        if (mMyFileList.getValue() != null) {
             tempMyFileList = mMyFileList.getValue();
         }
 
@@ -61,7 +57,7 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         mSelectionList.setValue(selectionList);
     }
 
-    public void clearSelectionList(){
+    public void clearSelectionList() {
         mSelectionList.setValue(null);
     }
 
@@ -85,7 +81,7 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         return mPickerFileType;
     }
 
-    public void setPickerFileType(String pickerFileType){
+    public void setPickerFileType(String pickerFileType) {
         mPickerFileType.setValue(pickerFileType);
     }
 
@@ -93,7 +89,7 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         return mSearching;
     }
 
-    public void setSearching(Boolean searching){
+    public void setSearching(Boolean searching) {
         mSearching.setValue(searching);
     }
 
@@ -101,7 +97,7 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         return mSearchingText;
     }
 
-    public void setSearchingText(String searchingText){
+    public void setSearchingText(String searchingText) {
         mSearchingText.setValue(searchingText);
     }
 
@@ -109,7 +105,7 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         return mSortingStyle;
     }
 
-    public void setSortingStyle(String sortingStyle){
+    public void setSortingStyle(String sortingStyle) {
         mSortingStyle.setValue(sortingStyle);
     }
 
@@ -117,21 +113,9 @@ public class AsmMfpCustomFilePickerViewModel extends AndroidViewModel {
         return mMaxSelection;
     }
 
-    public void setMaxSelection(Integer maxSelection){
+    public void setMaxSelection(Integer maxSelection) {
         mMaxSelection.setValue(maxSelection);
     }
 
-    public MutableLiveData<Integer> getBackgroundColor(){
-        return BackgroundColor;
-    }
-    public void setBackgroundColor(int color){
-        BackgroundColor.setValue(color);
-    }
-    public MutableLiveData<Integer> getTheme(){
-        return mTheme;
-    }
-    public void setTheme(int theme){
-        mTheme.setValue(theme);
-    }
 
 }

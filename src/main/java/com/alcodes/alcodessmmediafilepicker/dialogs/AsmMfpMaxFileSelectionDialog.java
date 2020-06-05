@@ -1,7 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.dialogs;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,31 +13,28 @@ import androidx.fragment.app.DialogFragment;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.databinding.DialogMaxFileSelectionBinding;
+import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpDialogMaxFileSelectionBinding;
 import com.alcodes.alcodessmmediafilepicker.utils.AsmMfpSharedPreferenceHelper;
 
 import static com.alcodes.alcodessmmediafilepicker.fragments.AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION;
 
-public class MaxFileSelectionDialog extends DialogFragment {
-    public static final String TAG = MaxFileSelectionDialog.class.getSimpleName();
+public class AsmMfpMaxFileSelectionDialog extends DialogFragment {
+    public static final String TAG = AsmMfpMaxFileSelectionDialog.class.getSimpleName();
 
-    private DialogMaxFileSelectionBinding mDataBinding;
-    private int mColor;
+    private AsmMfpDialogMaxFileSelectionBinding mDataBinding;
     private int mSoughtValue = 0; //No Limit
-    private int Theme = 0;
-    private String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
 
-    public MaxFileSelectionDialog() {
+    public AsmMfpMaxFileSelectionDialog() {
     }
 
-    public static MaxFileSelectionDialog newInstance() {
-        return new MaxFileSelectionDialog();
+    public static AsmMfpMaxFileSelectionDialog newInstance() {
+        return new AsmMfpMaxFileSelectionDialog();
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        mDataBinding = DialogMaxFileSelectionBinding.inflate(requireActivity().getLayoutInflater());
+        mDataBinding = AsmMfpDialogMaxFileSelectionBinding.inflate(requireActivity().getLayoutInflater());
 
         //Set The Cursor To The End Of The Edit Text
         mDataBinding.maxFileSelectionEdittext.setSelection(mDataBinding.maxFileSelectionEdittext.getText().length());
@@ -108,7 +104,7 @@ public class MaxFileSelectionDialog extends DialogFragment {
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         AsmMfpSharedPreferenceHelper.getInstance(requireContext())
                                 .edit()
-                                .putInt(EXTRA_INT_MAX_FILE_SELECTION,mSoughtValue)
+                                .putInt(EXTRA_INT_MAX_FILE_SELECTION, mSoughtValue)
                                 .apply();
                     }
                 })
@@ -126,15 +122,4 @@ public class MaxFileSelectionDialog extends DialogFragment {
         return builder.build();
     }
 
-    public void setBackGroundColor(int color) {
-        this.mColor = color;
-    }
-
-    public void setTheme(int theme) {
-        this.Theme = theme;
-    }
-
-    public int getmSoughtValue(){
-        return  mSoughtValue;
-    }
 }
