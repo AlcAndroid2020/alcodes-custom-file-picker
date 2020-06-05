@@ -15,7 +15,7 @@
         app:showAsAction="always|collapseActionView"
         android:icon="@drawable/asm_mfp_ic_check_black_24dp"
         android:visible="false"
-        android:title="@string/done"/>
+        android:title="@string/Done"/>
 
     <item
         android:id="@+id/ShareWith"
