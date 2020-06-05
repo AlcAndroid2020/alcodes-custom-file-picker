@@ -19,7 +19,6 @@ public class AsmMfpDocumentPickerViewPagerAdapter extends FragmentPagerAdapter {
         super(fm);
     }
 
-
     //get fragment details
     @NonNull
     @Override
@@ -39,6 +38,7 @@ public class AsmMfpDocumentPickerViewPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return FragmentListTitles.get(position);
     }
+
     //allow to add fragment to tab layout
     public void AddFragment(Fragment fragment, String Title) {
 

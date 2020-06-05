@@ -22,14 +22,12 @@ public class AsmMfpMaxFileSelectionDialog extends DialogFragment {
     public static final String TAG = AsmMfpMaxFileSelectionDialog.class.getSimpleName();
 
     private AsmMfpDialogMaxFileSelectionBinding mDataBinding;
-    private int mColor;
     private int mSoughtValue = 0; //No Limit
-    private int Theme = 0;
-    private String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
 
-    public AsmMfpMaxFileSelectionDialog(){}
+    public AsmMfpMaxFileSelectionDialog() {
+    }
 
-    public static AsmMfpMaxFileSelectionDialog newInstance(){
+    public static AsmMfpMaxFileSelectionDialog newInstance() {
         return new AsmMfpMaxFileSelectionDialog();
     }
 
@@ -106,7 +104,7 @@ public class AsmMfpMaxFileSelectionDialog extends DialogFragment {
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         AsmMfpSharedPreferenceHelper.getInstance(requireContext())
                                 .edit()
-                                .putInt(EXTRA_INT_MAX_FILE_SELECTION,mSoughtValue)
+                                .putInt(EXTRA_INT_MAX_FILE_SELECTION, mSoughtValue)
                                 .apply();
                     }
                 })
@@ -124,15 +122,4 @@ public class AsmMfpMaxFileSelectionDialog extends DialogFragment {
         return builder.build();
     }
 
-    public void setBackGroundColor(int color) {
-        this.mColor = color;
-    }
-
-    public void setTheme(int theme) {
-        this.Theme = theme;
-    }
-
-    public int getmSoughtValue(){
-        return  mSoughtValue;
-    }
 }

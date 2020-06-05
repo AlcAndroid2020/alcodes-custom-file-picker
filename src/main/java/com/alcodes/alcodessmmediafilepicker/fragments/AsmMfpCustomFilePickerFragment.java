@@ -2,7 +2,6 @@ package com.alcodes.alcodessmmediafilepicker.fragments;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +23,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -69,7 +66,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
     private Boolean isInSideAlbum;
     private Boolean IsGrid;
     private String sharefiletype = "";
-    private int mColor, mTheme;
     private Boolean IsSelectAll = false;
     private Boolean searching = false;
     private SearchView searchView;
@@ -82,7 +78,6 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
     private int mMaxFileSelection;
     public static final String EXTRA_STRING_ARRAY_FILE_URI = "EXTRA_STRING_ARRAY_FILE_URI";
-    public static final String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -206,27 +201,8 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
             }
             initAdapter();
         }
-        if (mfpCustomFilePickerViewModel.getBackgroundColor().getValue() != null) {
-            mColor = mfpCustomFilePickerViewModel.getBackgroundColor().getValue();
-            mfpCustomFilePickerViewModel.getBackgroundColor().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer integer) {
-                    mColor = integer;
-                }
-            });
-            if (mColor != 0)
-                mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mfpCustomFilePickerViewModel.getBackgroundColor().getValue()));
-        }
 
-        if (mfpCustomFilePickerViewModel.getTheme().getValue() != null) {
-            mTheme = mfpCustomFilePickerViewModel.getTheme().getValue();
-            mfpCustomFilePickerViewModel.getTheme().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer integer) {
-                    mTheme = integer;
-                }
-            });
-        }
+
     }
 
     @Override
@@ -513,9 +489,7 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
 
                 Intent ResultIntent = new Intent();
-                ResultIntent.putExtra("color", mColor);
                 ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-                ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
 
                 requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
                 requireActivity().finish();
@@ -651,24 +625,13 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
                         //Single document is selected
                         mFileListForAndroid10.add(data.getData().toString());
                     }
-           /*         Intent intent = new Intent("android.intent.action.MAIN");
-                    intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo", "com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
-                    intent.putExtra("color", mColor);
-                    intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
-
-                    intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
-                    startActivity(intent);
-*/
 
 
                     Intent ResultIntent = new Intent();
-                    ResultIntent.putExtra("color", mColor);
-                    ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileListForAndroid10);
-                    ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
+                    ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
 
                     requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
                     requireActivity().finish();
-                    Toast.makeText(getContext(),"testing "+mColor,Toast.LENGTH_SHORT).show();
                 }
             }
 

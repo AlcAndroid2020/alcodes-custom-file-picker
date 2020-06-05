@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.view.ActionMode;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -27,21 +26,17 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<String>> Selectionlist = new MutableLiveData<>();//selected files list
     private MutableLiveData<Integer> SelectionLimit = new MutableLiveData<>(0); //select limit counter
     private MutableLiveData<ArrayList<MyFile>> mFileList = new MutableLiveData<>(); //to store file list
-    private MutableLiveData<Boolean> mIsSearch = new MutableLiveData<>(false);  ///for custom search bar
 
     private final MutableLiveData<ArrayList<MyFile>> mMyFileList = new MutableLiveData<>();
     private final MutableLiveData<String> mSearchingText = new MutableLiveData<>();
     private final MutableLiveData<Integer> mViewPagerPosition = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isSwipe = new MutableLiveData<>(false);
     private final MutableLiveData<String> mSortingStyle = new MutableLiveData<>();
 
     private MutableLiveData<ArrayList<MyFile>> mpdfFileList = new MutableLiveData<>(); //to store file list
     private final MutableLiveData<ArrayList<MyFile>> mMypttFileList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<MyFile>> mMytxtFileList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<MyFile>> mMyxlsFileList = new MutableLiveData<>();
-    private final MutableLiveData<Integer> OriginalPosition = new MutableLiveData<>();
     private final MutableLiveData<List<String>> mFileType = new MutableLiveData<>();
-    private final MutableLiveData<Integer> BackgroundColor=new MutableLiveData<>();
 
     public AsmMfpDocumentViewModel(@NonNull Application application) {
         super(application);
@@ -113,7 +108,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
             DocumentFile df = DocumentFile.fromSingleUri(getApplication().getApplicationContext(), newuri);
             //revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), date,false);
+            MyFile myFile = new MyFile(df.getName(), String.valueOf(newuri), date, false);
             myFile.setFileType(type);
             myFile.setFileSize(size);
             FileList.add(myFile);
@@ -123,13 +118,6 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         return mFileList;
     }
 
-    public LiveData<Boolean> getIsSearching() {
-        return mIsSearch;
-    }
-
-    public void setIsSearching(Boolean IsSearch) {
-        mIsSearch.setValue(IsSearch);
-    }
 
     public MutableLiveData<String> getSearchingText() {
         return mSearchingText;
@@ -147,14 +135,6 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         mViewPagerPosition.setValue(position);
     }
 
-    public MutableLiveData<Boolean> getIsSwiped() {
-
-        return isSwipe;
-    }
-
-    public void setIsSwiped(Boolean isSwipe) {
-        this.isSwipe.setValue(isSwipe);
-    }
 
     public void saveMyFileList(ArrayList<MyFile> myFileList) {
         mMyFileList.setValue(myFileList);
@@ -197,35 +177,27 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
     }
 
 
-
-    public MutableLiveData<Integer> getBackgroundColor(){
-        return BackgroundColor;
-    }
-    public void setBackgroundColor(int color){
-        BackgroundColor.setValue(color);
-    }
-
     public MutableLiveData<List<String>> getFileType() {
         return mFileType;
     }
 
     public String getCurrentFileType(Integer position) {
-        if(mFileType.getValue() == null){
+        if (mFileType.getValue() == null) {
             return "";
-        }else{
+        } else {
             return mFileType.getValue().get(position);
         }
     }
 
-    public void setFileType(String fileType){
+    public void setFileType(String fileType) {
         List<String> dataHolders = new ArrayList<>();
 
-        if(mFileType.getValue() == null){
+        if (mFileType.getValue() == null) {
             dataHolders.add(fileType);
-        }else{
+        } else {
             dataHolders = mFileType.getValue();
-            for(int i=0; i < dataHolders.size(); i++){
-                if(!dataHolders.get(i).equals(fileType)){
+            for (int i = 0; i < dataHolders.size(); i++) {
+                if (!dataHolders.get(i).equals(fileType)) {
                     dataHolders.add(fileType);
                     break;
                 }
@@ -238,7 +210,7 @@ public class AsmMfpDocumentViewModel extends AndroidViewModel {
         return mSortingStyle;
     }
 
-    public void setSortingStyle(String sortingStyle){
+    public void setSortingStyle(String sortingStyle) {
         mSortingStyle.setValue(sortingStyle);
     }
 }

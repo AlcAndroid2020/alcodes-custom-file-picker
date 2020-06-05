@@ -7,13 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -38,13 +35,10 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     private AsmMfpFragmentMainBinding mDataBinding;
     private NavController mNavController;
     private AsmMfpCustomFilePickerViewModel mfpMainSharedViewModel;
-    private int mColor, mTheme;
-    private ActionBar mActionBar;
     private ArrayList<String> mFileList;
-   private ArrayList<String> mFileListForAndroid10=new ArrayList<>();
+    private ArrayList<String> mFileListForAndroid10 = new ArrayList<>();
     private AppCompatActivity mAppCompatActivity;
 
-    String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,56 +76,23 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         ).get(AsmMfpCustomFilePickerViewModel.class);
 
         AsmMfpMaxFileSelectionDialog maxFileSelectionDialog = new AsmMfpMaxFileSelectionDialog();
-       if(mfpMainSharedViewModel.getPickerFileType().getValue()==null)
-        maxFileSelectionDialog.show(getParentFragmentManager(), AsmMfpMaxFileSelectionDialog.TAG);
+        if (mfpMainSharedViewModel.getPickerFileType().getValue() == null)
+            maxFileSelectionDialog.show(getParentFragmentManager(), AsmMfpMaxFileSelectionDialog.TAG);
 
         if (requireActivity().getIntent().getExtras() != null) {
             mfpMainSharedViewModel.setMaxSelection(requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
 
-   /*         //When it was directing to here from Main Module
-            //Save maxFileSelection into Shared Preferences
-            AsmMfpSharedPreferenceHelper.getInstance(requireContext())
-                    .edit()
-                    .putInt(EXTRA_INT_MAX_FILE_SELECTION, requireActivity().getIntent().getExtras().getInt(EXTRA_INT_MAX_FILE_SELECTION, 0))
-                    .apply();
-*/
-
-
-
-            mColor = requireActivity().getIntent().getExtras().getInt("color");
-
-            mfpMainSharedViewModel.setBackgroundColor(mColor);
-
-
-            if (requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME) != 0)
-                mTheme = requireActivity().getIntent().getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
-
-            if (mTheme != 0)
-                mfpMainSharedViewModel.setTheme(mTheme);
-
         } else {
             //When it was directing to here within Sub Module
-           if (mfpMainSharedViewModel.getMaxSelection().getValue() != null) {
-               mfpMainSharedViewModel.setMaxSelection(mfpMainSharedViewModel.getMaxSelection().getValue());
+            if (mfpMainSharedViewModel.getMaxSelection().getValue() != null) {
+                mfpMainSharedViewModel.setMaxSelection(mfpMainSharedViewModel.getMaxSelection().getValue());
             } else {
                 //When it returns from another acitivity, get the shared preference value
-              mfpMainSharedViewModel.setMaxSelection(AsmMfpSharedPreferenceHelper.getInstance(requireContext()).getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
-         }
+                mfpMainSharedViewModel.setMaxSelection(AsmMfpSharedPreferenceHelper.getInstance(requireContext()).getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
+            }
             //for background color
 
-            if (mfpMainSharedViewModel.getBackgroundColor().getValue() != null) {
-                mColor = mfpMainSharedViewModel.getBackgroundColor().getValue();
-            }
         }
-
-        if (mColor != 0)
-            mDataBinding.getRoot().setBackgroundColor(ContextCompat.getColor(getActivity(), mColor));
-
-
-
-
-
-
     }
 
     @Override
@@ -142,10 +103,6 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         mNavController = Navigation.findNavController(view);
     }
 
-    public int getTheme() {
-
-        return mTheme;
-    }
 
     @Override
     public void onMediaFilePickerButtonClicked() {
@@ -173,15 +130,12 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx")};
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
             startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
 
         } else {
             //Android 7 to Android 9
             Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
             intent.putExtra(AsmMfpMainFragment.EXTRA_INT_MAX_FILE_SELECTION, AsmMfpSharedPreferenceHelper.getInstance(requireContext()).getInt(EXTRA_INT_MAX_FILE_SELECTION, 0));
-            intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
-            intent.putExtra("color", mColor);
             startActivityForResult(intent, 1);
         }
     }
@@ -206,10 +160,7 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
                     }
 
                     Intent ResultIntent = new Intent();
-                    ResultIntent.putExtra("color", mColor);
-                    ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileListForAndroid10);
-                    ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
-
+                    ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileListForAndroid10);
                     requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
                     requireActivity().finish();
                 }
@@ -218,9 +169,6 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
             if (requestCode == 1) {
 
                 mFileList = data.getExtras().getStringArrayList(EXTRA_STRING_ARRAY_FILE_URI);
-                mColor = data.getExtras().getInt("color");
-                mTheme = data.getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
-
                 BackToMainModule();
 
 
@@ -233,12 +181,9 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     //this is for document picker to finish another time for return to main module
     private void BackToMainModule() {
         Intent ResultIntent = new Intent();
-        ResultIntent.putExtra("color", mColor);
         ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-        ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
         requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
         requireActivity().finish();
     }
-
 
 }
