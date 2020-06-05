@@ -39,5 +39,6 @@
     <string name="NoImagesFound" tools:ignore="ResourceName">照片</string>
     <string name="Okay" tools:ignore="ResourceName">确认</string>
     <string name="Cancel" tools:ignore="ResourceName">取消</string>
+    <string name="LimitAmount">最多文件\n{ 0 => 无限制 }"</string>
 
 </resources>

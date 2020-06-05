@@ -43,5 +43,6 @@
     <string name="NoImagesFound" tools:ignore="ResourceName">Images</string>
     <string name="Okay" tools:ignore="ResourceName">Okay</string>
     <string name="Cancel" tools:ignore="ResourceName">Cancel</string>
+    <string name="LimitAmount">Max File Selection\n{ 0 => No Limit }"</string>
 
 </resources>

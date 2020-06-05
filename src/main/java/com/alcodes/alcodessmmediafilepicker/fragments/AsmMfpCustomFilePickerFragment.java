@@ -663,11 +663,12 @@ public class AsmMfpCustomFilePickerFragment extends Fragment
 
                     Intent ResultIntent = new Intent();
                     ResultIntent.putExtra("color", mColor);
-                    ResultIntent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileListForAndroid10);
+                    ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileListForAndroid10);
                     ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
 
-                    requireActivity().setResult(-1, ResultIntent);
+                    requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
                     requireActivity().finish();
+                    Toast.makeText(getContext(),"testing "+mColor,Toast.LENGTH_SHORT).show();
                 }
             }
 
