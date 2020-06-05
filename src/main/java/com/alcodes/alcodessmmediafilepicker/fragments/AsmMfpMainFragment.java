@@ -41,6 +41,7 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
     private int mColor, mTheme;
     private ActionBar mActionBar;
     private ArrayList<String> mFileList;
+   private ArrayList<String> mFileListForAndroid10=new ArrayList<>();
     private AppCompatActivity mAppCompatActivity;
 
     String EXTRA_INTEGER_SELECTED_THEME = "EXTRA_INTEGER_SELECTED_THEME";
@@ -174,6 +175,7 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
             intent.putExtra(AsmMfpCustomFilePickerFragment.EXTRA_INTEGER_SELECTED_THEME, mTheme);
             startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
+
         } else {
             //Android 7 to Android 9
             Intent intent = new Intent(requireContext(), AsmMfpDocumentFilePickerActivity.class);
@@ -189,16 +191,43 @@ public class AsmMfpMainFragment extends Fragment implements MainBindingCallback 
         super.onActivityResult(requestCode, resultCode, data);
 
         // Please, use a final int instead of hardcoded int value
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
+        mFileListForAndroid10 = new ArrayList<>();
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == OPEN_DOCUMENT_REQUEST_CODE) {
+                if (null != data) {
+                    if (null != data.getClipData()) {
+                        // Multiple document is selected
+                        for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                            mFileListForAndroid10.add(data.getClipData().getItemAt(i).getUri().toString());
+                        }
+                    } else {
+                        //Single document is selected
+                        mFileListForAndroid10.add(data.getData().toString());
+                    }
+
+                    Intent ResultIntent = new Intent();
+                    ResultIntent.putExtra("color", mColor);
+                    ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileListForAndroid10);
+                    ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
+
+                    requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
+                    requireActivity().finish();
+                }
+            }
+
+            if (requestCode == 1) {
+
                 mFileList = data.getExtras().getStringArrayList(EXTRA_STRING_ARRAY_FILE_URI);
                 mColor = data.getExtras().getInt("color");
                 mTheme = data.getExtras().getInt(EXTRA_INTEGER_SELECTED_THEME);
 
                 BackToMainModule();
 
+
             }
+
         }
+
     }
 
     //this is for document picker to finish another time for return to main module
