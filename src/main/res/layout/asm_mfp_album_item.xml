@@ -30,7 +30,7 @@
             android:text="FileName"
             android:layout_marginEnd="10dp"
             android:textSize="20sp"
-            android:textColor="@color/design_default_color_on_secondary"
+            android:textColor="#000000"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/album_item_thumbnail_in_list_view"
             android:layout_toStartOf="@id/album_item_checked_in_list_view"/>
@@ -90,7 +90,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_centerInParent="true"
                 android:textSize="18sp"
-                android:textColor="@color/design_default_color_on_secondary"
+                android:textColor="#000000"
                 android:layout_toStartOf="@+id/album_item_checked_in_grid_view"
                 android:layout_centerHorizontal="true"/>
 

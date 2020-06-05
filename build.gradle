@@ -71,7 +71,6 @@ dependencies {
     implementation "com.google.android.material:material:${rootLibraries.androidMaterialVersion}"
 
 }
-
 publish {
     repoName = 'alcodes-custom-file-picker'
     userOrg = 'alcodes'
@@ -81,4 +80,7 @@ publish {
     desc = '1.Change Filetype asm_mfp_tasklist to JPEG.'
     website = 'https://github.com/AlcAndroid2020/alcodes-custom-file-picker'
 }
+
+//apply from: 'install.gradle'
+//apply from: 'bintray.gradle'
 

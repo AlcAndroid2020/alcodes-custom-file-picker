@@ -5,7 +5,7 @@
     <item
         android:id="@+id/Doc_FilePicker_DoneSelection"
         android:icon="@drawable/asm_mfp_ic_check_black_24dp"
-        android:title="@string/done"
+        android:title="@string/Done"
         android:visible="false"
         app:showAsAction="always|collapseActionView" />
 
