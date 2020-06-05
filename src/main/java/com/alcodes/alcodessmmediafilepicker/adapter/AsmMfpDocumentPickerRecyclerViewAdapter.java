@@ -85,23 +85,23 @@ public class AsmMfpDocumentPickerRecyclerViewAdapter extends RecyclerView.Adapte
         if (mFileList.get(position).getFileType() != null) {
             switch (mFileList.get(position).getFileType()) {
                 case "PDF":
-                    holder.iv_FileIcon.setImageResource(R.drawable.ic_pdf);
+                    holder.iv_FileIcon.setImageResource(R.drawable.asm_mfp_ic_pdf);
                     break;
                 case "doc":
-                    holder.iv_FileIcon.setImageResource(R.drawable.ic_word);
+                    holder.iv_FileIcon.setImageResource(R.drawable.asm_mfp_ic_word);
                     break;
                 case "PTT":
-                    holder.iv_FileIcon.setImageResource(R.drawable.ic_ppt);
+                    holder.iv_FileIcon.setImageResource(R.drawable.asm_mfp_ic_ppt);
                     break;
                 case "TXT":
-                    holder.iv_FileIcon.setImageResource(R.drawable.ic_txt);
+                    holder.iv_FileIcon.setImageResource(R.drawable.asm_mfp_ic_txt);
                     break;
                 case "XLS":
-                    holder.iv_FileIcon.setImageResource(R.drawable.ic_xls);
+                    holder.iv_FileIcon.setImageResource(R.drawable.asm_mfp_ic_xls);
                     break;
             }
         } else
-            holder.iv_FileIcon.setImageResource(R.drawable.ic_txt);
+            holder.iv_FileIcon.setImageResource(R.drawable.asm_mfp_ic_txt);
 
         if (mFileList.get(position).getFileSize() != null) {
             Long size = Long.parseLong(mFileList.get(position).getFileSize());

@@ -1,5 +1,6 @@
 package com.alcodes.alcodessmmediafilepicker.fragments;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,8 +32,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alcodes.alcodessmmediafilepicker.R;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpDocumentFilePickerActivity;
-import com.alcodes.alcodessmmediafilepicker.activities.AsmMfpMainActivity;
 import com.alcodes.alcodessmmediafilepicker.adapter.AsmMfpDocumentPickerRecyclerViewAdapter;
 import com.alcodes.alcodessmmediafilepicker.databinding.AsmMfpFragmentDocumentFilePickerBinding;
 import com.alcodes.alcodessmmediafilepicker.databinding.bindingcallbacks.SortByDialogCallback;
@@ -120,9 +119,8 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 get(AsmMfpDocumentViewModel.class);
 
         //Set Default Sorting in View Model
-        if(mDocumentViewModel.getSortingStyle().getValue() == null){
+        if(mDocumentViewModel.getSortingStyle().getValue() == null)
             mDocumentViewModel.setSortingStyle(DEFAULT_SORTING_STYLE);
-        }
 
         mfpCustomFilePickerViewModel = new ViewModelProvider(mNavController.getBackStackEntry(R.id.asm_mfp_nav_document),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).
@@ -538,18 +536,14 @@ public class AsmMfpDocumentPickerMergedFileTypeFragment extends Fragment impleme
                 mFileList.add(TotalselectedList.get(i));
             }
             if (mFileList != null) {
-              //  Intent intent = new Intent(getContext(), AsmGvrMainActivity.class);
-            //    intent.putStringArrayListExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
-              //  startActivity(intent);
 
+                Intent ResultIntent = new Intent();
+                ResultIntent.putExtra("color", mColor);
+                ResultIntent.putExtra(EXTRA_STRING_ARRAY_FILE_URI, mFileList);
+                ResultIntent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
+                requireActivity().setResult(Activity.RESULT_OK, ResultIntent);
+                requireActivity().finish();
 
-                Intent intent = new Intent("android.intent.action.MAIN");
-                intent.setComponent(new ComponentName("com.alcodes.alcodesgalleryviewerdemo","com.alcodes.alcodesgalleryviewerdemo.activities.MainActivity"));
-                intent.putExtra("color", mColor);
-                intent.putExtra(EXTRA_STRING_ARRAY_FILE_URI,mFileList);
-
-                intent.putExtra(EXTRA_INTEGER_SELECTED_THEME, mTheme);
-                startActivity(intent);
             }
         }
 

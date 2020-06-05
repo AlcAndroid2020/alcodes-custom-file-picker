@@ -34,7 +34,7 @@
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/no_file_found" />
+                android:src="@drawable/asm_mfp_no_file_found" />
 
             <TextView
                 android:id="@+id/textview_file_type_not_found"
