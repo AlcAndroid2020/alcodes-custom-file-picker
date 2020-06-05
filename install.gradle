@@ -1,0 +1,39 @@
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.winson.alcodesgalleryviewerlibrary'
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar/jar'
+                groupId 'com.winson.alcodesgalleryviewerlibrary'
+                artifactId 'alcodessmmediafilepicker'
+                name 'alcodessmmediafilepicker'
+                description 'A media file picker library.'
+                url 'https://bitbucket.org/winsonloh1998/alcodes-gallery-viewer-library'
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'alcodesMobileTeam'
+                        name 'Alcodes Mobile Team'
+                        email 'alcmobileteam2020@gmail.com'
+                    }
+                }
+
+                scm {
+                    connection 'https://bitbucket.org/winsonloh1998/alcodes-gallery-viewer-library.git'
+                    developerConnection 'https://bitbucket.org/winsonloh1998/alcodes-gallery-viewer-library.git'
+                    url 'https://bitbucket.org/winsonloh1998/alcodes-gallery-viewer-library'
+                }
+            }
+        }
+    }
+}
